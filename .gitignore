@@ -25,3 +25,6 @@ replay_pid*
 
 # the target folder
 /target/
+
+# the .idea folder
+.idea/
