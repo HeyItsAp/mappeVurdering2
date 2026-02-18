@@ -3,7 +3,7 @@ package ntnu.gruppe21;
 /**
  * Thrown to indicate a transaction has failed.
  */
-public class TransactionException extends RuntimeException{
+public class TransactionException extends Exception{
 
     /**
      * Constructs a {@code TransactionException} with no detail message.
