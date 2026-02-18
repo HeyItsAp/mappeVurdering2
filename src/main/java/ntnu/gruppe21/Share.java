@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class Share {
   private final Stock stock;
-  private BigDecimal quantity;
-  private BigDecimal purchasePrice;
+  private final BigDecimal quantity;
+  private final BigDecimal purchasePrice;
 
   public Share(Stock stock, BigDecimal quantity, BigDecimal purchasePrice) {
     this.stock = Objects.requireNonNull(stock, "Stock cannot be null");
