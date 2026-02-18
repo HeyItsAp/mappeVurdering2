@@ -1,10 +1,8 @@
 package ntnu.gruppe21.calculators;
 
-import ntnu.gruppe21.Share;
-import ntnu.gruppe21.TransactionCalculator;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import ntnu.gruppe21.Share;
 
 /** Calculator class for sales. */
 public class SaleCalculator implements TransactionCalculator {
@@ -12,6 +10,11 @@ public class SaleCalculator implements TransactionCalculator {
   private final BigDecimal salesPrice;
   private final BigDecimal quantity;
 
+  /**
+   * Creates a new sale calculator.
+   *
+   * @param share The share linked to the transaction
+   */
   public SaleCalculator(Share share) {
     purchasePrice = share.getPurchasePrice();
     quantity = share.getQuantity();
