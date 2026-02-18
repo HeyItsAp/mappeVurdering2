@@ -1,7 +1,6 @@
 package ntnu.gruppe21.calculators;
 
 import ntnu.gruppe21.Share;
-import ntnu.gruppe21.TransactionCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
