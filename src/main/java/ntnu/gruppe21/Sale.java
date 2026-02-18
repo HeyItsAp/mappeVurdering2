@@ -2,7 +2,14 @@ package ntnu.gruppe21;
 
 import ntnu.gruppe21.calculators.SaleCalculator;
 
+/** Class representing a sale. */
 public class Sale extends Transaction {
+  /**
+   * Creates a new sale.
+   *
+   * @param share share to be sold.
+   * @param week week of sale.
+   */
   public Sale(Share share, int week) {
     var calculator = new SaleCalculator(share);
 
