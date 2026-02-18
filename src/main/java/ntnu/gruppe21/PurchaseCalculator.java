@@ -3,6 +3,9 @@ package ntnu.gruppe21;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * Class representing a purchase.
+ */
 public class PurchaseCalculator implements TransactionCalculator {
   private final BigDecimal purchasePrice;
   private final BigDecimal quantity;
