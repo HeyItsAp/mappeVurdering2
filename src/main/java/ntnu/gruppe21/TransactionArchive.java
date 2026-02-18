@@ -6,12 +6,11 @@
  */
 package ntnu.gruppe21;
 
+import java.util.ArrayList;
+import java.util.List;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
 import ntnu.gruppe21.transaction.Transaction;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TransactionArchive {
   /** An list of transactions, which can contain both purchases and sales. */

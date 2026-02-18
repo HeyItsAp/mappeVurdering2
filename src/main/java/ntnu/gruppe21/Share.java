@@ -1,9 +1,9 @@
 /**
- * Represents a share of a stock, including the stock itself, the quantity of shares owned, and the purchase price.
- * 
+ * Represents a share of a stock, including the stock itself, the quantity of shares owned, and the
+ * purchase price.
+ *
  * @author Adrian
  */
-
 package ntnu.gruppe21;
 
 import java.math.BigDecimal;
@@ -21,7 +21,7 @@ public class Share {
 
   /**
    * Creates a new Share with the specified stock, quantity, and purchase price.
-   * 
+   *
    * @param stock
    * @param quantity
    * @param purchasePrice
@@ -34,7 +34,7 @@ public class Share {
 
   /**
    * Returns the stock that this share represents.
-    *
+   *
    * @return the stock in question.
    */
   public Stock getStock() {
@@ -43,18 +43,18 @@ public class Share {
 
   /**
    * Returns the quantity of shares owned.
-   * 
+   *
    * @return the quantity in question.
    */
   public BigDecimal getQuantity() {
     return quantity;
   }
 
-	/**
-	 * Returns the purchase price of the shares.
-	 * 
-	 * @return the purchase price in question.
-	 */
+  /**
+   * Returns the purchase price of the shares.
+   *
+   * @return the purchase price in question.
+   */
   public BigDecimal getPurchasePrice() {
     return purchasePrice;
   }
