@@ -36,5 +36,9 @@ public abstract class Transaction {
     return committed;
   }
 
-  public abstract void commit(Player player);
+  protected void markCommitted() {
+    committed = true;
+  }
+
+  public abstract void commit(Player player) throws TransactionException;
 }
