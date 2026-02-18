@@ -8,4 +8,18 @@ public class Sale extends Transaction {
 
     super(share, week, calculator);
   }
+
+  public void commit(Player player) throws TransactionException {
+    if (isCommitted()) {
+      throw new TransactionException("Transaction is already committed.");
+    }
+
+    player.getPortfolio().removeShare(getShare());
+
+    player.addMoney(getCalculator().calculateTotal());
+
+    player.getTransactionArchive().add(this);
+
+    markCommitted();
+  }
 }
