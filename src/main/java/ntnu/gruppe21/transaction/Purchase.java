@@ -1,6 +1,8 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.transaction;
 
-import ntnu.gruppe21.calculators.PurchaseCalculator;
+import ntnu.gruppe21.Player;
+import ntnu.gruppe21.Share;
+import ntnu.gruppe21.transaction.calculators.PurchaseCalculator;
 
 /** Class representing a purchase. */
 public class Purchase extends Transaction {

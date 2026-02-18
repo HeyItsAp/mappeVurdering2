@@ -1,4 +1,4 @@
-package ntnu.gruppe21.calculators;
+package ntnu.gruppe21.transaction.calculators;
 
 import java.math.BigDecimal;
 

@@ -1,5 +1,8 @@
 package ntnu.gruppe21;
 
+import ntnu.gruppe21.transaction.Purchase;
+import ntnu.gruppe21.transaction.Transaction;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;

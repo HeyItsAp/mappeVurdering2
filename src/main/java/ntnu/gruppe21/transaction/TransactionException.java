@@ -1,4 +1,4 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.transaction;
 
 /** Thrown to indicate a transaction has failed. */
 public class TransactionException extends Exception {

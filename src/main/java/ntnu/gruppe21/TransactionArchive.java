@@ -6,6 +6,10 @@
  */
 package ntnu.gruppe21;
 
+import ntnu.gruppe21.transaction.Purchase;
+import ntnu.gruppe21.transaction.Sale;
+import ntnu.gruppe21.transaction.Transaction;
+
 import java.util.ArrayList;
 import java.util.List;
 
