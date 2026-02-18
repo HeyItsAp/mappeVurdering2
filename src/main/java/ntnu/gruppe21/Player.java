@@ -13,17 +13,17 @@ public class Player {
   /* Current money for the player */
   private BigDecimal currentMoney;
 
-  /* Players purchase portofolio */
-  private Portfolio portfolio;
+  /* Players purchase portfolio */
+  private final Portfolio portfolio;
 
   /* Players transaction archive */
-  private TransactionArchive transactionArchive;
+  private final TransactionArchive transactionArchive;
 
   /**
    * Creates a new Player with the specified name and starting money.
    *
-   * @param name
-   * @param startingMoney
+   * @param name player name.
+   * @param startingMoney money the player starts with.
    */
   public Player(String name, BigDecimal startingMoney) {
     this.name = name;
@@ -47,7 +47,7 @@ public class Player {
    *
    * @return the starting money in question.
    */
-  public BigDecimal getCurrecntMoney() {
+  public BigDecimal getCurrentMoney() {
     return currentMoney;
   }
 
@@ -74,7 +74,7 @@ public class Player {
   /**
    * Returns the portfolio of the player.
    *
-   * @return portofolio of the player.
+   * @return portfolio of the player.
    */
   public Portfolio getPortfolio() {
     return portfolio;

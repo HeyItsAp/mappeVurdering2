@@ -14,17 +14,17 @@ public class Share {
   private final Stock stock;
 
   /* The quantity of shares owned */
-  private BigDecimal quantity;
+  private final BigDecimal quantity;
 
   /* The purchase price of the shares */
-  private BigDecimal purchasePrice;
+  private final BigDecimal purchasePrice;
 
   /**
    * Creates a new Share with the specified stock, quantity, and purchase price.
    *
-   * @param stock
-   * @param quantity
-   * @param purchasePrice
+   * @param stock the stock the share belongs to.
+   * @param quantity amount of stocks.
+   * @param purchasePrice price to purchase.
    */
   public Share(Stock stock, BigDecimal quantity, BigDecimal purchasePrice) {
     this.stock = Objects.requireNonNull(stock, "Stock cannot be null");

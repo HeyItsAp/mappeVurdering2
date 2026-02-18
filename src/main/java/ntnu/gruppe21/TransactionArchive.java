@@ -13,8 +13,8 @@ import ntnu.gruppe21.transaction.Sale;
 import ntnu.gruppe21.transaction.Transaction;
 
 public class TransactionArchive {
-  /** An list of transactions, which can contain both purchases and sales. */
-  private List<Transaction> transactions;
+  /** A list of transactions, which can contain both purchases and sales. */
+  private final List<Transaction> transactions;
 
   /** Creates a new TransactionArchive with an empty list of transactions. */
   public TransactionArchive() {
@@ -48,33 +48,27 @@ public class TransactionArchive {
    * @return A list of transactions
    */
   public List<Transaction> getTransactionsInWeek(int week) {
-    List<Transaction> filteredTransactions =
-        transactions.stream().filter(t -> t.getWeek() == week).toList();
-    return filteredTransactions;
+    return transactions.stream().filter(t -> t.getWeek() == week).toList();
   }
 
   /**
    * Returns a list of purchases, that were made in the specified week.
    *
    * @param week The week in question
-   * @return Thelist of purchases
+   * @return The list of purchases
    */
   public List<Purchase> getPurchases(int week) {
-    List<Purchase> filteredTransactions =
-        transactions.stream().map(t -> (Purchase) t).filter(t -> t.getWeek() == week).toList();
-    return filteredTransactions;
+    return transactions.stream().map(t -> (Purchase) t).filter(t -> t.getWeek() == week).toList();
   }
 
   /**
    * Returns a list of sales, that were made in the specified week.
    *
    * @param week The week in question
-   * @return Thelist of sales
+   * @return The list of sales
    */
   public List<Sale> getSales(int week) {
-    List<Sale> filteredTransactions =
-        transactions.stream().map(t -> (Sale) t).filter(t -> t.getWeek() == week).toList();
-    return filteredTransactions;
+    return transactions.stream().map(t -> (Sale) t).filter(t -> t.getWeek() == week).toList();
   }
 
   /**
@@ -83,7 +77,7 @@ public class TransactionArchive {
    * @return the length of the list of distinct list, which is the number of distinct weeks.
    */
   public int countDistinctWeeks() {
-    List<Integer> weeks = transactions.stream().map(t -> t.getWeek()).distinct().toList();
+    List<Integer> weeks = transactions.stream().map(Transaction::getWeek).distinct().toList();
     return weeks.size();
   }
 }

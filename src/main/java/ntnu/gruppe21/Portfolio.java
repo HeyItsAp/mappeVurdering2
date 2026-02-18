@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class Portfolio {
   /* A list of shares owned by the investor. */
-  private List<Share> shares;
+  private final List<Share> shares;
 
   /** Creates a new Portfolio with an empty list of shares. */
   public Portfolio() {

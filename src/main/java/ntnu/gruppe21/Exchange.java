@@ -1,37 +1,41 @@
 package ntnu.gruppe21;
 
+/* UNFINISHED */
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Transaction;
 
 public class Exchange {
-  /* Name of "Børs" */
+  /* Name of exchange */
   private final String name;
 
   /* The current week of the game */
   private int week;
 
   /* A map of stock symbols to Stock objects, representing the stocks available on the exchange. */
-  private Map<String, Stock> stockMap;
+  private final Map<String, Stock> stockMap;
 
   /* A random number generator, used for simulating stock price changes??? */
-  private Random random;
+  private final Random random;
 
   /**
    * Creates a new Exchange with the specified name, week, stock map, and random number generator.
    *
-   * @param name
-   * @param week
-   * @param stockMap
-   * @param random
+   * @param name the name of the exchange.
+   * @param stocks list of stocks to be traded at this exchange.
    */
-  public Exchange(String name, Map<String, Stock> stockMap) {
+  public Exchange(String name, List<Stock> stocks) {
     this.name = name;
     this.week = 1;
-    this.stockMap = stockMap;
+    this.stockMap =
+        stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
+    ;
     this.random = new Random();
   }
 
@@ -85,19 +89,19 @@ public class Exchange {
    * @return
    */
   public List<Stock> findStock(String searchTerm) {
-    List<Stock> filtedStocks =
+    List<Stock> filteredStocks =
         stockMap.values().stream()
             .filter(
                 s ->
                     s.getSymbol().toLowerCase().contains(searchTerm.toLowerCase())
                         || s.getCompany().toLowerCase().contains(searchTerm.toLowerCase()))
             .toList();
-    return filtedStocks;
+    return filteredStocks;
   }
 
   /**
    * EMPTY TO BE IMPLEMENTED, REQUIRED TRANSACTION CLASS TO BE IMPLEMENTED Attempt details: When
-   * buying a stock it creates an transaction, this time a purchase. This requires to update players
+   * buying a stock it creates a transaction, this time a purchase. This requires to update players
    * portfolio and transaction archive.
    *
    * @param symbol
