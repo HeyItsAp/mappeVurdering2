@@ -9,6 +9,11 @@ public class PurchaseCalculator implements TransactionCalculator {
   private final BigDecimal purchasePrice;
   private final BigDecimal quantity;
 
+  /**
+   * Creates a new purchase calculator.
+   *
+   * @param share The share linked to the transaction
+   */
   public PurchaseCalculator(Share share) {
     purchasePrice = share.getPurchasePrice();
     quantity = share.getQuantity();
