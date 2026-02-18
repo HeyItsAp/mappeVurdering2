@@ -1,6 +1,8 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.transaction;
 
-import ntnu.gruppe21.calculators.TransactionCalculator;
+import ntnu.gruppe21.Player;
+import ntnu.gruppe21.Share;
+import ntnu.gruppe21.transaction.calculators.TransactionCalculator;
 
 /** Abstract class representing a single transaction. */
 public abstract class Transaction {
@@ -36,5 +38,9 @@ public abstract class Transaction {
     return committed;
   }
 
-  public abstract void commit(Player player);
+  protected void markCommitted() {
+    committed = true;
+  }
+
+  public abstract void commit(Player player) throws TransactionException;
 }
