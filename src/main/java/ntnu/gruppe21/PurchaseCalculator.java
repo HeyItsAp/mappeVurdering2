@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Class representing a purchase.
+ * Calculator class for purchases.
  */
 public class PurchaseCalculator implements TransactionCalculator {
   private final BigDecimal purchasePrice;

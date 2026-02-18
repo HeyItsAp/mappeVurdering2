@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * The interface represents a calculator for transactions.
  *
- * <p>It should be used on transactions like purchases and sales.
+ * <p>It should only be used in transaction calculators like purchases and sales.
  */
 public interface TransactionCalculator {
   /**
