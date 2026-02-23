@@ -126,7 +126,10 @@ public class Exchange {
     return new Sale(share, week);
   }
 
-  private void advance() {
+  /**
+   * Advances the exchange by one week, updating the stock prices.
+   */
+  public void advance() {
     for (Stock stock : stockMap.values()) {
       BigDecimal currentPrice = stock.getSalesPrice();
       double changePercent =
