@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import ntnu.gruppe21.transaction.Purchase;
+import ntnu.gruppe21.transaction.Sale;
 import ntnu.gruppe21.transaction.Transaction;
 
 public class Exchange {
@@ -35,7 +36,7 @@ public class Exchange {
     this.week = 1;
     this.stockMap =
         stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
-    ;
+
     this.random = new Random();
   }
 
@@ -60,8 +61,8 @@ public class Exchange {
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
-   * @param symbol
-   * @return
+   * @param symbol The symbol of the desired stock.
+   * @return True, if contains the stock, false if not.
    */
   public boolean hasStock(String symbol) {
     return stockMap.containsKey(symbol);
@@ -85,52 +86,47 @@ public class Exchange {
   /**
    * Returns a list of searched for stocks based on the search term. Based on symbol
    *
-   * @param searchTerm
-   * @return
+   * @param searchTerm The term you wish to search for.
+   * @return A list of all stocks matching the search.
    */
   public List<Stock> findStock(String searchTerm) {
-    List<Stock> filteredStocks =
-        stockMap.values().stream()
-            .filter(
-                s ->
-                    s.getSymbol().toLowerCase().contains(searchTerm.toLowerCase())
-                        || s.getCompany().toLowerCase().contains(searchTerm.toLowerCase()))
-            .toList();
-    return filteredStocks;
+    return stockMap.values().stream()
+        .filter(
+            s ->
+                s.getSymbol().toLowerCase().contains(searchTerm.toLowerCase())
+                    || s.getCompany().toLowerCase().contains(searchTerm.toLowerCase()))
+        .toList();
   }
 
   /**
-   * EMPTY TO BE IMPLEMENTED, REQUIRED TRANSACTION CLASS TO BE IMPLEMENTED Attempt details: When
-   * buying a stock it creates a transaction, this time a purchase. This requires to update players
-   * portfolio and transaction archive.
+   * Creates a purchase for a wanted stock.
    *
-   * @param symbol
-   * @param quantity
-   * @param player
-   * @return
+   * @param symbol The symbol of the stock to be purchased.
+   * @param quantity Amount of stocks to be purchased.
+   * @param player The player doing the purchase.
+   * @return The transaction.
    */
   public Transaction buy(String symbol, BigDecimal quantity, Player player) {
     Stock stock = getStock(symbol);
-    Purchase purchase = new Purchase(week, stock);
-    player.getTransactionArchive().add(purchase);
-    player.getPortfolio().addShare(new Share(stock, quantity, stock.getSalesPrice()));
-    return purchase;
+    Share share = new Share(stock, quantity, stock.getSalesPrice());
+    return new Purchase(share, week);
   }
 
   /**
-   * EMPTY TO BE IMPLEMENTED, REQUIRED TRANSACTION CLASS TO BE IMPLEMENTED
+   * Creates a sale for a wanted stock.
    *
-   * @param symbol
-   * @param quantity
-   * @param player
-   * @return
+   * @param symbol The symbol of the stock to be sold.
+   * @param quantity Amount of stocks to be sold.
+   * @param player The player doing the sale.
+   * @return The transaction.
    */
-  public Transaction sell(Share share, Player player) {
-    Stock stock = share.getStock();
+  public Transaction sell(String symbol, BigDecimal quantity, Player player) {
+    Stock stock = getStock(symbol);
+    Share share = new Share(stock, quantity, stock.getSalesPrice());
+    return new Sale(share, week);
   }
 
   private void advance() {
-    week++;
     for (Stock stock : stockMap.values()) {
       BigDecimal currentPrice = stock.getSalesPrice();
       double changePercent =
@@ -138,5 +134,6 @@ public class Exchange {
       BigDecimal newPrice = currentPrice.multiply(BigDecimal.valueOf(1 + changePercent));
       stock.addNewSalesPrice(newPrice);
     }
+    week++;
   }
 }
