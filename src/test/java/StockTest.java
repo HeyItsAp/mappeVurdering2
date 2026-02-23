@@ -28,6 +28,7 @@ public class StockTest {
     assertEquals(new BigDecimal(20000), stock.getSalesPrice());
   }
 
+
   @Test
   public void addingNewSalesCorrect() {
     stock.addNewSalesPrice(new BigDecimal(12345));
