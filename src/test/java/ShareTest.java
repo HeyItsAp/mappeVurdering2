@@ -23,12 +23,12 @@ public class ShareTest {
 
   @Test
   public void gettingQuantityCorrect() {
-    assertEquals(new BigDecimal(1000),shareOfStock.getQuantity() );
+    assertEquals(new BigDecimal(1000), shareOfStock.getQuantity());
   }
 
   @Test
   public void gettingPurchasePriceCorrect() {
-      assertEquals(new BigDecimal(2531),shareOfStock.getPurchasePrice() );
+    assertEquals(new BigDecimal(2531), shareOfStock.getPurchasePrice());
   }
 
   @Test
