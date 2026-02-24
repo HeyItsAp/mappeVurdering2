@@ -109,7 +109,12 @@ public class Exchange {
   public Transaction buy(String symbol, BigDecimal quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
-    return new Purchase(share, week);
+    Purchase purchase = new Purchase(share, week);
+
+    if (player.getCurrentMoney().compareTo(purchase.getCalculator().calculateTotal()) <= 0){
+      throw new IllegalArgumentException("Insufficient Funds");
+    }
+    return purchase;
   }
 
   /**
