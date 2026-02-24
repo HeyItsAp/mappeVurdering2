@@ -12,11 +12,19 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for the Purchase class.
+ * 
+ * The tests currently focus on basic functionality and expected behavior of the Purchase class.
+ * @author Adrian Balunan
+ */
+
 public class TransactionBuyTest {
     private Transaction purchase;
     private Share share;
     private Player player1;
 
+    /* Method to set up a Purchase instance before each test case is executed, ensuring a consistent test environment. */
     @BeforeEach
     public void setup(){
         Stock stock1 = new Stock("Bit", "Company1", new BigDecimal(1000));
@@ -25,26 +33,31 @@ public class TransactionBuyTest {
         purchase = new Purchase(share, 1);
     }
 
+    /* Method to verify that the getShare() method returns the correct Share object associated with the Purchase transaction. */
     @Test
     public void getterForShareWorks(){
         assertEquals(share, purchase.getShare());
     }
 
+    /* Method to verify that the getWeek() method returns the correct week number associated with the Purchase transaction. */
     @Test
     public void getterForWeekWorks(){
         assertEquals(1, purchase.getWeek());
     }
 
+    /* Method to verify that the getCalculator() method returns an instance of the PurchaseCalculator class, which is responsible for calculating the cost of the purchase transaction. */
     @Test
     public void getterForCalculatorReturnCorrectType(){
         assertInstanceOf(PurchaseCalculator.class, purchase.getCalculator());
     }
 
+    /* Method to verify that the isCommitted() method returns false for a newly created Purchase transaction, indicating that it has not yet been committed. */
     @Test
     public void IsCommitedWorks(){
         assertFalse(purchase.isCommitted());
     }
 
+    /* Method to verify that the commit() method correctly commits a purchase transaction and that it cannot be committed more than once. */
     @Test
     public void commitingWorks() throws TransactionException {
         purchase.commit(player1);
@@ -53,5 +66,4 @@ public class TransactionBuyTest {
            purchase.commit(player1);
         });
     }
-
 }
