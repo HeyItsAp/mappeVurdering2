@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests for the Exchange class.
  * 
  * The tests currently focus on basic functionality and expected behavior of the Exchange class.
+ * @author Adrian Balunan
  */
 
 public class ExhangeTest {
@@ -48,25 +49,25 @@ public class ExhangeTest {
         assertEquals("Oslo Børs", exchange.getName());
     }
 
-    /* - Getter method for week, ensuring it returns the correct initial value. */
+    /* Getter method for week, ensuring it returns the correct initial value. */
     @Test
     public void getterWeekWorks(){
         assertEquals(1, exchange.getWeek());
     }
 
-    /* - Method to retrieve a stock by its symbol, ensuring it returns the correct Stock object. */
+    /* Method to retrieve a stock by its symbol, ensuring it returns the correct Stock object. */
     @Test
     public void getStockWithSymbolStockReturns(){
         assertEquals(stock1, exchange.getStock("Bit"));
     }
 
-    /* - Method to check if a stock exists by its symbol, ensuring it returns true for existing stocks. */
+    /* Method to check if a stock exists by its symbol, ensuring it returns true for existing stocks. */
     @Test
     public void hasStockWorks(){
         assertTrue(exchange.hasStock("Bit"));
     }
 
-    /* - Method to throw an exception if a stock is not found by its symbol. */
+    /* Method to throw an exception if a stock is not found by its symbol. */
     @Test
     public void getStockWithSymbolThrowsExecptionIfNotFound(){
         assertThrows(IllegalArgumentException.class, () -> {
@@ -74,7 +75,7 @@ public class ExhangeTest {
         });
     }
 
-    /* - Method to find stocks by a partial symbol name, ensuring it returns the correct list of Stock objects. */
+    /* Method to find stocks by a partial symbol name, ensuring it returns the correct list of Stock objects. */
     @Test
     public void findStockWorks(){
         List<Stock> expectedResult = new ArrayList<>();
@@ -82,21 +83,31 @@ public class ExhangeTest {
         assertEquals(expectedResult, exchange.findStock("Bi"));
     }
 
-    /* - Method to return an empty list if no stocks match the partial symbol name. */
+    /* Method to return an empty list if no stocks match the partial symbol name. */
     @Test
     public void findStockReturnsEmptyInFailure(){
         List<Stock> expectedResult = new ArrayList<>();
         assertEquals(expectedResult, exchange.findStock("StockDoesNotExist"));
     }
 
-    /* - Method to return all stocks if the partial symbol name is empty. */
+    /* Method to return all stocks if the partial symbol name is empty. */
+    @Test
+    public void findStockReturnsAllIfEmpty(){
+        List<Stock> expectedResult = new ArrayList<>();
+        expectedResult.add(stock1);
+        expectedResult.add(new Stock("DogeCoin", "Company2", new BigDecimal(10)));
+        expectedResult.add(new Stock("DopeCoin", "Company3", new BigDecimal(500)));
+        assertEquals(expectedResult, exchange.findStock(""));
+    }
+
+    /* Method to return a Purchase object when a player buys a stock. */
     @Test
     public void buyingReturnsCorrectType(){
         Player player = new Player("Name1", new BigDecimal(10000000));
         assertInstanceOf(Purchase.class, exchange.buy("Bit", new BigDecimal(10), player));
     }
 
-    /* - Method to throw an exception if a player tries to buy a stock without having enough money. */
+    /* Method to throw an exception if a player tries to buy a stock without having enough money. */
     @Test
     public void buyingThrowsExceptionIfNotEnoughMoney(){
         Share share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
@@ -108,14 +119,14 @@ public class ExhangeTest {
         });
     }
 
-    /* - Method to return a Sale object when a player sells a stock. */
+    /* Method to return a Sale object when a player sells a stock. */
     @Test
     public void saleReturnsCorrectType(){
         Player player = new Player("Name1", new BigDecimal(10000000));
         assertInstanceOf(Sale.class, exchange.sell("Bit", new BigDecimal(10), player));
     }
 
-    /* - Method to throw an exception if a player tries to sell a stock they do not own. */
+    /* Method to throw an exception if a player tries to sell a stock they do not own. */
     @Test
     public void advanceWorks(){
         java.math.BigDecimal oldprice = exchange.getStock("Bit").getSalesPrice();

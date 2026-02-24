@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests for the Player class.
  * 
  * The tests currently focus on basic functionality and expected behavior of the Player class.
+ * @author Adrian Balunan
  */
 
 public class PlayerTest {
