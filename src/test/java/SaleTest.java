@@ -14,13 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SaleTest {
     private Transaction sale;
-    private Share share;
     private Player player1;
 
     @BeforeEach
     public void setup(){
         Stock stock1 = new Stock("Bit", "Company1", new BigDecimal(1000));
-        share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
+        Share share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
         player1 = new Player("Name", new BigDecimal(100000));
         sale = new Sale(share, 1);
     }
