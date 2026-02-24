@@ -59,6 +59,15 @@ public class Exchange {
   }
 
   /**
+   * Returns the StockMap
+   *
+   * @return StockMap in question
+   */
+  public Map<String, Stock> getStockMap() {
+    return stockMap;
+  }
+
+  /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
    * @param symbol The symbol of the desired stock.
