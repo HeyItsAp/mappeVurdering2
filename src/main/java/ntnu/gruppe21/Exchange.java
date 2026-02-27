@@ -59,6 +59,15 @@ public class Exchange {
   }
 
   /**
+   * Returns the StockMap
+   *
+   * @return StockMap in question
+   */
+  public Map<String, Stock> getStockMap() {
+    return stockMap;
+  }
+
+  /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
    * @param symbol The symbol of the desired stock.
@@ -109,7 +118,12 @@ public class Exchange {
   public Transaction buy(String symbol, BigDecimal quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
-    return new Purchase(share, week);
+    Purchase purchase = new Purchase(share, week);
+
+    if (player.getCurrentMoney().compareTo(purchase.getCalculator().calculateTotal()) <= 0){
+      throw new IllegalArgumentException("Insufficient Funds");
+    }
+    return purchase;
   }
 
   /**
@@ -126,9 +140,7 @@ public class Exchange {
     return new Sale(share, week);
   }
 
-  /**
-   * Advances the exchange by one week, updating the stock prices.
-   */
+  /** Advances the exchange by one week, updating the stock prices. */
   public void advance() {
     for (Stock stock : stockMap.values()) {
       BigDecimal currentPrice = stock.getSalesPrice();
