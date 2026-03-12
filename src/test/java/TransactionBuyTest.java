@@ -65,5 +65,5 @@ public class TransactionBuyTest {
         assertThrows(TransactionException.class, () -> {
            purchase.commit(player1);
         });
-    }
+    }   
 }

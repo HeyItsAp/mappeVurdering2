@@ -68,6 +68,8 @@ public class PlayerTest {
     @Test
     public void getterArchiveReturnArchive(){
         assertInstanceOf(TransactionArchive.class, player1.getTransactionArchive());
+        assertInstanceOf(TransactionArchive.class, player1.getTransactionArchive());
+
     }
 
 
