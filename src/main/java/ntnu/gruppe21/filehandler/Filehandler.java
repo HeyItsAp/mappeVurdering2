@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class filehandler {
+public class Filehandler {
     public static void saveData(){
 
     }
@@ -29,13 +29,18 @@ public class filehandler {
                     continue;
                 }
 
-                String[] values = trimmedLine.split(";");
-                Stock stock = new Stock(values[0], values[1], BigDecimal.valueOf(Integer.valueOf(values[3])));
-                listOfStocks.add(stock);
+                String[] values = trimmedLine.split(",");
 
+                // Just a normal print out
                 for (String value : values){
                     System.out.print(value.trim() + " ");
                 }
+                System.out.print("\n");
+
+                Stock stock = new Stock(values[0], values[1], new BigDecimal(values[2]));
+                listOfStocks.add(stock);
+
+
 
             }
         } catch (Exception e) {
