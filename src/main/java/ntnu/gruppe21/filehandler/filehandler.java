@@ -14,7 +14,7 @@ public class filehandler {
 
     }
     public static Exchange getExhangeData(){
-        String csvfile = "exchangeData.csv";
+        String csvfile = "src/main/resources/Exchanges/exchangeData.csv";
         String line = "";
         List<Stock> listOfStocks = new ArrayList<>();
         try {
