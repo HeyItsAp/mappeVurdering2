@@ -5,12 +5,35 @@ import ntnu.gruppe21.Stock;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Filehandler {
-    public static void saveData(){
+    public static void saveExchangeData(Exchange exchange){
+        try {
+            PrintWriter pw = new PrintWriter("src/main/resources/Exchanges/saveData" + exchange.getName() + exchange.getWeek() + ".csv");
+            pw.write("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
+            pw.write("# Ticker,Name,{Prices}");
+            pw.write(" ");
+
+            exchange.getStockMap().forEach((key, value) -> {
+                String prices = value.getPriceHistory().stream()
+                                .map(BigDecimal::toString)
+                                .collect(Collectors.joining(";"));
+
+                    pw.write(value.getSymbol() + "," + value.getCompany() + "," + prices);
+                }
+            );
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
     public static Exchange getExhangeData(){
