@@ -31,18 +31,47 @@ public class Stock {
     prices.add(Objects.requireNonNull(salesPrice, "salesPrice must not be null"));
   }
 
+  /**
+   * Returns the full History of this stock chronologically.
+   *
+   * @return a list of {@link BigDecimal} values.
+   */
   public List<BigDecimal> getPriceHistory() {
     return prices;
   }
 
+  /**
+   * Returns the highest recorded price of this stock.
+   *   If the price history is empty, {@link BigDecimal#ZERO} is returned.
+   *
+   * @return the maximum price in the price history, or {@code BigDecimal.ZERO} if no prices exist
+  */
   public BigDecimal getHighestPrice(){
     Optional<BigDecimal> maxOptional = prices.stream().max(Comparator.naturalOrder());
-    return maxOptional.isPresent() ? maxOptional.get() : new BigDecimal(0);
+    return maxOptional.isPresent() ? maxOptional.get() : BigDecimal.ZERO;
   }
+
+  /**
+   * Returns the lowest recorded price of this stock.
+   *    If the price history is empty, {@link BigDecimal#ZERO} is returned.
+   *
+   * @return the minimum price in the price history, or {@code BigDecimal.ZERO} if no prices exist
+   */
   public BigDecimal getLowestPrice(){
-    Optional<BigDecimal> maxOptional = prices.stream().min(Comparator.naturalOrder());
-    return maxOptional.isPresent() ? maxOptional.get() : new BigDecimal(0);
+    Optional<BigDecimal> minOptional = prices.stream().min(Comparator.naturalOrder());
+    return minOptional.isPresent() ? minOptional.get() : BigDecimal.ZERO;
   }
+  /**
+   * Calculates the most recent price change for this stock.
+   *
+   * The value is computed as the difference between the latest price and the previous price in the history:
+   *    latest - previous
+   *
+   * If fewer than two prices exist, no change can be calculated and
+   * {@link BigDecimal#ZERO} is returned.
+   *
+   * @return the latest price change, or {@code BigDecimal.ZERO} if insufficient data
+   */
   public BigDecimal getLatestPriceChange(){
     if (prices.size() < 2){
       System.out.println("This Stock has not gone through any changes");
