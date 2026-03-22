@@ -15,19 +15,18 @@ import java.util.stream.Collectors;
 
 public class Filehandler {
     public static String saveExchangeData(Exchange exchange){
-        String filename = "savaData" + exchange.getName() + exchange.getWeek();
-        try {
-            PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv");
-            pw.write("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
-            pw.write("# Ticker,Name,{Prices}");
-            pw.write(" ");
+        String filename = "saveData" + exchange.getName() + exchange.getWeek();
+        try (PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv")){
+            pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
+            pw.println("# Ticker,Name,{Prices}");
+            pw.println(" ");
 
             exchange.getStockMap().forEach((key, value) -> {
                 String prices = value.getPriceHistory().stream()
                                 .map(BigDecimal::toString)
                                 .collect(Collectors.joining(";"));
 
-                    pw.write(value.getSymbol() + "," + value.getCompany() + "," + prices);
+                    pw.println(value.getSymbol() + "," + value.getCompany() + "," + prices);
                 }
             );
 
