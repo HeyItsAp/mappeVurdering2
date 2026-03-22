@@ -1,9 +1,7 @@
 package ntnu.gruppe21;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /** Class representing a stock. */
 public class Stock {
@@ -31,5 +29,29 @@ public class Stock {
 
   public void addNewSalesPrice(BigDecimal salesPrice) {
     prices.add(Objects.requireNonNull(salesPrice, "salesPrice must not be null"));
+  }
+
+  public List<BigDecimal> getPriceHistory() {
+    return prices;
+  }
+
+  public BigDecimal getHighestPrice(){
+    Optional<BigDecimal> maxOptional = prices.stream().max(Comparator.naturalOrder());
+    return maxOptional.isPresent() ? maxOptional.get() : new BigDecimal(0);
+  }
+  public BigDecimal getLowestPrice(){
+    Optional<BigDecimal> maxOptional = prices.stream().min(Comparator.naturalOrder());
+    return maxOptional.isPresent() ? maxOptional.get() : new BigDecimal(0);
+  }
+  public BigDecimal getLatestPriceChange(){
+    if (prices.size() < 2){
+      System.out.println("This Stock has not gone through any changes");
+      return BigDecimal.ZERO;
+    }
+
+    BigDecimal latest = prices.get(prices.size() - 1);
+    BigDecimal previous = prices.get(prices.size() - 2);
+
+    return latest.subtract(previous);
   }
 }
