@@ -12,8 +12,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+/**
+ * Utility class responsible for handling file input and output operations
+ * related to {@link Exchange} and {@link Stock} objects.
+ *
+ * This class provides functionality for:
+ *     Saving exchange data to CSV files
+ *     Loading initial exchange data from CSV
+ *     Loading previously saved exchange data
+ *
+ *
+ * All methods are static and the class is not intended to be instantiated.
+ */
 
 public class Filehandler {
+
+    /**
+     * Saves the current state of an {@link Exchange} to a CSV file.
+     *      (Not a required point on del 2 but why not)
+     *
+     * The file will be stored in the {@code resources/saves/} directory and
+     * will include:
+     *     Exchange name and current week (as comments)
+     *     All stocks with their symbol, company name, and price history
+     *
+     * The price history is stored as a semicolon-separated list in a single column.
+     *
+     * @param exchange the {@link Exchange} object to be saved
+     * @return the filename (without path) of the saved file
+     */
     public static String saveExchangeData(Exchange exchange){
         String filename = "saveData" + exchange.getName() + exchange.getWeek();
         try (PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv")){
@@ -36,6 +63,23 @@ public class Filehandler {
         System.out.println("Attempt to save file: " + filename + ".csv; At resources/saves");
         return filename;
     }
+
+    /**
+     * Loads initial exchange data from a predefined CSV file
+     *      REQUIRED method in del 2
+     *      Probably uploaded on BlackBoard on some point
+     *
+     * The file is expected to be located at:
+     * {@code resources/Exchanges/exchangeData.csv}
+     *
+     * Each valid line in the file should contain:
+     *      Ticker,CompanyName,InitialPrice
+     *      (As demonstrated at del 2 in Mappe)
+     *
+     * Lines starting with '#' and empty lines are ignored.
+     *
+     * @return a new {@link Exchange} object populated with stocks from the file
+     */
     public static Exchange getExhangeData(){
         String csvfile = "src/main/resources/Exchanges/exchangeData.csv";
         String line = "";
@@ -72,6 +116,24 @@ public class Filehandler {
         Exchange exhange = new Exchange("ExhangeFromFile", listOfStocks);
         return exhange;
     }
+    /**
+     * Loads a previously saved exchange state from a CSV file.
+     *      (Not a required point on del 2 but why not)
+     *
+     * The file is expected to be located in:
+     * {@code resources/saves/}
+     *
+     * Each data row must follow the format:
+     *      Ticker,CompanyName,price1;price2;price3;...
+     *
+     * The first price is used as the initial price when creating the {@link Stock},
+     * and the remaining prices are added to reconstruct the full price history.
+     *
+     * Lines starting with '#' and empty lines are ignored.
+     *
+     * @param filename the name of the file (without extension) to load
+     * @return a reconstructed {@link Exchange} object based on the saved data
+     */
     public static Exchange getSaveData (String filename){
         String csvfile = "src/main/resources/saves/" + filename + ".csv";
         String line = "";
