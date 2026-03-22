@@ -169,10 +169,13 @@ public class Exchange {
     if (limit > stockMap.size()){
       throw new IllegalArgumentException("Limit can be bigger than number of stock");
     }
+    if (limit <= 0){
+      throw new IllegalArgumentException("Limit cant be below 0");
+    }
 
     List<Stock> winners = stockMap.values().stream()
             .sorted(Comparator.comparing(Stock::getLatestPriceChange).reversed())
-            .collect(Collectors.toList());
+            .toList();
     return winners.stream().limit(limit).collect(Collectors.toList());
   }
 
@@ -192,10 +195,13 @@ public class Exchange {
     if (limit > stockMap.size()){
       throw new IllegalArgumentException("Limit can be bigger than number of stock");
     }
+    if (limit <= 0){
+      throw new IllegalArgumentException("Limit cant be below 0");
+    }
 
     List<Stock> losers = stockMap.values().stream()
             .sorted(Comparator.comparing(Stock::getLatestPriceChange))
-            .collect(Collectors.toList());
+            .toList();
     return losers.stream().limit(limit).collect(Collectors.toList());
   }
 }
