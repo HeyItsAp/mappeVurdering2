@@ -3,6 +3,7 @@ package ntnu.gruppe21;
 /* UNFINISHED */
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -150,5 +151,57 @@ public class Exchange {
       stock.addNewSalesPrice(newPrice);
     }
     week++;
+  }
+
+  /**
+   * Returns a list of the top-performing stocks based on their most recent price change.
+   *
+   * Stocks are sorted in descending order by their latest price change,
+   * meaning the stocks with the highest positive change appear first.
+   *
+   * The number of stocks returned is limited by the {@code limit} parameter.
+   *
+   * @param limit the maximum number of top gainers to return
+   * @return a list of stocks with the highest recent price increases
+   * @throws IllegalArgumentException if {@code limit} is greater than the number of available stocks
+   */
+  public List<Stock> getGainers(int limit){
+    if (limit > stockMap.size()){
+      throw new IllegalArgumentException("Limit can be bigger than number of stock");
+    }
+    if (limit <= 0){
+      throw new IllegalArgumentException("Limit cant be below 0");
+    }
+
+    List<Stock> winners = stockMap.values().stream()
+            .sorted(Comparator.comparing(Stock::getLatestPriceChange).reversed())
+            .toList();
+    return winners.stream().limit(limit).collect(Collectors.toList());
+  }
+
+  /**
+   * Returns a list of the worst-performing stocks based on their most recent price change.
+   *
+   * Stocks are sorted in ascending order by their latest price change,
+   * meaning the stocks with the largest negative change appear first.
+   *
+   * The number of stocks returned is limited by the {@code limit} parameter.
+   *
+   * @param limit the maximum number of top losers to return
+   * @return a list of stocks with the largest recent price decreases
+   * @throws IllegalArgumentException if {@code limit} is greater than the number of available stocks
+   */
+  public List<Stock> getLosers(int limit){
+    if (limit > stockMap.size()){
+      throw new IllegalArgumentException("Limit can be bigger than number of stock");
+    }
+    if (limit <= 0){
+      throw new IllegalArgumentException("Limit cant be below 0");
+    }
+
+    List<Stock> losers = stockMap.values().stream()
+            .sorted(Comparator.comparing(Stock::getLatestPriceChange))
+            .toList();
+    return losers.stream().limit(limit).collect(Collectors.toList());
   }
 }
