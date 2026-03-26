@@ -102,12 +102,12 @@ public class Player {
   /**
    * Calculates and returns the experience level of the player.
    *
-   * @return A number representing the experience level. 1 = Novice,
-   * 2 = Investor, 3 = Speculator.
+   * @return A number representing the experience level. 1 = Novice, 2 = Investor, 3 = Speculator.
    */
   public int getStatus() {
     int weeks = transactionArchive.countDistinctWeeks();
-    BigDecimal gain = currentMoney.subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_EVEN);
+    BigDecimal gain =
+        getNetWorth().subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_UP);
 
     if (weeks >= 20 && gain.compareTo(BigDecimal.ONE) >= 0) {
       return 3;
@@ -117,6 +117,4 @@ public class Player {
       return 1;
     }
   }
-
-
 }

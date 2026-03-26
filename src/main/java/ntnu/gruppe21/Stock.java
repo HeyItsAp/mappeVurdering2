@@ -48,7 +48,7 @@ public class Stock {
    */
   public BigDecimal getHighestPrice() {
     Optional<BigDecimal> maxOptional = prices.stream().max(Comparator.naturalOrder());
-    return maxOptional.isPresent() ? maxOptional.get() : BigDecimal.ZERO;
+    return maxOptional.orElse(BigDecimal.ZERO);
   }
 
   /**
@@ -59,7 +59,7 @@ public class Stock {
    */
   public BigDecimal getLowestPrice() {
     Optional<BigDecimal> minOptional = prices.stream().min(Comparator.naturalOrder());
-    return minOptional.isPresent() ? minOptional.get() : BigDecimal.ZERO;
+    return minOptional.orElse(BigDecimal.ZERO);
   }
 
   /**
