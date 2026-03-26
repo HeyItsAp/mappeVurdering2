@@ -104,7 +104,7 @@ public class Filehandler {
     } catch (Exception e) {
       e.printStackTrace();
     }
-      return new Exchange("ExchangeFromFile", listOfStocks);
+    return new Exchange("ExchangeFromFile", listOfStocks);
   }
 
   /**
@@ -159,6 +159,6 @@ public class Filehandler {
     } catch (Exception e) {
       e.printStackTrace();
     }
-      return new Exchange("Save:" + filename, listOfStocks);
+    return new Exchange("Save:" + filename, listOfStocks);
   }
 }
