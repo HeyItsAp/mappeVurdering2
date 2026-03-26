@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Adrian Balunan
  */
-public class ExhangeTest {
+public class ExchangeTest {
   private Exchange exchange;
   private Stock stock1;
 
@@ -122,9 +122,61 @@ public class ExhangeTest {
   /* Method to throw an exception if a player tries to sell a stock they do not own. */
   @Test
   public void advanceWorks() {
-    java.math.BigDecimal oldprice = exchange.getStock("Bit").getSalesPrice();
+    java.math.BigDecimal oldPrice = exchange.getStock("Bit").getSalesPrice();
     exchange.advance();
-    assertNotEquals(oldprice, exchange.getStock("Bit").getSalesPrice());
+    assertNotEquals(oldPrice, exchange.getStock("Bit").getSalesPrice());
     assertEquals(2, exchange.getWeek());
+  }
+
+  /* Method to see if it returns correct amount of stocks according to limit.*/
+  @Test
+  public void getGainersReturnsCorrectNumberOfStocks() {
+    exchange.advance();
+    List<Stock> gainers = exchange.getGainers(2);
+    assertEquals(2, gainers.size());
+  }
+
+  /* Method that sees if getGainers sorts correctly.*/
+  @Test
+  public void getGainersReturnsSortedDescending() {
+    exchange.advance();
+    List<Stock> gainers = exchange.getGainers(3);
+    for (int i = 0; i < gainers.size() - 1; i++) {
+      assertTrue(
+          gainers.get(i).getLatestPriceChange().compareTo(gainers.get(i + 1).getLatestPriceChange())
+              >= 0);
+    }
+  }
+
+  /* Method to throw an exception if limit exceeds amount of total stocks. */
+  @Test
+  public void getGainersThrowsExceptionIfLimitExceedsStockCount() {
+    assertThrows(IllegalArgumentException.class, () -> exchange.getGainers(100));
+  }
+
+  /* Method to see if it returns correct amount of stocks according to limit.*/
+  @Test
+  public void getLosersReturnsCorrectNumberOfStocks() {
+    exchange.advance();
+    List<Stock> losers = exchange.getLosers(2);
+    assertEquals(2, losers.size());
+  }
+
+  /* Method that sees if getLosers sorts correctly.*/
+  @Test
+  public void getLosersReturnsSortedAscending() {
+    exchange.advance();
+    List<Stock> losers = exchange.getLosers(3);
+    for (int i = 0; i < losers.size() - 1; i++) {
+      assertTrue(
+          losers.get(i).getLatestPriceChange().compareTo(losers.get(i + 1).getLatestPriceChange())
+              <= 0);
+    }
+  }
+
+  /* Method to throw an exception if limit exceeds amount of total stocks. */
+  @Test
+  public void getLosersThrowsExceptionIfLimitExceedsStockCount() {
+    assertThrows(IllegalArgumentException.class, () -> exchange.getLosers(100));
   }
 }
