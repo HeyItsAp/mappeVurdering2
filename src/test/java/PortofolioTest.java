@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the Portfolio class.
- * 
- * The tests currently focus on basic functionality and expected behavior of the Portfolio class.
+ *
+ * <p>The tests currently focus on basic functionality and expected behavior of the Portfolio class.
+ *
  * @author Adrian Balunan
  */
-
 public class PortofolioTest {
   private Portfolio protofoilo;
   private Stock stock;
@@ -62,5 +62,4 @@ public class PortofolioTest {
     protofoilo.addShare(shareOfStock);
     assertTrue(protofoilo.containsShare(shareOfStock));
   }
-
 }

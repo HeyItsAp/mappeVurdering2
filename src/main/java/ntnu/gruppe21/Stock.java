@@ -27,10 +27,6 @@ public class Stock {
     return prices.getLast();
   }
 
-  public List<BigDecimal> getPriceHistory() {
-    return prices;
-  }
-
   public void addNewSalesPrice(BigDecimal salesPrice) {
     prices.add(Objects.requireNonNull(salesPrice, "salesPrice must not be null"));
   }
@@ -45,44 +41,45 @@ public class Stock {
   }
 
   /**
-   * Returns the highest recorded price of this stock.
-   *   If the price history is empty, {@link BigDecimal#ZERO} is returned.
+   * Returns the highest recorded price of this stock. If the price history is empty, {@link
+   * BigDecimal#ZERO} is returned.
    *
    * @return the maximum price in the price history, or {@code BigDecimal.ZERO} if no prices exist
-  */
-  public BigDecimal getHighestPrice(){
+   */
+  public BigDecimal getHighestPrice() {
     Optional<BigDecimal> maxOptional = prices.stream().max(Comparator.naturalOrder());
     return maxOptional.isPresent() ? maxOptional.get() : BigDecimal.ZERO;
   }
 
   /**
-   * Returns the lowest recorded price of this stock.
-   *    If the price history is empty, {@link BigDecimal#ZERO} is returned.
+   * Returns the lowest recorded price of this stock. If the price history is empty, {@link
+   * BigDecimal#ZERO} is returned.
    *
    * @return the minimum price in the price history, or {@code BigDecimal.ZERO} if no prices exist
    */
-  public BigDecimal getLowestPrice(){
+  public BigDecimal getLowestPrice() {
     Optional<BigDecimal> minOptional = prices.stream().min(Comparator.naturalOrder());
     return minOptional.isPresent() ? minOptional.get() : BigDecimal.ZERO;
   }
+
   /**
    * Calculates the most recent price change for this stock.
    *
-   * The value is computed as the difference between the latest price and the previous price in the history:
-   *    latest - previous
+   * <p>The value is computed as the difference between the latest price and the previous price in
+   * the history: latest - previous
    *
-   * If fewer than two prices exist, no change can be calculated and
-   * {@link BigDecimal#ZERO} is returned.
+   * <p>If fewer than two prices exist, no change can be calculated and {@link BigDecimal#ZERO} is
+   * returned.
    *
    * @return the latest price change, or {@code BigDecimal.ZERO} if insufficient data
    */
-  public BigDecimal getLatestPriceChange(){
-    if (prices.size() < 2){
+  public BigDecimal getLatestPriceChange() {
+    if (prices.size() < 2) {
       System.out.println("This Stock has not gone through any changes");
       return BigDecimal.ZERO;
     }
 
-    BigDecimal latest = prices.get(prices.size() - 1);
+    BigDecimal latest = prices.getLast();
     BigDecimal previous = prices.get(prices.size() - 2);
 
     return latest.subtract(previous);
