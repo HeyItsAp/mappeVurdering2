@@ -13,26 +13,26 @@ public interface TransactionCalculator {
    *
    * @return The gross value.
    */
-  BigDecimal calculateGross();
+  public BigDecimal calculateGross();
 
   /**
    * Calculates the commission fee of the transaction.
    *
    * @return The amount that need to be paid of commission.
    */
-  BigDecimal calculateCommission();
+  public BigDecimal calculateCommission();
 
   /**
    * Calculates the tax that need to be paid to the government.
    *
    * @return The tax.
    */
-  BigDecimal calculateTax();
+  public BigDecimal calculateTax();
 
   /**
    * Calculates the total price of the transaction, including commission and tax.
    *
    * @return The value of the transaction.
    */
-  BigDecimal calculateTotal();
+  public BigDecimal calculateTotal();
 }

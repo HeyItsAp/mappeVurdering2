@@ -1,7 +1,6 @@
 package ntnu.gruppe21;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Player {
@@ -88,33 +87,5 @@ public class Player {
    */
   public TransactionArchive getTransactionArchive() {
     return transactionArchive;
-  }
-
-  /**
-   * Calculates and returns the net worth of the player.
-   *
-   * @return Net worth of the player.
-   */
-  public BigDecimal getNetWorth() {
-    return currentMoney.add(portfolio.getNetWorth());
-  }
-
-  /**
-   * Calculates and returns the experience level of the player.
-   *
-   * @return A number representing the experience level. 1 = Novice, 2 = Investor, 3 = Speculator.
-   */
-  public int getStatus() {
-    int weeks = transactionArchive.countDistinctWeeks();
-    BigDecimal gain =
-        getNetWorth().subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_UP);
-
-    if (weeks >= 20 && gain.compareTo(BigDecimal.ONE) >= 0) {
-      return 3;
-    } else if (weeks >= 10 && gain.compareTo(BigDecimal.valueOf(0.2)) >= 0) {
-      return 2;
-    } else {
-      return 1;
-    }
   }
 }

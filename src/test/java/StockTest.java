@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the Stock class.
- *
- * <p>The tests currently focus on basic functionality and expected behavior of the Stock class.
- *
+ * 
+ * The tests currently focus on basic functionality and expected behavior of the Stock class.
  * @author Adrian Balunan
  */
+
 public class StockTest {
   private Stock stock;
 
