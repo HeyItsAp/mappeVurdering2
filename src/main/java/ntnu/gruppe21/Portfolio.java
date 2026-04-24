@@ -6,6 +6,7 @@
  */
 package ntnu.gruppe21;
 
+import java.math.BigDecimal;
 import ntnu.gruppe21.transaction.calculators.SaleCalculator;
 
 import java.math.BigDecimal;
@@ -69,7 +70,7 @@ public class Portfolio {
 
     for (Share share : shares) {
       SaleCalculator s = new SaleCalculator(share);
-      netWorth = netWorth.add(s.calculateTotal()); //Maybe use calculateGross()??? Unsure.
+      netWorth = netWorth.add(s.calculateTotal()); // Maybe use calculateGross()??? Unsure.
     }
 
     return netWorth;

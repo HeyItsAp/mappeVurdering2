@@ -30,7 +30,7 @@ public abstract class Transaction {
   }
 
   /**
-   * Checks if the transaction is comitted.
+   * Checks if the transaction is commited.
    *
    * @return True if committed, false if not
    */

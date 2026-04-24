@@ -3,7 +3,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 import ntnu.gruppe21.Player;
 import ntnu.gruppe21.Portfolio;
+import ntnu.gruppe21.Share;
+import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.TransactionArchive;
+import ntnu.gruppe21.transaction.Purchase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,5 +73,76 @@ public class PlayerTest {
   public void getterArchiveReturnArchive() {
     assertInstanceOf(TransactionArchive.class, player1.getTransactionArchive());
     assertInstanceOf(TransactionArchive.class, player1.getTransactionArchive());
+  }
+
+  /* Helper to add a transaction in a given week without affecting player money/portfolio */
+  private void addWeeks(Player player, int numberOfWeeks) {
+    Stock stock = new Stock("TEST", "TestCo", new BigDecimal(1));
+    Share share = new Share(stock, BigDecimal.ONE, BigDecimal.ONE);
+    for (int week = 1; week <= numberOfWeeks; week++) {
+      player.getTransactionArchive().add(new Purchase(share, week));
+    }
+  }
+
+  /* New player with no trades should be Novice (1) */
+  @Test
+  public void getStatusIsNoviceByDefault() {
+    assertEquals(1, player1.getStatus());
+  }
+
+  /* Player with 20% more money but fewer than 10 weeks should still be Novice */
+  @Test
+  public void getStatusIsNoviceWithGainButTooFewWeeks() {
+    player1.addMoney(new BigDecimal(2000)); // 120% of 10000
+    addWeeks(player1, 9);
+    assertEquals(1, player1.getStatus());
+  }
+
+  /* Player with 10+ weeks but less than 20% gain should still be Novice */
+  @Test
+  public void getStatusIsNoviceWithEnoughWeeksButInsufficientGain() {
+    player1.addMoney(new BigDecimal(1999)); // just under 20%
+    addWeeks(player1, 10);
+    assertEquals(1, player1.getStatus());
+  }
+
+  /* Player with exactly 10 weeks and exactly 20% gain should be Investor (2) */
+  @Test
+  public void getStatusIsInvestorAtExactThreshold() {
+    player1.addMoney(new BigDecimal(2000)); // exactly 20% of 10000
+    addWeeks(player1, 10);
+    assertEquals(2, player1.getStatus());
+  }
+
+  /* Player with more than 10 weeks and more than 20% gain should be Investor */
+  @Test
+  public void getStatusIsInvestorAboveThreshold() {
+    player1.addMoney(new BigDecimal(5000)); // 50% gain
+    addWeeks(player1, 15);
+    assertEquals(2, player1.getStatus());
+  }
+
+  /* Player with 19 weeks and doubled net worth but not quite speculator should not regress */
+  @Test
+  public void getStatusIsInvestorWith19WeeksAndDoubledNetWorth() {
+    player1.addMoney(new BigDecimal(10000)); // doubled
+    addWeeks(player1, 19);
+    assertEquals(2, player1.getStatus());
+  }
+
+  /* Player with exactly 20 weeks and exactly doubled net worth should be Speculator (3) */
+  @Test
+  public void getStatusIsSpeculatorAtExactThreshold() {
+    player1.addMoney(new BigDecimal(10000)); // exactly doubled
+    addWeeks(player1, 20);
+    assertEquals(3, player1.getStatus());
+  }
+
+  /* Player with more than 20 weeks and more than doubled net worth should be Speculator */
+  @Test
+  public void getStatusIsSpeculatorAboveThreshold() {
+    player1.addMoney(new BigDecimal(50000)); // 6x starting
+    addWeeks(player1, 25);
+    assertEquals(3, player1.getStatus());
   }
 }

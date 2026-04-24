@@ -74,7 +74,7 @@ public class Filehandler {
    *
    * @return a new {@link Exchange} object populated with stocks from the file
    */
-  public static Exchange getExhangeData() {
+  public static Exchange getExchangeData() {
     String csvfile = "src/main/resources/Exchanges/exchangeData.csv";
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
@@ -104,8 +104,7 @@ public class Filehandler {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    Exchange exhange = new Exchange("ExhangeFromFile", listOfStocks);
-    return exhange;
+    return new Exchange("ExchangeFromFile", listOfStocks);
   }
 
   /**
@@ -160,7 +159,6 @@ public class Filehandler {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    Exchange exhange = new Exchange("Save:" + filename, listOfStocks);
-    return exhange;
+    return new Exchange("Save:" + filename, listOfStocks);
   }
 }

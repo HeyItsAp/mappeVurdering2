@@ -7,7 +7,7 @@ public class Main {
 
     System.out.println("If you read this, you are gay");
 
-    Exchange exchange = Filehandler.getExhangeData();
+    Exchange exchange = Filehandler.getExchangeData();
     System.out.println(
         exchange.getName()
             + ". Week: "
