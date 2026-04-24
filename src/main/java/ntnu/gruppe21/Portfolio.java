@@ -6,9 +6,11 @@
  */
 package ntnu.gruppe21;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import ntnu.gruppe21.transaction.calculators.SaleCalculator;
 
 public class Portfolio {
   /* A list of shares owned by the investor. */
@@ -54,5 +56,21 @@ public class Portfolio {
    */
   public boolean containsShare(Share share) {
     return shares.contains(share);
+  }
+
+  /**
+   * Calculates and returns the total sales price of all shares in the portfolio.
+   *
+   * @return The net worth of the shares in the portfolio.
+   */
+  public BigDecimal getNetWorth() {
+    BigDecimal netWorth = BigDecimal.ZERO;
+
+    for (Share share : shares) {
+      SaleCalculator s = new SaleCalculator(share);
+      netWorth = netWorth.add(s.calculateTotal()); // Maybe use calculateGross()??? Unsure.
+    }
+
+    return netWorth;
   }
 }

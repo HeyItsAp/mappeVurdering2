@@ -58,7 +58,11 @@ public class TransactionArchive {
    * @return The list of purchases
    */
   public List<Purchase> getPurchases(int week) {
-    return transactions.stream().filter(t -> t instanceof Purchase).map(t -> (Purchase) t).filter(t -> t.getWeek() == week).toList();
+    return transactions.stream()
+        .filter(t -> t instanceof Purchase)
+        .map(t -> (Purchase) t)
+        .filter(t -> t.getWeek() == week)
+        .toList();
   }
 
   /**
@@ -68,7 +72,11 @@ public class TransactionArchive {
    * @return The list of sales
    */
   public List<Sale> getSales(int week) {
-    return transactions.stream().filter(t -> t instanceof Sale).map(t -> (Sale) t).filter(t -> t.getWeek() == week).toList();
+    return transactions.stream()
+        .filter(t -> t instanceof Sale)
+        .map(t -> (Sale) t)
+        .filter(t -> t.getWeek() == week)
+        .toList();
   }
 
   /**
