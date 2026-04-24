@@ -88,4 +88,13 @@ public class Player {
   public TransactionArchive getTransactionArchive() {
     return transactionArchive;
   }
+
+  /**
+   * Calculates and returns the net worth of the player.
+   *
+   * @return Net worth of the player.
+   */
+  public BigDecimal getNetWorth() {
+    return currentMoney.add(portfolio.getNetWorth());
+  }
 }
