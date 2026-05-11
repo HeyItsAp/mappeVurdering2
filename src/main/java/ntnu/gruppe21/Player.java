@@ -35,6 +35,23 @@ public class Player {
   }
 
   /**
+   * Creates previous Player, usually from a csv load.
+   *
+   * @param name player name.
+   * @param startingMoney money the player starts with.
+   * @param currentMoney amount the player exited the game with
+   * @param portfolio list of shares before exiting
+   * @param transactionArchive list of transactions before exiting
+   */
+  public Player(String name, BigDecimal startingMoney, BigDecimal currentMoney, Portfolio portfolio, TransactionArchive transactionArchive) {
+    this.name = name;
+    this.startingMoney = startingMoney;
+    this.currentMoney = currentMoney;
+    this.portfolio = portfolio;
+    this.transactionArchive = transactionArchive;
+  }
+
+  /**
    * Returns the name of the player.
    *
    * @return the name in question.
