@@ -20,7 +20,7 @@ import ntnu.gruppe21.Stock;
  *
  * <p>All methods are static and the class is not intended to be instantiated.
  */
-public class Filehandler {
+public class FilehandlerExchange {
 
   /**
    * Saves the current state of an {@link Exchange} to a CSV file. (Not a required point on del 2
@@ -30,7 +30,7 @@ public class Filehandler {
    * name and current week (as comments) All stocks with their symbol, company name, and price
    * history
    *
-   * <p>The price history is stored as a semicolon-separated list in a single column.
+   * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
    * @return the filename (without path) of the saved file

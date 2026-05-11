@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.filehandler.Filehandler;
+import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -24,25 +24,25 @@ public class FilehandlerTest {
   /* Loading the default exchange file should return a non-null Exchange. */
   @Test
   public void getExchangeDataReturnsNonNull() {
-    assertNotNull(Filehandler.getExchangeData());
+    assertNotNull(FilehandlerExchange.getExchangeData());
   }
 
   /* The exchange file has 3 data rows; the returned Exchange should contain exactly 3 stocks. */
   @Test
   public void getExchangeDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, Filehandler.getExchangeData().getStockMap().size());
+    assertEquals(3, FilehandlerExchange.getExchangeData().getStockMap().size());
   }
 
   /* The exchange should be named "ExchangeFromFile" as defined in the method. */
   @Test
   public void getExchangeDataHasCorrectName() {
-    assertEquals("ExchangeFromFile", Filehandler.getExchangeData().getName());
+    assertEquals("ExchangeFromFile", FilehandlerExchange.getExchangeData().getName());
   }
 
   /* A known stock from the file should exist with the correct price. */
   @Test
   public void getExchangeDataContainsNvidiaWithCorrectPrice() {
-    Exchange exchange = Filehandler.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeData();
     assertTrue(exchange.hasStock("NVDA"));
     assertEquals(0, exchange.getStock("NVDA").getSalesPrice().compareTo(new BigDecimal("191.27")));
   }
@@ -50,7 +50,7 @@ public class FilehandlerTest {
   /* Comment lines (starting with '#') must not be parsed as stocks. */
   @Test
   public void getExchangeDataIgnoresCommentLines() {
-    Exchange exchange = Filehandler.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeData();
     assertFalse(exchange.hasStock("#"));
   }
 
@@ -59,26 +59,26 @@ public class FilehandlerTest {
   /* Loading a known save file should return a non-null Exchange. */
   @Test
   public void getSaveDataReturnsNonNull() {
-    assertNotNull(Filehandler.getSaveData("saveDataExhangeFromFile1"));
+    assertNotNull(FilehandlerExchange.getSaveData("saveDataExhangeFromFile1"));
   }
 
   /* The save file has 3 stocks; the returned Exchange should contain exactly 3. */
   @Test
   public void getSaveDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, Filehandler.getSaveData("saveDataExhangeFromFile1").getStockMap().size());
+    assertEquals(3, FilehandlerExchange.getSaveData("saveDataExhangeFromFile1").getStockMap().size());
   }
 
   /* MSFT in the save file has two prices (404.68;312.12), so price history size should be 2. */
   @Test
   public void getSaveDataReconstructsFullPriceHistory() {
-    Exchange exchange = Filehandler.getSaveData("saveDataExhangeFromFile1");
+    Exchange exchange = FilehandlerExchange.getSaveData("saveDataExhangeFromFile1");
     assertEquals(2, exchange.getStock("MSFT").getPriceHistory().size());
   }
 
   /* The current sales price should be the last price in the saved history, not the first. */
   @Test
   public void getSaveDataUsesLatestPriceAsSalesPrice() {
-    Exchange exchange = Filehandler.getSaveData("saveDataExhangeFromFile1");
+    Exchange exchange = FilehandlerExchange.getSaveData("saveDataExhangeFromFile1");
     // MSFT: 404.68;312.12 — latest (current) price is 312.12
     assertEquals(0, exchange.getStock("MSFT").getSalesPrice().compareTo(new BigDecimal("312.12")));
   }
@@ -86,7 +86,7 @@ public class FilehandlerTest {
   /* The exchange name should contain the filename so save files are identifiable. */
   @Test
   public void getSaveDataExchangeNameContainsFilename() {
-    Exchange exchange = Filehandler.getSaveData("saveDataExhangeFromFile1");
+    Exchange exchange = FilehandlerExchange.getSaveData("saveDataExhangeFromFile1");
     assertTrue(exchange.getName().contains("saveDataExhangeFromFile1"));
   }
 
@@ -99,7 +99,7 @@ public class FilehandlerTest {
     stocks.add(new Stock("TST", "TestCo", new BigDecimal("100")));
     Exchange exchange = new Exchange("SaveTest", stocks);
 
-    String filename = Filehandler.saveExchangeData(exchange);
+    String filename = FilehandlerExchange.saveExchangeData(exchange);
     assertEquals("saveDataSaveTest1", filename);
 
     new File("src/main/resources/saves/" + filename + ".csv").delete();
@@ -112,8 +112,8 @@ public class FilehandlerTest {
     stocks.add(new Stock("RRT", "RoundTripCo", new BigDecimal("75.00")));
     Exchange exchange = new Exchange("RoundTrip", stocks);
 
-    String filename = Filehandler.saveExchangeData(exchange);
-    Exchange loaded = Filehandler.getSaveData(filename);
+    String filename = FilehandlerExchange.saveExchangeData(exchange);
+    Exchange loaded = FilehandlerExchange.getSaveData(filename);
 
     assertTrue(loaded.hasStock("RRT"));
     assertEquals(0, loaded.getStock("RRT").getSalesPrice().compareTo(new BigDecimal("75.00")));
@@ -131,8 +131,8 @@ public class FilehandlerTest {
     stocks.add(stock);
     Exchange exchange = new Exchange("HistoryTest", stocks);
 
-    String filename = Filehandler.saveExchangeData(exchange);
-    Exchange loaded = Filehandler.getSaveData(filename);
+    String filename = FilehandlerExchange.saveExchangeData(exchange);
+    Exchange loaded = FilehandlerExchange.getSaveData(filename);
 
     assertEquals(3, loaded.getStock("HST").getPriceHistory().size());
     assertEquals(0, loaded.getStock("HST").getSalesPrice().compareTo(new BigDecimal("120")));

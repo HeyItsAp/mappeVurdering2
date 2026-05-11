@@ -1,13 +1,13 @@
 package ntnu.gruppe21;
 
-import ntnu.gruppe21.filehandler.Filehandler;
+import ntnu.gruppe21.filehandler.FilehandlerExchange;
 
 public class Main {
   public static void main(String[] args) {
 
     System.out.println("If you read this, you are gay");
 
-    Exchange exchange = Filehandler.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeData();
     System.out.println(
         exchange.getName()
             + ". Week: "
@@ -17,7 +17,7 @@ public class Main {
             + ": "
             + exchange.getStock("NVDA").getSalesPrice());
 
-    Exchange exchange1 = Filehandler.getSaveData("saveDataExhangeFromFile1");
+    Exchange exchange1 = FilehandlerExchange.getSaveData("saveDataExhangeFromFile1");
     System.out.println(
         exchange1.getName()
             + ". Week: "
