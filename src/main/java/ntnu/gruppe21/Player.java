@@ -61,12 +61,21 @@ public class Player {
   }
 
   /**
+   * Returns the current money of the player.
+   *
+   * @return the current money in question.
+   */
+  public BigDecimal getCurrentMoney() {
+    return currentMoney;
+  }
+
+  /**
    * Returns the starting money of the player.
    *
    * @return the starting money in question.
    */
-  public BigDecimal getCurrentMoney() {
-    return currentMoney;
+  public BigDecimal getStartingMoney() {
+    return startingMoney;
   }
 
   /**
