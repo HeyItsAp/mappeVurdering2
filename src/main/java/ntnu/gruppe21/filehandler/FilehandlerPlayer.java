@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,11 +36,80 @@ public class FilehandlerPlayer {
      *
      * <p>The price history is stored as a semicolon-separated list in a single column.
      *
-     * @param Player {@link Player} object to be saved
+     * @param player {@link Player} object to be saved
      * @return the filename (without path) of the saved file
      */
     public static String savePlayerData(Player player) {
-        return "";
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+        String filename = "savedPlayerDataFor " + player.getName() + "," + timestamp;
+        try (PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv")) {
+            pw.println("# SaveFile for: " + player.getName() + ". Saved on " + timestamp);
+
+            pw.println();
+            pw.println("# Player metadata:");
+            pw.println("# name,startingMoney,currentMoney");
+            pw.println(player.getName() + "," + player.getStartingMoney() + "," + player.getCurrentMoney());
+            pw.println();
+
+
+            pw.println();
+            pw.println("# First dataset, Portofolio/Shares:");
+            pw.println("# stock,quantity,purchasePrice");
+            pw.println();
+
+            player.getPortfolio().getShares()
+                    .forEach(
+                            (value) -> {
+                                Stock stock = value.getStock();
+                                String stockPrices =
+                                        stock.getPriceHistory().stream()
+                                                .map(BigDecimal::toString)
+                                                .collect(Collectors.joining(";"));
+
+                                pw.println(stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + value.getQuantity());
+                            });
+            pw.println();
+            pw.println("# Second dataset, Purchases:");
+            pw.println("# stock,quantity,purchasePrice,week");
+            pw.println();
+            player.getTransactionArchive().getPurchases()
+                    .forEach(
+                            (value) -> {
+                                Share purchasedShare = value.getShare();
+
+                                Stock stock = purchasedShare.getStock();
+                                String stockPrices =
+                                        stock.getPriceHistory().stream()
+                                                .map(BigDecimal::toString)
+                                                .collect(Collectors.joining(";"));
+
+                                pw.println(stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + purchasedShare.getPurchasePrice() + "," + value.getWeek());
+                            });
+
+            pw.println(" ");
+            pw.println("# Thrid dataset, Sales:");
+            pw.println("# stock,quantity,purchasePrice,week");
+            pw.println(" ");
+            player.getTransactionArchive().getSales()
+                    .forEach(
+                            (value) -> {
+                                Share purchasedShare = value.getShare();
+
+                                Stock stock = purchasedShare.getStock();
+                                String stockPrices =
+                                        stock.getPriceHistory().stream()
+                                                .map(BigDecimal::toString)
+                                                .collect(Collectors.joining(";"));
+
+                                pw.println(stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + purchasedShare.getPurchasePrice() + "," + value.getWeek());
+                            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Attempt to save file: " + filename + ".csv; At resources/saves");
+        return filename;
     }
 
     /**
@@ -46,9 +118,9 @@ public class FilehandlerPlayer {
      * <p>The file is expected to be located in: {@code resources/saves/}
      *
      * <p> Data is split into paragraphs:
-     *     First paragraph will contain shares: Stock,quantity,purchasePrice;
-     *     Second paragraph will contain Purchases: stock,quantity,purchasePrice,week
-     *     Thrid paragraph will contain Sales: stock,quantity,purchasePrice,week
+     *     First paragraph will contain shares: company,symbol,{prices},quantity,purchasePrice;
+     *     Second paragraph will contain Purchases: stock,quantity,{prices},purchasePrice,week
+     *     Thrid paragraph will contain Sales: stock,quantity,{prices},purchasePrice,week
      *
      * <p>The first price is used as the initial price when creating the {@link Stock}, and the
      * remaining prices are added to reconstruct the full price history.
