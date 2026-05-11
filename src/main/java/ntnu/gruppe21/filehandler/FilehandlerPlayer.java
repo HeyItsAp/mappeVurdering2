@@ -1,6 +1,8 @@
 package ntnu.gruppe21.filehandler;
 
 import ntnu.gruppe21.*;
+import ntnu.gruppe21.transaction.Purchase;
+import ntnu.gruppe21.transaction.Sale;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -118,9 +120,10 @@ public class FilehandlerPlayer {
      * <p>The file is expected to be located in: {@code resources/saves/}
      *
      * <p> Data is split into paragraphs:
-     *     First paragraph will contain shares: company,symbol,{prices},quantity,purchasePrice;
-     *     Second paragraph will contain Purchases: stock,quantity,{prices},purchasePrice,week
-     *     Thrid paragraph will contain Sales: stock,quantity,{prices},purchasePrice,week
+     *     First LINE will be the players metadata: Name,startingMoney,currentMoney
+     *     First paragraph will contain shares: 1,company,symbol,{prices},quantity,purchasePrice;
+     *     Second paragraph will contain Purchases: 2,company,symbol,quantity,{prices},purchasePrice,week
+     *     Thrid paragraph will contain Sales: 3,company,symbol,stock,quantity,{prices},purchasePrice,week
      *
      * <p>The first price is used as the initial price when creating the {@link Stock}, and the
      * remaining prices are added to reconstruct the full price history.
@@ -131,7 +134,72 @@ public class FilehandlerPlayer {
      * @return a reconstructed {@link Exchange} object based on the saved data
      */
     public static Player getPlayerSavedData(String filename) {
+        String csvfile = "src/main/resources/saves/" + filename + ".csv";
+        String line = "";
 
-        return null;
+        Portfolio portfolio = new Portfolio();
+        TransactionArchive transactionArchive = new TransactionArchive();
+        String playerName = null;
+        BigDecimal startingMoney = null;
+        BigDecimal currentMoney = null;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(csvfile));
+            while ((line = br.readLine()) != null) {
+                String trimmedLine = line.trim();
+
+                if (trimmedLine.isEmpty()) {
+                    continue;
+                }
+                if (trimmedLine.startsWith("#")) {
+                    continue;
+                }
+
+                String[] values = trimmedLine.split(",");
+
+                // Just a normal print out
+                for (String value : values) {
+                    System.out.print(value.trim() + " ");
+                }
+                System.out.print("\n");
+
+                if(values.length == 3){
+                    playerName = values[0];
+                    startingMoney = BigDecimal.valueOf(Long.parseLong(values[1]));
+                    currentMoney = BigDecimal.valueOf(Long.parseLong(values[2]));
+                    continue;
+                }
+
+                String[] stockPricesString = values[3].split(";");
+                List<BigDecimal> stockPrices =
+                        Arrays.stream(stockPricesString).map(BigDecimal::new).toList();
+                Stock savedStock = new Stock(values[0], values[1], stockPrices.getFirst());
+                for (int i = 1; i < stockPrices.size(); i++) {
+                    savedStock.addNewSalesPrice(stockPrices.get(i));
+                }
+
+                BigDecimal quantity = BigDecimal.valueOf(Long.parseLong(values[4]));
+                BigDecimal purchasePrice = BigDecimal.valueOf(Long.parseLong(values[5]));
+                Share savedShare = new Share(savedStock, quantity, purchasePrice);
+
+                switch (values[0]) {
+                    case "1" -> portfolio.addShare(savedShare);
+                    case "2" -> {
+                        if (values.length != 7){throw new RuntimeException("Corrupted line");}
+                        int savedWeek = Integer.valueOf(values[6]);
+                        Purchase savedPurchase = new Purchase(savedShare, savedWeek);
+                    }
+                    case "3" -> {
+                        if (values.length != 7){throw new RuntimeException("Corrupted line");}
+                        int savedWeek = Integer.valueOf(values[6]);
+                        Sale savedSale = new Sale(savedShare, savedWeek);
+                    }
+                    default -> throw new RuntimeException("Unexpected Line occurred");
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Player(playerName, startingMoney,currentMoney,portfolio,transactionArchive);
     }
 }
