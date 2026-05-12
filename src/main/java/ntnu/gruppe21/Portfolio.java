@@ -7,10 +7,11 @@
 package ntnu.gruppe21;
 
 import java.math.BigDecimal;
+import ntnu.gruppe21.transaction.calculators.SaleCalculator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import ntnu.gruppe21.transaction.calculators.SaleCalculator;
 
 public class Portfolio {
   /* A list of shares owned by the investor. */
