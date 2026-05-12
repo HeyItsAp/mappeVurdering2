@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import ntnu.gruppe21.transaction.Purchase;
-import ntnu.gruppe21.transaction.Sale;
 import ntnu.gruppe21.transaction.Transaction;
+import ntnu.gruppe21.transaction.TransactionFactory;
 
 public class Exchange {
   /* Name of exchange */
@@ -26,6 +25,8 @@ public class Exchange {
   /* A random number generator, used for simulating stock price changes??? */
   private final Random random;
 
+  private final TransactionFactory transactionFactory;
+
   /**
    * Creates a new Exchange with the specified name, week, stock map, and random number generator.
    *
@@ -39,6 +40,7 @@ public class Exchange {
         stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
 
     this.random = new Random();
+    this.transactionFactory = new TransactionFactory();
   }
 
   /**
@@ -119,7 +121,7 @@ public class Exchange {
   public Transaction buy(String symbol, BigDecimal quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
-    Purchase purchase = new Purchase(share, week);
+    Transaction purchase = transactionFactory.createPurchase(share, week);
 
     if (player.getCurrentMoney().compareTo(purchase.getCalculator().calculateTotal()) <= 0) {
       throw new IllegalArgumentException("Insufficient Funds");
@@ -138,7 +140,7 @@ public class Exchange {
   public Transaction sell(String symbol, BigDecimal quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
-    return new Sale(share, week);
+    return transactionFactory.createSale(share, week);
   }
 
   /** Advances the exchange by one week, updating the stock prices. */

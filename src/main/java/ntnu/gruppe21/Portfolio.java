@@ -9,7 +9,6 @@ package ntnu.gruppe21;
 import java.math.BigDecimal;
 import ntnu.gruppe21.transaction.calculators.SaleCalculator;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
