@@ -42,7 +42,7 @@ public class FilehandlerPlayer {
      * @param player {@link Player} object to be saved
      * @return the filename (without path) of the saved file
      */
-    public static String savePlayerData(Player player, String folderPath) {
+    public static boolean savePlayerData(Player player, String folderPath) {
         String filename = folderPath + "/player.csv ";
         try (PrintWriter pw = new PrintWriter(filename)) {
             pw.println("# SaveFile for: " + player.getName());
@@ -109,9 +109,10 @@ public class FilehandlerPlayer {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
         System.out.println("Attempt to save file: " + filename + ".csv; At resources/saves");
-        return filename;
+        return true;
     }
 
     /**

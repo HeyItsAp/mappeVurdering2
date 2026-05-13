@@ -32,13 +32,15 @@ public class FilehandlerExchange {
    * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
+   * @param folderPath The saveSLOT/Directory, not path to the resources/saves
    * @return the filename (without path) of the saved file
    */
-  public static String saveExchangeData(Exchange exchange, String folderPath) {
-    String filename = folderPath + "exchangeData.csv";
+  public static boolean saveExchangeData(Exchange exchange, String folderPath) {
+    String filename = folderPath + "/exchangeData.csv";
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
+      pw.println(exchange.getName());
       pw.println(" ");
 
       exchange
@@ -55,16 +57,18 @@ public class FilehandlerExchange {
 
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
+
     }
-    System.out.println("Attempt to save file: " + filename + ".csv; At resources/saves");
-    return filename;
+    System.out.println("Attempt to save to: " + filename);
+    return true;
   }
 
   /**
    * Loads initial exchange data from a predefined CSV file REQUIRED method in del 2 Probably
    * uploaded on BlackBoard on some point
    *
-   * <p>The file is expected to be located at: {@code resources/Exchanges/exchangeData.csv}
+   * <p>The file is expected to be located at: {@code resources/Exchanges/exchangeDataSet1.csv}
    *
    * <p>Each valid line in the file should contain: Ticker,CompanyName,InitialPrice (As demonstrated
    * at del 2 in Mappe)
@@ -74,7 +78,7 @@ public class FilehandlerExchange {
    * @return a new {@link Exchange} object populated with stocks from the file
    */
   public static Exchange getExchangeData() {
-    String csvfile = "src/main/resources/datasets/exchangeData.csv";
+    String csvfile = "src/main/resources/datasets/exchangeDataSet1.csv";
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
     try {
@@ -116,13 +120,15 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderPath the name of the file (without extension) to load
+   * @param folderPath The saveSLOT/Directory, not path to the resources/saves
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
   public static Exchange getSaveData(String folderPath) {
-    String csvfile = folderPath + "exchangeData.csv";
+    String csvfile = folderPath + "/exchangeData.csv";
     String line = "";
+
     List<Stock> listOfStocks = new ArrayList<>();
+    String exchangeName = "";
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -143,6 +149,11 @@ public class FilehandlerExchange {
         }
         System.out.print("\n");
 
+        if (values.length == 1){
+          exchangeName = values[0];
+          continue;
+        }
+
         String[] savedPricesString = values[2].split(";");
         List<BigDecimal> savedPrices =
             Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
@@ -155,6 +166,6 @@ public class FilehandlerExchange {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new Exchange("Save:" + filename, listOfStocks);
+    return new Exchange(exchangeName, listOfStocks);
   }
 }
