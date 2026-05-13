@@ -27,9 +27,16 @@ public class SaveManager {
      * @param saveName points to folder name containing csv files.
      */
     public SaveManager(String saveName){
-        this.folderPath = saves_root + saveName;
+        this.folderPath = saves_root + '/' + saveName;
     }
 
+    /**
+     * Test constructor — accepts a full path as-is
+     *
+     */
+    public SaveManager(String saveName, boolean fullPath) {
+        this.folderPath = fullPath ? saveName : saves_root + "/" + saveName;
+    }
     /**
      * Performs a full save of the exchange and player data. Creates folder, csv files through static methods
      * and then prints out.

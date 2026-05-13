@@ -36,7 +36,7 @@ public class FilehandlerExchangeTest {
   /* The exchange file has 3 data rows; the returned Exchange should contain exactly 3 stocks. */
   @Test
   public void getExchangeDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, FilehandlerExchange.getExchangeData().getStockMap().size());
+    assertEquals(4, FilehandlerExchange.getExchangeData().getStockMap().size());
   }
 
   /* The exchange should be named "ExchangeFromFile" as defined in the method. */

@@ -1,6 +1,3 @@
-# OBS: This is a test file used for testing
-    # testSETsaveslot means these files ARE subject to change when testing
-
 # Save on Exchange: HistoryTest, Week: 1
 # Ticker,Name,{Prices}
 HistoryTest
