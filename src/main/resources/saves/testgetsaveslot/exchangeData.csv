@@ -1,0 +1,9 @@
+# OBS: This is a test file used for testing
+    # testGETsaveslot means these files ARE NOT subject to change when testing
+# Save on Exchange: HistoryTest, Week: 1
+# Ticker,Name,{Prices}
+HistoryTest
+
+NVDA,Nvidia,191.27
+HST,HistoryCo,100;110
+MSFT,Microsoft,404.68;312.12

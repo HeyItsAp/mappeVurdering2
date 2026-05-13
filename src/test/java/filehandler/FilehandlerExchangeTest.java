@@ -1,3 +1,5 @@
+package filehandler;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
@@ -6,43 +8,47 @@ import java.util.ArrayList;
 import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.filehandler.Filehandler;
+import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for the Filehandler class.
+ * Tests for the FilehandlerExchangeClass.
  *
  * <p>Covers loading exchange data from CSV, loading saved exchange data, and the save/reload
  * round-trip.
  *
  * @author Adrian Balunan
  */
-public class FilehandlerTest {
+public class FilehandlerExchangeTest {
+  // First root is subject to change
+  private final String test_saves_root = "src/main/resources/saves/testsetsaveslot";
+  // Second root will have static data
+  private final String test_get_saves_root = "src/main/resources/saves/testgetsaveslot";
 
   // ── getExchangeData ──────────────────────────────────────────────────────
 
   /* Loading the default exchange file should return a non-null Exchange. */
   @Test
   public void getExchangeDataReturnsNonNull() {
-    assertNotNull(Filehandler.getExchangeData());
+    assertNotNull(FilehandlerExchange.getExchangeData());
   }
 
   /* The exchange file has 3 data rows; the returned Exchange should contain exactly 3 stocks. */
   @Test
   public void getExchangeDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, Filehandler.getExchangeData().getStockMap().size());
+    assertEquals(4, FilehandlerExchange.getExchangeData().getStockMap().size());
   }
 
   /* The exchange should be named "ExchangeFromFile" as defined in the method. */
   @Test
   public void getExchangeDataHasCorrectName() {
-    assertEquals("ExchangeFromFile", Filehandler.getExchangeData().getName());
+    assertEquals("ExchangeFromFile", FilehandlerExchange.getExchangeData().getName());
   }
 
   /* A known stock from the file should exist with the correct price. */
   @Test
   public void getExchangeDataContainsNvidiaWithCorrectPrice() {
-    Exchange exchange = Filehandler.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeData();
     assertTrue(exchange.hasStock("NVDA"));
     assertEquals(0, exchange.getStock("NVDA").getSalesPrice().compareTo(new BigDecimal("191.27")));
   }
@@ -50,7 +56,7 @@ public class FilehandlerTest {
   /* Comment lines (starting with '#') must not be parsed as stocks. */
   @Test
   public void getExchangeDataIgnoresCommentLines() {
-    Exchange exchange = Filehandler.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeData();
     assertFalse(exchange.hasStock("#"));
   }
 
@@ -59,50 +65,57 @@ public class FilehandlerTest {
   /* Loading a known save file should return a non-null Exchange. */
   @Test
   public void getSaveDataReturnsNonNull() {
-    assertNotNull(Filehandler.getSaveData("saveDataExhangeFromFile1"));
+    assertNotNull(FilehandlerExchange.getSaveData(test_get_saves_root));
   }
 
   /* The save file has 3 stocks; the returned Exchange should contain exactly 3. */
   @Test
   public void getSaveDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, Filehandler.getSaveData("saveDataExhangeFromFile1").getStockMap().size());
+    assertEquals(3, FilehandlerExchange.getSaveData(test_get_saves_root).getStockMap().size());
   }
 
   /* MSFT in the save file has two prices (404.68;312.12), so price history size should be 2. */
   @Test
   public void getSaveDataReconstructsFullPriceHistory() {
-    Exchange exchange = Filehandler.getSaveData("saveDataExhangeFromFile1");
+    Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
     assertEquals(2, exchange.getStock("MSFT").getPriceHistory().size());
   }
 
   /* The current sales price should be the last price in the saved history, not the first. */
   @Test
   public void getSaveDataUsesLatestPriceAsSalesPrice() {
-    Exchange exchange = Filehandler.getSaveData("saveDataExhangeFromFile1");
+    Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
     // MSFT: 404.68;312.12 — latest (current) price is 312.12
     assertEquals(0, exchange.getStock("MSFT").getSalesPrice().compareTo(new BigDecimal("312.12")));
   }
 
-  /* The exchange name should contain the filename so save files are identifiable. */
+  /* The exchange name is the one spesified in file */
   @Test
   public void getSaveDataExchangeNameContainsFilename() {
-    Exchange exchange = Filehandler.getSaveData("saveDataExhangeFromFile1");
-    assertTrue(exchange.getName().contains("saveDataExhangeFromFile1"));
+    Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
+    assertEquals("HistoryTest", exchange.getName());
   }
 
   // ── saveExchangeData ─────────────────────────────────────────────────────
 
-  /* The returned filename should follow the pattern saveData{name}{week}. */
+  /* If it succseeds it will be true*/
   @Test
-  public void saveExchangeDataReturnsCorrectFilename() {
+  public void saveExchangeDataReturnsCorrect() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("TST", "TestCo", new BigDecimal("100")));
     Exchange exchange = new Exchange("SaveTest", stocks);
 
-    String filename = Filehandler.saveExchangeData(exchange);
-    assertEquals("saveDataSaveTest1", filename);
+    Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
+    assertTrue(success);
+  }
+  /* If it fails, returns false*/
+  @Test
+  public void saveExchangeDataReturnsFalseWhenNot() {
+    Exchange exchange = new Exchange("SaveTest", List.of());
 
-    new File("src/main/resources/saves/" + filename + ".csv").delete();
+
+    Boolean success = FilehandlerExchange.saveExchangeData(exchange, "not/valid/path");
+    assertFalse(success);
   }
 
   /* Saving an exchange and reloading it should preserve all stocks. */
@@ -112,13 +125,11 @@ public class FilehandlerTest {
     stocks.add(new Stock("RRT", "RoundTripCo", new BigDecimal("75.00")));
     Exchange exchange = new Exchange("RoundTrip", stocks);
 
-    String filename = Filehandler.saveExchangeData(exchange);
-    Exchange loaded = Filehandler.getSaveData(filename);
+    boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
+    Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
 
     assertTrue(loaded.hasStock("RRT"));
     assertEquals(0, loaded.getStock("RRT").getSalesPrice().compareTo(new BigDecimal("75.00")));
-
-    new File("src/main/resources/saves/" + filename + ".csv").delete();
   }
 
   /* Saving an exchange and reloading it should reconstruct the full price history. */
@@ -131,12 +142,11 @@ public class FilehandlerTest {
     stocks.add(stock);
     Exchange exchange = new Exchange("HistoryTest", stocks);
 
-    String filename = Filehandler.saveExchangeData(exchange);
-    Exchange loaded = Filehandler.getSaveData(filename);
+    Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
+    Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
 
     assertEquals(3, loaded.getStock("HST").getPriceHistory().size());
     assertEquals(0, loaded.getStock("HST").getSalesPrice().compareTo(new BigDecimal("120")));
 
-    new File("src/main/resources/saves/" + filename + ".csv").delete();
   }
 }

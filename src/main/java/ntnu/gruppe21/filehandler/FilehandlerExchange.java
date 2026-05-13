@@ -20,26 +20,28 @@ import ntnu.gruppe21.Stock;
  *
  * <p>All methods are static and the class is not intended to be instantiated.
  */
-public class Filehandler {
+public class FilehandlerExchange {
 
   /**
-   * Saves the current state of an {@link Exchange} to a CSV file. (Not a required point on del 2
-   * but why not)
+   * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
+   * Usually invoke on {@link SaveManager}
    *
-   * <p>The file will be stored in the {@code resources/saves/} directory and will include: Exchange
+   * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes exchange
    * name and current week (as comments) All stocks with their symbol, company name, and price
    * history
    *
-   * <p>The price history is stored as a semicolon-separated list in a single column.
+   * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
+   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
    * @return the filename (without path) of the saved file
    */
-  public static String saveExchangeData(Exchange exchange) {
-    String filename = "saveData" + exchange.getName() + exchange.getWeek();
-    try (PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv")) {
+  public static boolean saveExchangeData(Exchange exchange, String folderPath) {
+    String filename = folderPath + "/exchangeData.csv";
+    try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
+      pw.println(exchange.getName());
       pw.println(" ");
 
       exchange
@@ -56,16 +58,18 @@ public class Filehandler {
 
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
+
     }
-    System.out.println("Attempt to save file: " + filename + ".csv; At resources/saves");
-    return filename;
+    System.out.println("Attempt to save to: " + filename);
+    return true;
   }
 
   /**
    * Loads initial exchange data from a predefined CSV file REQUIRED method in del 2 Probably
    * uploaded on BlackBoard on some point
    *
-   * <p>The file is expected to be located at: {@code resources/Exchanges/exchangeData.csv}
+   * <p>The file is expected to be located at: {@code resources/Exchanges/exchangeDataSet1.csv}
    *
    * <p>Each valid line in the file should contain: Ticker,CompanyName,InitialPrice (As demonstrated
    * at del 2 in Mappe)
@@ -75,7 +79,7 @@ public class Filehandler {
    * @return a new {@link Exchange} object populated with stocks from the file
    */
   public static Exchange getExchangeData() {
-    String csvfile = "src/main/resources/Exchanges/exchangeData.csv";
+    String csvfile = "src/main/resources/datasets/exchangeDataSet1.csv";
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
     try {
@@ -108,10 +112,8 @@ public class Filehandler {
   }
 
   /**
-   * Loads a previously saved exchange state from a CSV file. (Not a required point on del 2 but why
-   * not)
-   *
-   * <p>The file is expected to be located in: {@code resources/saves/}
+   * Loads a previously saved exchange state from a CSV file in a designated folder
+   * Usually invoke on {@link SaveManager}
    *
    * <p>Each data row must follow the format: Ticker,CompanyName,price1;price2;price3;...
    *
@@ -120,13 +122,15 @@ public class Filehandler {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param filename the name of the file (without extension) to load
+   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
-  public static Exchange getSaveData(String filename) {
-    String csvfile = "src/main/resources/saves/" + filename + ".csv";
+  public static Exchange getSaveData(String folderPath) {
+    String csvfile = folderPath + "/exchangeData.csv";
     String line = "";
+
     List<Stock> listOfStocks = new ArrayList<>();
+    String exchangeName = "";
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -147,6 +151,11 @@ public class Filehandler {
         }
         System.out.print("\n");
 
+        if (values.length == 1){
+          exchangeName = values[0];
+          continue;
+        }
+
         String[] savedPricesString = values[2].split(";");
         List<BigDecimal> savedPrices =
             Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
@@ -159,6 +168,6 @@ public class Filehandler {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new Exchange("Save:" + filename, listOfStocks);
+    return new Exchange(exchangeName, listOfStocks);
   }
 }
