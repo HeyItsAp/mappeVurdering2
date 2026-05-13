@@ -16,8 +16,8 @@ public class Main {
             + exchange.getStock("NVDA").getSymbol()
             + ": "
             + exchange.getStock("NVDA").getSalesPrice());
-
-    Exchange exchange1 = FilehandlerExchange.getSaveData("saveDataExhangeFromFile1");
+    System.out.println(" ");
+    Exchange exchange1 = FilehandlerExchange.getSaveData("src/main/resources/saves/testsaveslot");
     System.out.println(
         exchange1.getName()
             + ". Week: "
