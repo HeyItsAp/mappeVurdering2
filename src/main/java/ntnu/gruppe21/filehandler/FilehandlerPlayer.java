@@ -30,9 +30,10 @@ import java.util.stream.Collectors;
  */
 public class FilehandlerPlayer {
     /**
-     * Saves the current state of an {@link Player} to a CSV file. Similar Function at {@link FilehandlerExchange}.
+     * Saves the current state of an {@link Player} to a CSV file in a designated save folder unqiue to player.
+     * Similar Function at {@link FilehandlerExchange}.
      *
-     * <p>The file will be stored in the {@code resources/saves/} directory and will include:
+     * <p>The file will include:
      * Playername, starting money, current money, list of shares {@link Portfolio} and
      * list of transactions {@link TransactionArchive}
      *
@@ -41,11 +42,10 @@ public class FilehandlerPlayer {
      * @param player {@link Player} object to be saved
      * @return the filename (without path) of the saved file
      */
-    public static String savePlayerData(Player player) {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-        String filename = "savedPlayerDataFor " + player.getName() + "," + timestamp;
-        try (PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv")) {
-            pw.println("# SaveFile for: " + player.getName() + ". Saved on " + timestamp);
+    public static String savePlayerData(Player player, String folderPath) {
+        String filename = folderPath + "/player.csv ";
+        try (PrintWriter pw = new PrintWriter(filename)) {
+            pw.println("# SaveFile for: " + player.getName());
 
             pw.println();
             pw.println("# Player metadata:");
@@ -115,9 +115,7 @@ public class FilehandlerPlayer {
     }
 
     /**
-     * Loads a previously saved Player CSV file.
-     *
-     * <p>The file is expected to be located in: {@code resources/saves/}
+     * Loads a previously saved Player CSV file in a designated save folder
      *
      * <p> Data is split into paragraphs:
      *     First LINE will be the players metadata: Name,startingMoney,currentMoney
@@ -130,11 +128,11 @@ public class FilehandlerPlayer {
      *
      * <p>Lines starting with '#' and empty lines are ignored.
      *
-     * @param filename the name of the file (without extension) to load
+     * @param folderPath the name of the file (without extension) to load
      * @return a reconstructed {@link Exchange} object based on the saved data
      */
-    public static Player getPlayerSavedData(String filename) {
-        String csvfile = "src/main/resources/saves/" + filename + ".csv";
+    public static Player getPlayerSavedData(String folderPath) {
+        String csvfile = folderPath + "/player.csv";
         String line = "";
 
         Portfolio portfolio = new Portfolio();
@@ -176,11 +174,9 @@ public class FilehandlerPlayer {
                 for (int i = 1; i < stockPrices.size(); i++) {
                     savedStock.addNewSalesPrice(stockPrices.get(i));
                 }
-
                 BigDecimal quantity = BigDecimal.valueOf(Long.parseLong(values[4]));
                 BigDecimal purchasePrice = BigDecimal.valueOf(Long.parseLong(values[5]));
                 Share savedShare = new Share(savedStock, quantity, purchasePrice);
-
                 switch (values[0]) {
                     case "1" -> portfolio.addShare(savedShare);
                     case "2" -> {

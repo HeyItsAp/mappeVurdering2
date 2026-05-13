@@ -23,10 +23,9 @@ import ntnu.gruppe21.Stock;
 public class FilehandlerExchange {
 
   /**
-   * Saves the current state of an {@link Exchange} to a CSV file. (Not a required point on del 2
-   * but why not)
+   * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
    *
-   * <p>The file will be stored in the {@code resources/saves/} directory and will include: Exchange
+   * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes exchange
    * name and current week (as comments) All stocks with their symbol, company name, and price
    * history
    *
@@ -35,9 +34,9 @@ public class FilehandlerExchange {
    * @param exchange the {@link Exchange} object to be saved
    * @return the filename (without path) of the saved file
    */
-  public static String saveExchangeData(Exchange exchange) {
-    String filename = "saveData" + exchange.getName() + exchange.getWeek();
-    try (PrintWriter pw = new PrintWriter("src/main/resources/saves/" + filename + ".csv")) {
+  public static String saveExchangeData(Exchange exchange, String folderPath) {
+    String filename = folderPath + "exchangeData.csv";
+    try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
       pw.println(" ");
@@ -75,7 +74,7 @@ public class FilehandlerExchange {
    * @return a new {@link Exchange} object populated with stocks from the file
    */
   public static Exchange getExchangeData() {
-    String csvfile = "src/main/resources/Exchanges/exchangeData.csv";
+    String csvfile = "src/main/resources/datasets/exchangeData.csv";
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
     try {
@@ -108,11 +107,8 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Loads a previously saved exchange state from a CSV file. (Not a required point on del 2 but why
-   * not)
-   *
-   * <p>The file is expected to be located in: {@code resources/saves/}
-   *
+   * Loads a previously saved exchange state from a CSV file in a designated folder
+   **
    * <p>Each data row must follow the format: Ticker,CompanyName,price1;price2;price3;...
    *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
@@ -120,11 +116,11 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param filename the name of the file (without extension) to load
+   * @param folderPath the name of the file (without extension) to load
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
-  public static Exchange getSaveData(String filename) {
-    String csvfile = "src/main/resources/saves/" + filename + ".csv";
+  public static Exchange getSaveData(String folderPath) {
+    String csvfile = folderPath + "exchangeData.csv";
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
     try {
