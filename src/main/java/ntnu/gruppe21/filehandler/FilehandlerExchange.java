@@ -24,6 +24,7 @@ public class FilehandlerExchange {
 
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
+   * Usually invoke on {@link SaveManager}
    *
    * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes exchange
    * name and current week (as comments) All stocks with their symbol, company name, and price
@@ -32,7 +33,7 @@ public class FilehandlerExchange {
    * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
-   * @param folderPath The saveSLOT/Directory, not path to the resources/saves
+   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
    * @return the filename (without path) of the saved file
    */
   public static boolean saveExchangeData(Exchange exchange, String folderPath) {
@@ -112,7 +113,8 @@ public class FilehandlerExchange {
 
   /**
    * Loads a previously saved exchange state from a CSV file in a designated folder
-   **
+   * Usually invoke on {@link SaveManager}
+   *
    * <p>Each data row must follow the format: Ticker,CompanyName,price1;price2;price3;...
    *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
@@ -120,7 +122,7 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderPath The saveSLOT/Directory, not path to the resources/saves
+   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
   public static Exchange getSaveData(String folderPath) {

@@ -32,6 +32,7 @@ public class FilehandlerPlayer {
     /**
      * Saves the current state of an {@link Player} to a CSV file in a designated save folder unqiue to player.
      * Similar Function at {@link FilehandlerExchange}.
+     * Usually invoked on {@link SaveManager}
      *
      * <p>The file will include:
      * Playername, starting money, current money, list of shares {@link Portfolio} and
@@ -40,10 +41,11 @@ public class FilehandlerPlayer {
      * <p>The price history is stored as a semicolon-separated list in a single column.
      *
      * @param player {@link Player} object to be saved
-     * @return the filename (without path) of the saved file
+     * @param folderPath The saveSLOT/Directory, not path to the resources/saves
+     * @return true of false based on if succeed
      */
     public static boolean savePlayerData(Player player, String folderPath) {
-        String filename = folderPath + "/player.csv ";
+        String filename = folderPath + "/player.csv";
         try (PrintWriter pw = new PrintWriter(filename)) {
             pw.println("# SaveFile for: " + player.getName());
 
@@ -57,8 +59,6 @@ public class FilehandlerPlayer {
             pw.println();
             pw.println("# First dataset, Portofolio/Shares:");
             pw.println("# stock,quantity,purchasePrice");
-            pw.println();
-
             player.getPortfolio().getShares()
                     .forEach(
                             (value) -> {
@@ -68,12 +68,11 @@ public class FilehandlerPlayer {
                                                 .map(BigDecimal::toString)
                                                 .collect(Collectors.joining(";"));
 
-                                pw.println(stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + value.getQuantity());
+                                pw.println("1,"+stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + value.getQuantity() + "," + value.getQuantity());
                             });
             pw.println();
             pw.println("# Second dataset, Purchases:");
             pw.println("# stock,quantity,purchasePrice,week");
-            pw.println();
             player.getTransactionArchive().getPurchases()
                     .forEach(
                             (value) -> {
@@ -85,13 +84,12 @@ public class FilehandlerPlayer {
                                                 .map(BigDecimal::toString)
                                                 .collect(Collectors.joining(";"));
 
-                                pw.println(stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + purchasedShare.getPurchasePrice() + "," + value.getWeek());
+                                pw.println("2," +stock.getCompany() + "," + stock.getSymbol() + "," + purchasedShare.getQuantity() + "," + stockPrices + "," + purchasedShare.getPurchasePrice() + "," + value.getWeek());
                             });
 
             pw.println(" ");
             pw.println("# Thrid dataset, Sales:");
             pw.println("# stock,quantity,purchasePrice,week");
-            pw.println(" ");
             player.getTransactionArchive().getSales()
                     .forEach(
                             (value) -> {
@@ -103,7 +101,7 @@ public class FilehandlerPlayer {
                                                 .map(BigDecimal::toString)
                                                 .collect(Collectors.joining(";"));
 
-                                pw.println(stock.getCompany() + "," + stock.getSymbol() + "," + stockPrices + "," + purchasedShare.getPurchasePrice() + "," + value.getWeek());
+                                pw.println("3,"+stock.getCompany() + "," + stock.getSymbol() + "," + purchasedShare.getQuantity() + "," + stockPrices + "," + purchasedShare.getPurchasePrice() + "," + value.getWeek());
                             });
 
 
@@ -116,7 +114,8 @@ public class FilehandlerPlayer {
     }
 
     /**
-     * Loads a previously saved Player CSV file in a designated save folder
+     * Loads a previously saved Player CSV file in a designated save folder.
+     * Usually invoke on {@link SaveManager}
      *
      * <p> Data is split into paragraphs:
      *     First LINE will be the players metadata: Name,startingMoney,currentMoney
@@ -129,13 +128,14 @@ public class FilehandlerPlayer {
      *
      * <p>Lines starting with '#' and empty lines are ignored.
      *
-     * @param folderPath the name of the file (without extension) to load
+     * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
      * @return a reconstructed {@link Exchange} object based on the saved data
      */
     public static Player getPlayerSavedData(String folderPath) {
         String csvfile = folderPath + "/player.csv";
         String line = "";
 
+        Player player = null;
         Portfolio portfolio = new Portfolio();
         TransactionArchive transactionArchive = new TransactionArchive();
         String playerName = null;
@@ -156,6 +156,7 @@ public class FilehandlerPlayer {
                 String[] values = trimmedLine.split(",");
 
                 // Just a normal print out
+                System.out.println("Length of line: " + values.length);
                 for (String value : values) {
                     System.out.print(value.trim() + " ");
                 }
@@ -163,8 +164,8 @@ public class FilehandlerPlayer {
 
                 if(values.length == 3){
                     playerName = values[0];
-                    startingMoney = BigDecimal.valueOf(Long.parseLong(values[1]));
-                    currentMoney = BigDecimal.valueOf(Long.parseLong(values[2]));
+                    startingMoney = BigDecimal.valueOf(Double.parseDouble(values[1]));
+                    currentMoney = BigDecimal.valueOf(Double.parseDouble(values[2]));
                     continue;
                 }
 
@@ -175,8 +176,8 @@ public class FilehandlerPlayer {
                 for (int i = 1; i < stockPrices.size(); i++) {
                     savedStock.addNewSalesPrice(stockPrices.get(i));
                 }
-                BigDecimal quantity = BigDecimal.valueOf(Long.parseLong(values[4]));
-                BigDecimal purchasePrice = BigDecimal.valueOf(Long.parseLong(values[5]));
+                BigDecimal quantity = BigDecimal.valueOf(Double.parseDouble(values[4]));
+                BigDecimal purchasePrice = BigDecimal.valueOf(Double.parseDouble(values[5]));
                 Share savedShare = new Share(savedStock, quantity, purchasePrice);
                 switch (values[0]) {
                     case "1" -> portfolio.addShare(savedShare);
@@ -184,19 +185,22 @@ public class FilehandlerPlayer {
                         if (values.length != 7){throw new RuntimeException("Corrupted line");}
                         int savedWeek = Integer.valueOf(values[6]);
                         Purchase savedPurchase = new Purchase(savedShare, savedWeek);
+                        transactionArchive.add(savedPurchase);
                     }
                     case "3" -> {
                         if (values.length != 7){throw new RuntimeException("Corrupted line");}
                         int savedWeek = Integer.valueOf(values[6]);
                         Sale savedSale = new Sale(savedShare, savedWeek);
+                        transactionArchive.add(savedSale);
                     }
                     default -> throw new RuntimeException("Unexpected Line occurred");
                 }
 
             }
+            player = new Player(playerName, startingMoney,currentMoney,portfolio,transactionArchive);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new Player(playerName, startingMoney,currentMoney,portfolio,transactionArchive);
+        return player;
     }
 }
