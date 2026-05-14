@@ -190,6 +190,8 @@ public class FilehandlerExchange {
    *     Should be able to access the systems file explorer, search for a csv file, add it
    *     and be sent into the {@link resources/datasets} folder.
    * </p>
+   *
+   * This method cannot be Unit tested as it incorporates GUI dialogs which cannot be tested.
    * @return true/false based on if it worked or not.
    */
   public static Boolean importExternalData() {
@@ -232,7 +234,7 @@ public class FilehandlerExchange {
    * </p>
    * @return true/false based on if the selected is valid format or not
    */
-  protected static boolean validFormat(Path filePath) {
+  public static boolean validFormat(Path filePath) {
     try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
       String line;
       boolean hasDataLine = false;
@@ -269,7 +271,7 @@ public class FilehandlerExchange {
    * @return Destination
    * @throws IOException, if something wrong. Catched in {@link #importExternalData()} method
    */
-  private static Path copyToDatasets(Path source) throws IOException {
+  public static Path copyToDatasets(Path source) throws IOException {
     Path destination = Paths.get(DATASETS_ROOT + source.getFileName());
     Files.createDirectories(Paths.get(DATASETS_ROOT));
     Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
