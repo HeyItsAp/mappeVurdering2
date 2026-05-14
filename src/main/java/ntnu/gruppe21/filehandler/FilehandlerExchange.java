@@ -2,14 +2,22 @@ package ntnu.gruppe21.filehandler;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import javax.swing.*;
 
 /**
  * Utility class responsible for handling file input and output operations related to {@link
@@ -21,6 +29,9 @@ import ntnu.gruppe21.Stock;
  * <p>All methods are static and the class is not intended to be instantiated.
  */
 public class FilehandlerExchange {
+  // Root path to datasets. Used for importing of datasets
+  private static final String DATASETS_ROOT = "src/main/resources/datasets/";
+
 
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
@@ -169,5 +180,99 @@ public class FilehandlerExchange {
       e.printStackTrace();
     }
     return new Exchange(exchangeName, listOfStocks);
+  }
+
+
+  /**
+   * Method to import your own Exchange Data in a valid csv format that resembles ours.
+   *
+   * <p>
+   *     Should be able to access the systems file explorer, search for a csv file, add it
+   *     and be sent into the {@link resources/datasets} folder.
+   * </p>
+   * @return true/false based on if it worked or not.
+   */
+  public static Boolean importExternalData() {
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Import Exchange Data");
+    fileChooser.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
+
+    int result = fileChooser.showOpenDialog(null);
+    if (result != JFileChooser.APPROVE_OPTION) {
+      System.out.println("Import cancelled.");
+      return false;
+    }
+
+    Path chosen = fileChooser.getSelectedFile().toPath();
+
+    if (!validFormat(chosen)) {
+      System.out.println("Invalid file format: " + chosen.getFileName());
+      return false;
+    }
+
+    try {
+      Path saved = copyToDatasets(chosen);
+      System.out.println("Imported to: " + saved);
+      return true; // reuse your existing load logic
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  /**
+   * Helper function for {@link #importExternalData()} method that checks if attempted import is off valid format.
+   * <p>
+   *     Valid format should be
+   *     <ul>
+   *         <li>At least 5 rows of data</li>
+   *         <li>Each row of data is separated by comma and are of three columns</li>
+   *         <li>Third column is parsable to BigDecimal</li>
+   *     </ul>
+   * </p>
+   * @return true/false based on if the selected is valid format or not
+   */
+  protected static boolean validFormat(Path filePath) {
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
+      String line;
+      boolean hasDataLine = false;
+
+      while ((line = br.readLine()) != null) {
+        String trimmed = line.trim();
+        if (trimmed.isEmpty() || trimmed.startsWith("#")) continue;
+
+        String[] values = trimmed.split(",");
+
+        if (values.length != 3) return false;
+
+        try {
+          new BigDecimal(values[2].trim()); // price must be a number
+        } catch (NumberFormatException e) {
+          return false;
+        }
+
+        hasDataLine = true;
+      }
+      return hasDataLine; // reject empty files
+
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  /**
+   * Helper function for {@link #importExternalData()} method that copies the selected csv file to the
+   * {@link resources/datasets} folder to be selected later.
+   *
+   *
+   * @param source Selected file during ui file selecting
+   * @return Destination
+   * @throws IOException, if something wrong. Catched in {@link #importExternalData()} method
+   */
+  private static Path copyToDatasets(Path source) throws IOException {
+    Path destination = Paths.get(DATASETS_ROOT + source.getFileName());
+    Files.createDirectories(Paths.get(DATASETS_ROOT));
+    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+    return destination;
   }
 }
