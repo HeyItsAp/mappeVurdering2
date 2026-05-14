@@ -13,11 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import javax.swing.*;
 
 /**
  * Utility class responsible for handling file input and output operations related to {@link
@@ -32,14 +31,13 @@ public class FilehandlerExchange {
   // Root path to datasets. Used for importing of datasets
   private static final String DATASETS_ROOT = "src/main/resources/datasets/";
 
-
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
    * Usually invoke on {@link SaveManager}
    *
-   * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes exchange
-   * name and current week (as comments) All stocks with their symbol, company name, and price
-   * history
+   * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes
+   * exchange name and current week (as comments) All stocks with their symbol, company name, and
+   * price history
    *
    * <p>Uses comma as the seperator
    *
@@ -70,7 +68,6 @@ public class FilehandlerExchange {
     } catch (Exception e) {
       e.printStackTrace();
       return false;
-
     }
     System.out.println("Attempt to save to: " + filename);
     return true;
@@ -123,8 +120,8 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Loads a previously saved exchange state from a CSV file in a designated folder
-   * Usually invoke on {@link SaveManager}
+   * Loads a previously saved exchange state from a CSV file in a designated folder Usually invoke
+   * on {@link SaveManager}
    *
    * <p>Each data row must follow the format: Ticker,CompanyName,price1;price2;price3;...
    *
@@ -162,7 +159,7 @@ public class FilehandlerExchange {
         }
         System.out.print("\n");
 
-        if (values.length == 1){
+        if (values.length == 1) {
           exchangeName = values[0];
           continue;
         }
@@ -182,16 +179,13 @@ public class FilehandlerExchange {
     return new Exchange(exchangeName, listOfStocks);
   }
 
-
   /**
    * Method to import your own Exchange Data in a valid csv format that resembles ours.
    *
-   * <p>
-   *     Should be able to access the systems file explorer, search for a csv file, add it
-   *     and be sent into the {@link resources/datasets} folder.
-   * </p>
+   * <p>Should be able to access the systems file explorer, search for a csv file, add it and be
+   * sent into the {@link resources/datasets} folder. This method cannot be Unit tested as it
+   * incorporates GUI dialogs which cannot be tested.
    *
-   * This method cannot be Unit tested as it incorporates GUI dialogs which cannot be tested.
    * @return true/false based on if it worked or not.
    */
   public static Boolean importExternalData() {
@@ -223,15 +217,17 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Helper function for {@link #importExternalData()} method that checks if attempted import is off valid format.
-   * <p>
-   *     Valid format should be
-   *     <ul>
-   *         <li>At least 5 rows of data</li>
-   *         <li>Each row of data is separated by comma and are of three columns</li>
-   *         <li>Third column is parsable to BigDecimal</li>
-   *     </ul>
-   * </p>
+   * Helper function for {@link #importExternalData()} method that checks if attempted import is off
+   * valid format.
+   *
+   * <p>Valid format should be
+   *
+   * <ul>
+   *   <li>At least 5 rows of data
+   *   <li>Each row of data is separated by comma and are of three columns
+   *   <li>Third column is parsable to BigDecimal
+   * </ul>
+   *
    * @return true/false based on if the selected is valid format or not
    */
   public static boolean validFormat(Path filePath) {
@@ -263,9 +259,8 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Helper function for {@link #importExternalData()} method that copies the selected csv file to the
-   * {@link resources/datasets} folder to be selected later.
-   *
+   * Helper function for {@link #importExternalData()} method that copies the selected csv file to
+   * the {@link resources/datasets} folder to be selected later.
    *
    * @param source Selected file during ui file selecting
    * @return Destination

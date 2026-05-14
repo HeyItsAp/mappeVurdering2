@@ -1,17 +1,13 @@
 package filehandler;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.math.BigDecimal;
 import ntnu.gruppe21.*;
-import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for the Filehandler class.
@@ -44,7 +40,6 @@ public class FilehandlerPlayerTest {
     assertEquals(1, savedPlayer.getTransactionArchive().getSales().size());
   }
 
-
   /* The Player attributes should be the same as spesified in file */
   @Test
   public void getSaveDataExchangeNameContainsFilename() {
@@ -59,8 +54,13 @@ public class FilehandlerPlayerTest {
   /* Saving a player should return true on a valid path */
   @Test
   public void savePlayerDataReturnsTrueOnValidPath() {
-    Player player = new Player("TestPlayer", new BigDecimal("5000"), new BigDecimal("3000"),
-            new Portfolio(), new TransactionArchive());
+    Player player =
+        new Player(
+            "TestPlayer",
+            new BigDecimal("5000"),
+            new BigDecimal("3000"),
+            new Portfolio(),
+            new TransactionArchive());
 
     boolean success = FilehandlerPlayer.savePlayerData(player, test_saves_root);
     assertTrue(success);
@@ -69,8 +69,13 @@ public class FilehandlerPlayerTest {
   /* Saving a player to an invalid path should return false */
   @Test
   public void savePlayerDataReturnsFalseOnInvalidPath() {
-    Player player = new Player("TestPlayer", new BigDecimal("5000"), new BigDecimal("3000"),
-            new Portfolio(), new TransactionArchive());
+    Player player =
+        new Player(
+            "TestPlayer",
+            new BigDecimal("5000"),
+            new BigDecimal("3000"),
+            new Portfolio(),
+            new TransactionArchive());
 
     boolean success = FilehandlerPlayer.savePlayerData(player, "not/valid/path");
     assertFalse(success);
@@ -79,8 +84,13 @@ public class FilehandlerPlayerTest {
   /* Saving and reloading should preserve player name and money */
   @Test
   public void saveAndReloadPreservesMetadata() {
-    Player original = new Player("RoundTrip", new BigDecimal("5000"), new BigDecimal("3000"),
-            new Portfolio(), new TransactionArchive());
+    Player original =
+        new Player(
+            "RoundTrip",
+            new BigDecimal("5000"),
+            new BigDecimal("3000"),
+            new Portfolio(),
+            new TransactionArchive());
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -97,8 +107,13 @@ public class FilehandlerPlayerTest {
     Stock stock = new Stock("TST", "TestCo", new BigDecimal("100"));
     portfolio.addShare(new Share(stock, new BigDecimal("5"), new BigDecimal("100")));
 
-    Player original = new Player("PortfolioTest", new BigDecimal("5000"), new BigDecimal("3000"),
-            portfolio, new TransactionArchive());
+    Player original =
+        new Player(
+            "PortfolioTest",
+            new BigDecimal("5000"),
+            new BigDecimal("3000"),
+            portfolio,
+            new TransactionArchive());
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -114,8 +129,13 @@ public class FilehandlerPlayerTest {
     Share share = new Share(stock, new BigDecimal("2"), new BigDecimal("100"));
     archive.add(new Purchase(share, 1));
 
-    Player original = new Player("PurchaseTest", new BigDecimal("5000"), new BigDecimal("3000"),
-            new Portfolio(), archive);
+    Player original =
+        new Player(
+            "PurchaseTest",
+            new BigDecimal("5000"),
+            new BigDecimal("3000"),
+            new Portfolio(),
+            archive);
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -131,8 +151,9 @@ public class FilehandlerPlayerTest {
     Share share = new Share(stock, new BigDecimal("2"), new BigDecimal("100"));
     archive.add(new Sale(share, 3));
 
-    Player original = new Player("SaleTest", new BigDecimal("5000"), new BigDecimal("3000"),
-            new Portfolio(), archive);
+    Player original =
+        new Player(
+            "SaleTest", new BigDecimal("5000"), new BigDecimal("3000"), new Portfolio(), archive);
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);

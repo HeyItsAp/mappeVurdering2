@@ -50,16 +50,14 @@ public class TransactionArchive {
   public List<Transaction> getTransactionsInWeek(int week) {
     return transactions.stream().filter(t -> t.getWeek() == week).toList();
   }
+
   /**
    * Returns a list of all purchases
    *
    * @return The list of purchases
    */
   public List<Purchase> getPurchases() {
-    return transactions.stream()
-            .filter(t -> t instanceof Purchase)
-            .map(t -> (Purchase) t)
-            .toList();
+    return transactions.stream().filter(t -> t instanceof Purchase).map(t -> (Purchase) t).toList();
   }
 
   /**
@@ -68,11 +66,9 @@ public class TransactionArchive {
    * @return The list of sales
    */
   public List<Sale> getSales() {
-    return transactions.stream()
-            .filter(t -> t instanceof Sale)
-            .map(t -> (Sale) t)
-            .toList();
+    return transactions.stream().filter(t -> t instanceof Sale).map(t -> (Sale) t).toList();
   }
+
   /**
    * Returns a list of purchases, that were made in the specified week.
    *
@@ -100,7 +96,6 @@ public class TransactionArchive {
         .filter(t -> t.getWeek() == week)
         .toList();
   }
-
 
   /**
    * Counts the number of distinct weeks in which transactions were made.
