@@ -237,7 +237,7 @@ public class FilehandlerExchange {
   public static boolean validFormat(Path filePath) {
     try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
       String line;
-      boolean hasDataLine = false;
+      int lineCount = 0;
 
       while ((line = br.readLine()) != null) {
         String trimmed = line.trim();
@@ -253,9 +253,9 @@ public class FilehandlerExchange {
           return false;
         }
 
-        hasDataLine = true;
+        lineCount += 1;
       }
-      return hasDataLine; // reject empty files
+      return lineCount >= 5; // should be atleast 5 valid lines
 
     } catch (IOException e) {
       return false;

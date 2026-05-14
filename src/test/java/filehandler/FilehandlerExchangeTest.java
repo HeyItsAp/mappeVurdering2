@@ -159,7 +159,14 @@ public class FilehandlerExchangeTest {
   @Test
   void validFormat_returnsFalse_whenPriceIsNotANumber(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("bad.csv");
-    Files.writeString(csv, "TST,TestCo,notanumber\n");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,notanumber"
+    ));
 
     assertFalse(FilehandlerExchange.validFormat(csv));
   }
@@ -167,20 +174,56 @@ public class FilehandlerExchangeTest {
   @Test
   void validFormat_returnsFalse_whenTooFewColumnsOrTooMany(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("bad.csv");
-    Files.writeString(csv, "TST,TestCo\n");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00",
+            "TST,TestCo",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
+
 
     assertFalse(FilehandlerExchange.validFormat(csv));
 
     Path csv2 = tempDir.resolve("bad2.csv");
-    Files.writeString(csv2, "TST,TestCo,21.2,Week:2\n");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00,week1",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
 
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  @Test
+  void validFormat_returnsFalse_whenTooFewRows(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("bad.csv");
+    Files.write(csv, List.of(
+            "# comment",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
     assertFalse(FilehandlerExchange.validFormat(csv));
   }
 
   @Test
   void validFormat_returnsTrue_whenFileIsValid(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("good.csv");
-    Files.writeString(csv, "# comment\nTST,TestCo,100.00\n");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
+
+
 
     assertTrue(FilehandlerExchange.validFormat(csv));
   }
