@@ -43,7 +43,12 @@ public class Player {
    * @param portfolio list of shares before exiting
    * @param transactionArchive list of transactions before exiting
    */
-  public Player(String name, BigDecimal startingMoney, BigDecimal currentMoney, Portfolio portfolio, TransactionArchive transactionArchive) {
+  public Player(
+      String name,
+      BigDecimal startingMoney,
+      BigDecimal currentMoney,
+      Portfolio portfolio,
+      TransactionArchive transactionArchive) {
     this.name = name;
     this.startingMoney = startingMoney;
     this.currentMoney = currentMoney;
