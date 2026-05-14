@@ -2,9 +2,13 @@ package ntnu.gruppe21.filehandler;
 
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
+import ntnu.gruppe21.Stock;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * This class handles calculations, writing and reading of highscores.
@@ -32,10 +36,8 @@ public class HighScoreManager {
      * @return highscore final highscore
      */
     public static BigDecimal calculateFinalScore(Exchange exchange, Player player){
-        // Difficulty not yet implemented
-        Object difficulty = null;
-        int difficultyValue = difficulty.getValue();
-        BigDecimal difficultyBigDecimalValue = BigDecimal.valueOf(difficultyValue);
+        // TODO: Difficulty mechanism not yet implemented
+        BigDecimal difficultyBigDecimalValue = BigDecimal.valueOf(YET_IMPLEMENTED_THING);
 
         int week = exchange.getWeek();
         BigDecimal weekBigDecimal = BigDecimal.valueOf(week);
@@ -53,7 +55,12 @@ public class HighScoreManager {
     /**
      * Method to add a new line in datasets/highscores.csv containing player name, week and
      * calculated finalScore.
-     *      Uses {@link  #calculateFinalScore(Exchange, Player)} to calculate final score.
+     *      Uses {@link #calculateFinalScore(Exchange, Player)} to calculate final score.
+     *
+     * <p>
+     *     Format of generated lines:
+     *     Week,playerName,finalScore
+     * </p>
      *
      * @param exchange The exchange at current point to calculate networth at current state
      * @param player Player with portfolio to calculate final score.
@@ -74,5 +81,68 @@ public class HighScoreManager {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Reads all high scores from the CSV and returns them sorted by final score descending.
+     *
+     * <p>Each entry in the returned list is a {@code List<String>} with three elements:
+     * <ol>
+     *   <li>week (e.g. {@code "12"})</li>
+     *   <li>player name (e.g. {@code "Alice"})</li>
+     *   <li>final score (e.g. {@code "340.50"})</li>
+     * </ol>
+     *
+     * @return a list of score entries sorted by final score descending,
+     *         or an empty list if the file is missing or unreadable
+     */
+    public static ArrayList<List> getHighScores(){
+        ArrayList<List> scores = new ArrayList<>();
+        String line = "";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(highscoreFile));
+            while ((line = br.readLine()) != null) {
+                String trimmedLine = line.trim();
+
+                if (trimmedLine.isEmpty()) {
+                    continue;
+                }
+                if (trimmedLine.startsWith("#")) {
+                    continue;
+                }
+
+                String[] values = trimmedLine.split(",");
+
+                // Just a normal print out
+                for (String value : values) {
+                    System.out.print(value.trim() + " ");
+                }
+
+                if (values.length != 3) throw new IllegalArgumentException("Illegal format");
+                try {
+                    new Integer(values[0]);
+                    new BigDecimal(values[2].trim()); // price must be a number
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Illegal format");
+                }
+
+                String week = values[0];
+                String playerName = values[1];
+                String finalScore = (values[2]);
+                scores.add(List.of(week, playerName, finalScore));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(!scores.isEmpty()){
+            // Sort by final score descending
+            scores.sort((a, b) -> {
+                BigDecimal scoreA = new BigDecimal((char[]) a.get(2));
+                BigDecimal scoreB = new BigDecimal((char[]) b.get(2));
+                return scoreB.compareTo(scoreA);
+            });
+        }
+        return scores;
     }
 }
