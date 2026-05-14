@@ -3,13 +3,17 @@ package filehandler;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests for the FilehandlerExchangeClass.
@@ -148,5 +152,79 @@ public class FilehandlerExchangeTest {
     assertEquals(3, loaded.getStock("HST").getPriceHistory().size());
     assertEquals(0, loaded.getStock("HST").getSalesPrice().compareTo(new BigDecimal("120")));
 
+  }
+
+  // ── validFormat ─────────────────────────────────────────────────────
+
+  @Test
+  void validFormat_returnsFalse_whenPriceIsNotANumber(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("bad.csv");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,notanumber"
+    ));
+
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  @Test
+  void validFormat_returnsFalse_whenTooFewColumnsOrTooMany(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("bad.csv");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00",
+            "TST,TestCo",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
+
+
+    assertFalse(FilehandlerExchange.validFormat(csv));
+
+    Path csv2 = tempDir.resolve("bad2.csv");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00,week1",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
+
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  @Test
+  void validFormat_returnsFalse_whenTooFewRows(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("bad.csv");
+    Files.write(csv, List.of(
+            "# comment",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  @Test
+  void validFormat_returnsTrue_whenFileIsValid(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("good.csv");
+    Files.write(csv, List.of(
+            "# comment",
+            "First,TestCo,100.00",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0",
+            "TST,TestCo,21.0"
+    ));
+
+
+
+    assertTrue(FilehandlerExchange.validFormat(csv));
   }
 }
