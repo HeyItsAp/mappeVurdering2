@@ -82,6 +82,33 @@ public class Exchange {
   }
 
   /**
+   * Getter for the player choses difficulty
+   *
+   * @return Difficulty {@link Difficulty}
+   */
+  public Difficulty getDifficulty() {
+    return difficulty;
+  }
+
+  /**
+   * Price Strategy for current week
+   *
+   * @return PriceStrategy {@link PriceStrategy}
+   */
+  public PriceStrategy getPriceStrategy() {
+    return priceStrategy;
+  }
+
+  /**
+   * TransactionFactory used for making transactions
+   *
+   * @return TransactionFactory {@link TransactionFactory}
+   */
+  public TransactionFactory getTransactionFactory() {
+    return transactionFactory;
+  }
+
+  /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
    * @param symbol The symbol of the desired stock.

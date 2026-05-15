@@ -130,6 +130,15 @@ public class Player {
   }
 
   /**
+   * Returns chosen difficulty
+   *
+   * @return Difficulty of player
+   */
+  public Difficulty getDifficulty() {
+    return difficulty;
+  }
+
+  /**
    * Calculates and returns the net worth of the player.
    *
    * @return Net worth of the player.
