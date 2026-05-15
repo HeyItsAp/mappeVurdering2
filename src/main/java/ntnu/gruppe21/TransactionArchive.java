@@ -52,6 +52,24 @@ public class TransactionArchive {
   }
 
   /**
+   * Returns a list of all purchases
+   *
+   * @return The list of purchases
+   */
+  public List<Purchase> getPurchases() {
+    return transactions.stream().filter(t -> t instanceof Purchase).map(t -> (Purchase) t).toList();
+  }
+
+  /**
+   * Returns a list of sales
+   *
+   * @return The list of sales
+   */
+  public List<Sale> getSales() {
+    return transactions.stream().filter(t -> t instanceof Sale).map(t -> (Sale) t).toList();
+  }
+
+  /**
    * Returns a list of purchases, that were made in the specified week.
    *
    * @param week The week in question

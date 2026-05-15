@@ -7,6 +7,7 @@ import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
 import ntnu.gruppe21.Share;
 import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ public class ExchangeTest {
     stocks.add(stock2);
     stocks.add(stock3);
     exchange = new Exchange("Oslo Børs", stocks);
+    exchange.setDifficulty(Difficulty.HARD);
   }
 
   /**
@@ -94,7 +96,7 @@ public class ExchangeTest {
   /* Method to return a Purchase object when a player buys a stock. */
   @Test
   public void buyingReturnsCorrectType() {
-    Player player = new Player("Name1", new BigDecimal(10000000));
+    Player player = new Player("Name1", new BigDecimal(10000000), Difficulty.EASY);
     assertInstanceOf(Purchase.class, exchange.buy("Bit", new BigDecimal(10), player));
   }
 
@@ -103,7 +105,7 @@ public class ExchangeTest {
   public void buyingThrowsExceptionIfNotEnoughMoney() {
     Share share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
     Purchase purchase = new Purchase(share, 1);
-    Player player = new Player("Name1", new BigDecimal(1));
+    Player player = new Player("Name1", new BigDecimal(1), Difficulty.EASY);
 
     assertThrows(
         IllegalArgumentException.class,
@@ -115,7 +117,7 @@ public class ExchangeTest {
   /* Method to return a Sale object when a player sells a stock. */
   @Test
   public void saleReturnsCorrectType() {
-    Player player = new Player("Name1", new BigDecimal(10000000));
+    Player player = new Player("Name1", new BigDecimal(10000000), Difficulty.EASY);
     assertInstanceOf(Sale.class, exchange.sell("Bit", new BigDecimal(10), player));
   }
 

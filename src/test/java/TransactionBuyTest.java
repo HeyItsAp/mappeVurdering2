@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import ntnu.gruppe21.Player;
 import ntnu.gruppe21.Share;
 import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionException;
@@ -28,7 +29,7 @@ public class TransactionBuyTest {
   public void setup() {
     Stock stock1 = new Stock("Bit", "Company1", new BigDecimal(1000));
     share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
-    player1 = new Player("Name", new BigDecimal(100000));
+    player1 = new Player("Name", new BigDecimal(100000), Difficulty.EASY);
     purchase = new Purchase(share, 1);
   }
 
