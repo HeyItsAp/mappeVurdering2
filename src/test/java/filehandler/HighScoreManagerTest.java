@@ -63,6 +63,7 @@ class HighScoreManagerTest {
   @Test
   void calculateFinalScore_knownInputs_returnsCorrectValue() {
     Exchange exchange = exchangeAtWeek(10);
+    exchange.setDifficulty(Difficulty.HARD);
     // startingMoney=1000, fortune=2000 → profitScore=(2000/1000)*10=20
     // finalScore = 5 * 10 * 20 = 200*5
     Player player = playerWithFortune("Alice", new BigDecimal("1000"), new BigDecimal("2000"));
@@ -75,6 +76,7 @@ class HighScoreManagerTest {
   @Test
   void calculateFinalScore_doubledWeek_doublesScore() {
     Player player = playerWithFortune("Bob", new BigDecimal("1000"), new BigDecimal("2000"));
+
 
     BigDecimal scoreWeek5 = HighScoreManager.calculateFinalScore(exchangeAtWeek(5), player);
     BigDecimal scoreWeek10 = HighScoreManager.calculateFinalScore(exchangeAtWeek(10), player);

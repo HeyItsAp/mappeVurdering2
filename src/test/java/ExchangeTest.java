@@ -38,6 +38,7 @@ public class ExchangeTest {
     stocks.add(stock2);
     stocks.add(stock3);
     exchange = new Exchange("Oslo Børs", stocks);
+    exchange.setDifficulty(Difficulty.HARD);
   }
 
   /**

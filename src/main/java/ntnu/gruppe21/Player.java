@@ -155,7 +155,7 @@ public class Player {
    */
   public int getStatus() {
     int weeks = transactionArchive.countDistinctWeeks();
-    BigDecimal bonusGrowthFactor = difficulty.getFinalScoreMultiplier().divide(BigDecimal.valueOf(70).add(BigDecimal.ONE));
+    BigDecimal bonusGrowthFactor = difficulty.getFinalScoreMultiplier().divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP).add(BigDecimal.ONE);
     BigDecimal gain =
         getNetWorth().subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_UP).multiply(bonusGrowthFactor);
 
