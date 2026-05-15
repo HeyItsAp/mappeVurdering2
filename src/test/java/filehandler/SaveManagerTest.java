@@ -34,7 +34,7 @@ public class SaveManagerTest {
   }
 
   private Exchange dummyExchange() {
-    return new Exchange("TestExchange", List.of(), Difficulty.EASY);
+    return new Exchange("TestExchange", List.of());
   }
 
   /* save() should create the save folder if it doesn't exist yet */

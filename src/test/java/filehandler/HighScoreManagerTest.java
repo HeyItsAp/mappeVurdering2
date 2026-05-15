@@ -33,7 +33,7 @@ class HighScoreManagerTest {
    * Returns an Exchange at week 1 (default after construction).
    */
   private Exchange exchangeAtWeek(int targetWeek) {
-    Exchange exchange = new Exchange("TestExchange", DUMMY_STOCKS, Difficulty.EASY);
+    Exchange exchange = new Exchange("TestExchange", DUMMY_STOCKS);
     // advance() increments week, so call it (targetWeek - 1) times
     for (int i = 1; i < targetWeek; i++) {
       exchange.advance();

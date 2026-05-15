@@ -30,7 +30,7 @@ public class Exchange {
   private final TransactionFactory transactionFactory;
 
   /* Difficulty enum, difficulty chosen by player at start */
-  private final Difficulty difficulty;
+  private Difficulty difficulty;
 
   /* Based onStrategy Behavioural design. Interchangeable
   and handles calculated new Stock prices */
@@ -41,17 +41,16 @@ public class Exchange {
    *
    * @param name the name of the exchange.
    * @param stocks list of stocks to be traded at this exchange.
-   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and FinalScoreMultiplier.
    */
-  public Exchange(String name, List<Stock> stocks, Difficulty difficulty) {
+  public Exchange(String name, List<Stock> stocks) {
     this.name = name;
     this.week = 1;
     this.stockMap =
         stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
 
     this.transactionFactory = new TransactionFactory();
-    this.difficulty = difficulty;
     this.priceStrategy = null;
+    this.difficulty = null;
   }
 
   /**
@@ -62,6 +61,7 @@ public class Exchange {
   public String getName() {
     return name;
   }
+
 
   /**
    * Returns the current week of the game.
@@ -108,6 +108,14 @@ public class Exchange {
     return transactionFactory;
   }
 
+  /**
+   * Setting difficulty will be done after choosing exchange. This method reflects that.
+   *
+   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and FinalScoreMultiplier.
+   */
+  public void setDifficulty(Difficulty difficulty){
+    this.difficulty = difficulty;
+  }
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
