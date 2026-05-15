@@ -10,6 +10,7 @@ import ntnu.gruppe21.Player;
 import ntnu.gruppe21.Portfolio;
 import ntnu.gruppe21.TransactionArchive;
 import ntnu.gruppe21.filehandler.SaveManager;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -27,11 +28,13 @@ public class SaveManagerTest {
         new BigDecimal("5000"),
         new BigDecimal("3000"),
         new Portfolio(),
-        new TransactionArchive());
+        new TransactionArchive(),
+        Difficulty.EASY
+    );
   }
 
   private Exchange dummyExchange() {
-    return new Exchange("TestExchange", List.of());
+    return new Exchange("TestExchange", List.of(), Difficulty.EASY);
   }
 
   /* save() should create the save folder if it doesn't exist yet */

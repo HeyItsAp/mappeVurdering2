@@ -3,13 +3,14 @@ package ntnu.gruppe21;
 import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.TransactionException;
 
 public class Main {
   public static void main(String[] args) {
 
     // Fragmentry Simulation for periodic/random save after some actions:
-    Player player = new Player("Adrian", new BigDecimal(20000));
+    Player player = new Player("Adrian", new BigDecimal(20000), Difficulty.EASY);
     Exchange exchange = FilehandlerExchange.getExchangeData();
 
     exchange

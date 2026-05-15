@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import ntnu.gruppe21.*;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
 
@@ -28,7 +29,7 @@ public class FilehandlerPlayer {
    * to player. Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link
    * SaveManager}
    *
-   * <p>The file will include: Playername, starting money, current money, list of shares {@link
+   * <p>The file will include: PlayerName, starting money, current money, difficulty, list of shares {@link
    * Portfolio} and list of transactions {@link TransactionArchive}
    *
    * <p>The price history is stored as a semicolon-separated list in a single column.
@@ -46,7 +47,7 @@ public class FilehandlerPlayer {
       pw.println("# Player metadata:");
       pw.println("# name,startingMoney,currentMoney");
       pw.println(
-          player.getName() + "," + player.getStartingMoney() + "," + player.getCurrentMoney());
+          player.getName() + "," + player.getStartingMoney() + "," + player.getCurrentMoney() + "," + player.getDifficulty().toString());
       pw.println();
 
       pw.println();
@@ -149,8 +150,10 @@ public class FilehandlerPlayer {
    * Loads a previously saved Player CSV file in a designated save folder. Usually invoke on {@link
    * SaveManager}
    *
-   * <p>Data is split into paragraphs: First LINE will be the players metadata:
-   * Name,startingMoney,currentMoney First paragraph will contain shares:
+   * <p>Data is split into paragraphs:
+   * First LINE will be the players metadata:
+   * Name,startingMoney,currentMoney,difficulty
+   * First paragraph will contain shares:
    * 1,company,symbol,{prices},quantity,purchasePrice; Second paragraph will contain Purchases:
    * 2,company,symbol,quantity,{prices},purchasePrice,week Thrid paragraph will contain Sales:
    * 3,company,symbol,stock,quantity,{prices},purchasePrice,week
@@ -173,6 +176,7 @@ public class FilehandlerPlayer {
     String playerName = null;
     BigDecimal startingMoney = null;
     BigDecimal currentMoney = null;
+    Difficulty difficulty = null;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -198,6 +202,7 @@ public class FilehandlerPlayer {
           playerName = values[0];
           startingMoney = BigDecimal.valueOf(Double.parseDouble(values[1]));
           currentMoney = BigDecimal.valueOf(Double.parseDouble(values[2]));
+          difficulty = Difficulty.valueOf(values[3]);
           continue;
         }
 
@@ -232,7 +237,7 @@ public class FilehandlerPlayer {
           default -> throw new RuntimeException("Unexpected Line occurred");
         }
       }
-      player = new Player(playerName, startingMoney, currentMoney, portfolio, transactionArchive);
+      player = new Player(playerName, startingMoney, currentMoney, portfolio, transactionArchive, difficulty);
     } catch (Exception e) {
       e.printStackTrace();
     }

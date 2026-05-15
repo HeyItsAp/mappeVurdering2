@@ -6,6 +6,7 @@ import ntnu.gruppe21.Portfolio;
 import ntnu.gruppe21.Share;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.TransactionArchive;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.Purchase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ public class PlayerTest {
   /* Method to set up a Player instance before each test case is executed, ensuring a consistent test environment. */
   @BeforeEach
   public void setup() {
-    player1 = new Player("Player One", new BigDecimal(10000));
+    player1 = new Player("Player One", new BigDecimal(10000), Difficulty.EASY);
   }
 
   /* Method to verify that the getName() method returns the correct name of the player. */

@@ -4,6 +4,7 @@ import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.HighScoreManager;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -32,7 +33,7 @@ class HighScoreManagerTest {
    * Returns an Exchange at week 1 (default after construction).
    */
   private Exchange exchangeAtWeek(int targetWeek) {
-    Exchange exchange = new Exchange("TestExchange", DUMMY_STOCKS);
+    Exchange exchange = new Exchange("TestExchange", DUMMY_STOCKS, Difficulty.EASY);
     // advance() increments week, so call it (targetWeek - 1) times
     for (int i = 1; i < targetWeek; i++) {
       exchange.advance();
@@ -45,7 +46,7 @@ class HighScoreManagerTest {
    * We keep portfolio empty (worth 0) and put everything in currentMoney.
    */
   private Player playerWithFortune(String name, BigDecimal startingMoney, BigDecimal fortune) {
-    Player player = new Player(name, startingMoney);
+    Player player = new Player(name, startingMoney, Difficulty.EASY);
     // currentMoney starts at startingMoney; adjust it to reach the desired fortune
     BigDecimal delta = fortune.subtract(startingMoney);
     if (delta.compareTo(BigDecimal.ZERO) >= 0) {

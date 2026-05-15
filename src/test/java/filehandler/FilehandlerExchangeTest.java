@@ -11,6 +11,7 @@ import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -106,7 +107,7 @@ public class FilehandlerExchangeTest {
   public void saveExchangeDataReturnsCorrect() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("TST", "TestCo", new BigDecimal("100")));
-    Exchange exchange = new Exchange("SaveTest", stocks);
+    Exchange exchange = new Exchange("SaveTest", stocks, Difficulty.EASY);
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     assertTrue(success);
@@ -115,7 +116,7 @@ public class FilehandlerExchangeTest {
   /* If it fails, returns false*/
   @Test
   public void saveExchangeDataReturnsFalseWhenNot() {
-    Exchange exchange = new Exchange("SaveTest", List.of());
+    Exchange exchange = new Exchange("SaveTest", List.of(), Difficulty.EASY);
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, "not/valid/path");
     assertFalse(success);
@@ -126,7 +127,7 @@ public class FilehandlerExchangeTest {
   public void saveAndReloadPreservesStocks() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("RRT", "RoundTripCo", new BigDecimal("75.00")));
-    Exchange exchange = new Exchange("RoundTrip", stocks);
+    Exchange exchange = new Exchange("RoundTrip", stocks, Difficulty.EASY);
 
     boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
@@ -143,7 +144,7 @@ public class FilehandlerExchangeTest {
     stock.addNewSalesPrice(new BigDecimal("120"));
     List<Stock> stocks = new ArrayList<>();
     stocks.add(stock);
-    Exchange exchange = new Exchange("HistoryTest", stocks);
+    Exchange exchange = new Exchange("HistoryTest", stocks, Difficulty.EASY);
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);

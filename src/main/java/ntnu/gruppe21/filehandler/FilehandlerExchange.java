@@ -17,6 +17,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
 
 /**
  * Utility class responsible for handling file input and output operations related to {@link
@@ -116,7 +117,7 @@ public class FilehandlerExchange {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new Exchange("ExchangeFromFile", listOfStocks);
+    return new Exchange("ExchangeFromFile", listOfStocks, Difficulty.EASY);
   }
 
   /**
@@ -176,7 +177,7 @@ public class FilehandlerExchange {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new Exchange(exchangeName, listOfStocks);
+    return new Exchange(exchangeName, listOfStocks, Difficulty.EASY);
   }
 
   /**
