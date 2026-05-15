@@ -1,5 +1,7 @@
 package ntnu.gruppe21;
 
+import ntnu.gruppe21.gameEngine.Difficulty;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
@@ -20,18 +22,22 @@ public class Player {
   /* Players transaction archive */
   private final TransactionArchive transactionArchive;
 
+  /* Players chosen difficulty, used for GUI */
+  private final Difficulty difficulty;
+
   /**
    * Creates a new Player with the specified name and starting money.
    *
    * @param name player name.
    * @param startingMoney money the player starts with.
    */
-  public Player(String name, BigDecimal startingMoney) {
+  public Player(String name, BigDecimal startingMoney, Difficulty difficulty) {
     this.name = name;
     this.startingMoney = startingMoney;
     this.currentMoney = startingMoney;
     this.portfolio = new Portfolio();
     this.transactionArchive = new TransactionArchive();
+    this.difficulty = difficulty;
   }
 
   /**
@@ -48,12 +54,14 @@ public class Player {
       BigDecimal startingMoney,
       BigDecimal currentMoney,
       Portfolio portfolio,
-      TransactionArchive transactionArchive) {
+      TransactionArchive transactionArchive,
+      Difficulty difficulty) {
     this.name = name;
     this.startingMoney = startingMoney;
     this.currentMoney = currentMoney;
     this.portfolio = portfolio;
     this.transactionArchive = transactionArchive;
+    this.difficulty = difficulty;
   }
 
   /**
@@ -132,13 +140,15 @@ public class Player {
 
   /**
    * Calculates and returns the experience level of the player.
+   *    Higher difficulties get a little bonus.
    *
    * @return A number representing the experience level. 1 = Novice, 2 = Investor, 3 = Speculator.
    */
   public int getStatus() {
     int weeks = transactionArchive.countDistinctWeeks();
+    BigDecimal bonusGrowthFactor = difficulty.getFinalScoreMultiplier().divide(BigDecimal.valueOf(70).add(BigDecimal.ONE));
     BigDecimal gain =
-        getNetWorth().subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_UP);
+        getNetWorth().subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_UP).multiply(bonusGrowthFactor);
 
     if (weeks >= 20 && gain.compareTo(BigDecimal.ONE) >= 0) {
       return 3;

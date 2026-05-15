@@ -14,9 +14,11 @@ public enum Difficulty {
     HARD(0.15, 2, BigDecimal.TWO.multiply(BigDecimal.TWO)),
     REALISTIC(0.25, 0, BigDecimal.TEN);
 
-    // ChangeRate Effects how drastic the new stock prices will be
+    /**
+     * ChangeRate Effects how drastic the new stock prices can be. A maximum change percentage wise
+     *      Percentage based. Easy: 3%, Medium 7%, Hard 15%, Realistic 25%.
+     */
     private final double changeRate;
-
     // GracePeriodWeeks. Grace reduces the changes to give players more time to develop their portfolio
     //      This attribute determines how many weeks this period will last.
     private final int gracePeriodWeeks;

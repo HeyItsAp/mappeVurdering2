@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.gameEngine.strategies.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
@@ -22,25 +26,32 @@ public class Exchange {
   /* A map of stock symbols to Stock objects, representing the stocks available on the exchange. */
   private final Map<String, Stock> stockMap;
 
-  /* A random number generator, used for simulating stock price changes??? */
-  private final Random random;
-
+  /* Factory to produce correct Transactions, purchase or sell */
   private final TransactionFactory transactionFactory;
+
+  /* Difficulty enum, difficulty chosen by player at start */
+  private final Difficulty difficulty;
+
+  /* Based onStrategy Behavioural design. Interchangeable
+  and handles calculated new Stock prices */
+  private PriceStrategy priceStrategy;
 
   /**
    * Creates a new Exchange with the specified name, week, stock map, and random number generator.
    *
    * @param name the name of the exchange.
    * @param stocks list of stocks to be traded at this exchange.
+   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and FinalScoreMultiplier.
    */
-  public Exchange(String name, List<Stock> stocks) {
+  public Exchange(String name, List<Stock> stocks, Difficulty difficulty) {
     this.name = name;
     this.week = 1;
     this.stockMap =
         stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
 
-    this.random = new Random();
     this.transactionFactory = new TransactionFactory();
+    this.difficulty = difficulty;
+    this.priceStrategy = null;
   }
 
   /**
@@ -145,14 +156,13 @@ public class Exchange {
 
   /** Advances the exchange by one week, updating the stock prices. */
   public void advance() {
+    week++;
+    this.priceStrategy = new StandardStrategy(difficulty, week);
     for (Stock stock : stockMap.values()) {
       BigDecimal currentPrice = stock.getSalesPrice();
-      double changePercent =
-          (random.nextDouble() - 0.5) * 0.1; // Simulate a price change between -5% and +5%
-      BigDecimal newPrice = currentPrice.multiply(BigDecimal.valueOf(1 + changePercent));
+      BigDecimal newPrice = priceStrategy.calculateNewPrice(currentPrice);
       stock.addNewSalesPrice(newPrice);
     }
-    week++;
   }
 
   /**
