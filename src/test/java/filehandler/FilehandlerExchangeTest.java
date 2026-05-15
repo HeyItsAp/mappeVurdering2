@@ -11,6 +11,7 @@ import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -92,11 +93,12 @@ public class FilehandlerExchangeTest {
     assertEquals(0, exchange.getStock("MSFT").getSalesPrice().compareTo(new BigDecimal("312.12")));
   }
 
-  /* The exchange name is the one spesified in file */
+  /* The exchange metadata is preserved */
   @Test
-  public void getSaveDataExchangeNameContainsFilename() {
+  public void getSaveDataExchangeNameContainsFilenameAndDifficulty() {
     Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
     assertEquals("HistoryTest", exchange.getName());
+    assertEquals(Difficulty.EASY, exchange.getDifficulty());
   }
 
   // ── saveExchangeData ─────────────────────────────────────────────────────
@@ -107,6 +109,7 @@ public class FilehandlerExchangeTest {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("TST", "TestCo", new BigDecimal("100")));
     Exchange exchange = new Exchange("SaveTest", stocks);
+    exchange.setDifficulty(Difficulty.EASY);
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     assertTrue(success);
@@ -127,10 +130,12 @@ public class FilehandlerExchangeTest {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("RRT", "RoundTripCo", new BigDecimal("75.00")));
     Exchange exchange = new Exchange("RoundTrip", stocks);
+    exchange.setDifficulty(Difficulty.HARD);
 
     boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
 
+    assertTrue(success);
     assertTrue(loaded.hasStock("RRT"));
     assertEquals(0, loaded.getStock("RRT").getSalesPrice().compareTo(new BigDecimal("75.00")));
   }
@@ -144,6 +149,7 @@ public class FilehandlerExchangeTest {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(stock);
     Exchange exchange = new Exchange("HistoryTest", stocks);
+    exchange.setDifficulty(Difficulty.MEDIUM);
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);

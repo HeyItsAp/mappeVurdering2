@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.gameEngine.strategies.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
@@ -22,10 +26,15 @@ public class Exchange {
   /* A map of stock symbols to Stock objects, representing the stocks available on the exchange. */
   private final Map<String, Stock> stockMap;
 
-  /* A random number generator, used for simulating stock price changes??? */
-  private final Random random;
-
+  /* Factory to produce correct Transactions, purchase or sell */
   private final TransactionFactory transactionFactory;
+
+  /* Difficulty enum, difficulty chosen by player at start */
+  private Difficulty difficulty;
+
+  /* Based onStrategy Behavioural design. Interchangeable
+  and handles calculated new Stock prices */
+  private PriceStrategy priceStrategy;
 
   /**
    * Creates a new Exchange with the specified name, week, stock map, and random number generator.
@@ -39,8 +48,9 @@ public class Exchange {
     this.stockMap =
         stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
 
-    this.random = new Random();
     this.transactionFactory = new TransactionFactory();
+    this.priceStrategy = null;
+    this.difficulty = null;
   }
 
   /**
@@ -51,6 +61,7 @@ public class Exchange {
   public String getName() {
     return name;
   }
+
 
   /**
    * Returns the current week of the game.
@@ -70,6 +81,41 @@ public class Exchange {
     return stockMap;
   }
 
+  /**
+   * Getter for the player choses difficulty
+   *
+   * @return Difficulty {@link Difficulty}
+   */
+  public Difficulty getDifficulty() {
+    return difficulty;
+  }
+
+  /**
+   * Price Strategy for current week
+   *
+   * @return PriceStrategy {@link PriceStrategy}
+   */
+  public PriceStrategy getPriceStrategy() {
+    return priceStrategy;
+  }
+
+  /**
+   * TransactionFactory used for making transactions
+   *
+   * @return TransactionFactory {@link TransactionFactory}
+   */
+  public TransactionFactory getTransactionFactory() {
+    return transactionFactory;
+  }
+
+  /**
+   * Setting difficulty will be done after choosing exchange. This method reflects that.
+   *
+   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and FinalScoreMultiplier.
+   */
+  public void setDifficulty(Difficulty difficulty){
+    this.difficulty = difficulty;
+  }
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
@@ -145,14 +191,13 @@ public class Exchange {
 
   /** Advances the exchange by one week, updating the stock prices. */
   public void advance() {
+    week++;
+    this.priceStrategy = new StandardStrategy(difficulty, week);
     for (Stock stock : stockMap.values()) {
       BigDecimal currentPrice = stock.getSalesPrice();
-      double changePercent =
-          (random.nextDouble() - 0.5) * 0.1; // Simulate a price change between -5% and +5%
-      BigDecimal newPrice = currentPrice.multiply(BigDecimal.valueOf(1 + changePercent));
+      BigDecimal newPrice = priceStrategy.calculateNewPrice(currentPrice);
       stock.addNewSalesPrice(newPrice);
     }
-    week++;
   }
 
   /**

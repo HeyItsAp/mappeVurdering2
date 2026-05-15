@@ -2,7 +2,7 @@
 
 # Player metadata:
 # name,startingMoney,currentMoney
-TestPlayer,5000,3000
+TestPlayer,5000,3000,EASY
 
 
 # First dataset, Portofolio/Shares:

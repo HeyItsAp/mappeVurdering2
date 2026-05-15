@@ -17,6 +17,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
 
 /**
  * Utility class responsible for handling file input and output operations related to {@link
@@ -36,7 +37,7 @@ public class FilehandlerExchange {
    * Usually invoke on {@link SaveManager}
    *
    * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes
-   * exchange name and current week (as comments) All stocks with their symbol, company name, and
+   * exchange name, difficulty during playtime and current week (as comments) All stocks with their symbol, company name, and
    * price history
    *
    * <p>Uses comma as the seperator
@@ -50,7 +51,7 @@ public class FilehandlerExchange {
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
-      pw.println(exchange.getName());
+      pw.println(exchange.getName() + "," + exchange.getDifficulty().toString());
       pw.println(" ");
 
       exchange
@@ -123,8 +124,11 @@ public class FilehandlerExchange {
    * Loads a previously saved exchange state from a CSV file in a designated folder Usually invoke
    * on {@link SaveManager}
    *
-   * <p>Each data row must follow the format: Ticker,CompanyName,price1;price2;price3;...
+   * <p>Each data (expect the first) row must follow the format: Ticker,CompanyName,price1;price2;price3;...
    *
+   * <p>First row contains the Metadata: Name,difficulty. THIS ONLY APPLIES TO SAVES, not regular/imported
+   * exchange data
+   * </p>
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
    * remaining prices are added to reconstruct the full price history.
    *
@@ -137,8 +141,10 @@ public class FilehandlerExchange {
     String csvfile = folderPath + "/exchangeData.csv";
     String line = "";
 
+    Exchange exchange = null;
     List<Stock> listOfStocks = new ArrayList<>();
     String exchangeName = "";
+    Difficulty difficulty = null;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -159,8 +165,9 @@ public class FilehandlerExchange {
         }
         System.out.print("\n");
 
-        if (values.length == 1) {
+        if (values.length == 2) {
           exchangeName = values[0];
+          difficulty = Difficulty.valueOf(values[1]);
           continue;
         }
 
@@ -173,10 +180,12 @@ public class FilehandlerExchange {
         }
         listOfStocks.add(stock);
       }
+      exchange = new Exchange(exchangeName, listOfStocks);
+      exchange.setDifficulty(difficulty);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new Exchange(exchangeName, listOfStocks);
+    return exchange;
   }
 
   /**
