@@ -198,7 +198,7 @@ public class FilehandlerPlayer {
         }
         System.out.print("\n");
 
-        if (values.length == 3) {
+        if (values.length == 4) {
           playerName = values[0];
           startingMoney = BigDecimal.valueOf(Double.parseDouble(values[1]));
           currentMoney = BigDecimal.valueOf(Double.parseDouble(values[2]));
@@ -240,6 +240,7 @@ public class FilehandlerPlayer {
       player = new Player(playerName, startingMoney, currentMoney, portfolio, transactionArchive, difficulty);
     } catch (Exception e) {
       e.printStackTrace();
+      throw new RuntimeException();
     }
     return player;
   }

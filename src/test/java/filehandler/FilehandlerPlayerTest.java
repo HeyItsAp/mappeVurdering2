@@ -2,6 +2,7 @@ package filehandler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import ntnu.gruppe21.*;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
@@ -176,7 +177,8 @@ public class FilehandlerPlayerTest {
   /* Loading from an invalid path should return null (or handle gracefully) */
   @Test
   public void getPlayerSavedDataReturnsNullOnInvalidPath() {
-    Player result = FilehandlerPlayer.getPlayerSavedData("not/valid/path");
-    assertNull(result);
+    assertThrows((RuntimeException.class), () -> {
+      Player result = FilehandlerPlayer.getPlayerSavedData("not/valid/path");
+    });
   }
 }
