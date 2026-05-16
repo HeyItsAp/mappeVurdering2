@@ -65,7 +65,7 @@ public class StandardStrategy implements PriceStrategy{
      *     Random produces a number between -1.0 and 1.0 which then multiplied
      *     by max possible percentage change.
      *          Max Effect = changeRate(3%, 7%, 15%, 25%) * graceFactor(0.0 -> 1.0)
-     *     Gracefactor is based on current week and difficult and calculated on
+     *     Grace factor is based on current week and difficult and calculated on
      *     {@link #calculateGraceFactor(Difficulty, int)}
      * </p>
      *
