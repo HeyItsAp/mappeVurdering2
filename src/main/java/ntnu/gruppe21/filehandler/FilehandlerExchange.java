@@ -37,8 +37,8 @@ public class FilehandlerExchange {
    * Usually invoke on {@link SaveManager}
    *
    * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes
-   * exchange name, difficulty during playtime and current week (as comments) All stocks with their symbol, company name, and
-   * price history
+   * exchange name, difficulty during playtime and current week (as comments) All stocks with their
+   * symbol, company name, and price history
    *
    * <p>Uses comma as the seperator
    *
@@ -124,11 +124,12 @@ public class FilehandlerExchange {
    * Loads a previously saved exchange state from a CSV file in a designated folder Usually invoke
    * on {@link SaveManager}
    *
-   * <p>Each data (expect the first) row must follow the format: Ticker,CompanyName,price1;price2;price3;...
+   * <p>Each data (expect the first) row must follow the format:
+   * Ticker,CompanyName,price1;price2;price3;...
    *
-   * <p>First row contains the Metadata: Name,difficulty. THIS ONLY APPLIES TO SAVES, not regular/imported
-   * exchange data
-   * </p>
+   * <p>First row contains the Metadata: Name,difficulty. THIS ONLY APPLIES TO SAVES, not
+   * regular/imported exchange data
+   *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
    * remaining prices are added to reconstruct the full price history.
    *

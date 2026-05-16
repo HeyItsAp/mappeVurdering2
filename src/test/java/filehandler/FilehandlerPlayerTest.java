@@ -2,7 +2,6 @@ package filehandler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import ntnu.gruppe21.*;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
@@ -63,8 +62,7 @@ public class FilehandlerPlayerTest {
             new BigDecimal("3000"),
             new Portfolio(),
             new TransactionArchive(),
-            Difficulty.EASY
-        );
+            Difficulty.EASY);
 
     boolean success = FilehandlerPlayer.savePlayerData(player, test_saves_root);
     assertTrue(success);
@@ -80,8 +78,7 @@ public class FilehandlerPlayerTest {
             new BigDecimal("3000"),
             new Portfolio(),
             new TransactionArchive(),
-            Difficulty.EASY
-        );
+            Difficulty.EASY);
 
     boolean success = FilehandlerPlayer.savePlayerData(player, "not/valid/path");
     assertFalse(success);
@@ -97,8 +94,7 @@ public class FilehandlerPlayerTest {
             new BigDecimal("3000"),
             new Portfolio(),
             new TransactionArchive(),
-            Difficulty.EASY
-        );
+            Difficulty.EASY);
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -123,8 +119,7 @@ public class FilehandlerPlayerTest {
             new BigDecimal("3000"),
             portfolio,
             new TransactionArchive(),
-            Difficulty.EASY
-        );
+            Difficulty.EASY);
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -147,8 +142,7 @@ public class FilehandlerPlayerTest {
             new BigDecimal("3000"),
             new Portfolio(),
             archive,
-            Difficulty.EASY
-        );
+            Difficulty.EASY);
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -166,7 +160,12 @@ public class FilehandlerPlayerTest {
 
     Player original =
         new Player(
-            "SaleTest", new BigDecimal("5000"), new BigDecimal("3000"), new Portfolio(), archive, Difficulty.EASY);
+            "SaleTest",
+            new BigDecimal("5000"),
+            new BigDecimal("3000"),
+            new Portfolio(),
+            archive,
+            Difficulty.EASY);
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -177,8 +176,10 @@ public class FilehandlerPlayerTest {
   /* Loading from an invalid path should return null (or handle gracefully) */
   @Test
   public void getPlayerSavedDataReturnsNullOnInvalidPath() {
-    assertThrows((RuntimeException.class), () -> {
-      Player result = FilehandlerPlayer.getPlayerSavedData("not/valid/path");
-    });
+    assertThrows(
+        (RuntimeException.class),
+        () -> {
+          Player result = FilehandlerPlayer.getPlayerSavedData("not/valid/path");
+        });
   }
 }

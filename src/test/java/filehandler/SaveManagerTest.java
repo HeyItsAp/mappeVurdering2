@@ -29,8 +29,7 @@ public class SaveManagerTest {
         new BigDecimal("3000"),
         new Portfolio(),
         new TransactionArchive(),
-        Difficulty.EASY
-    );
+        Difficulty.EASY);
   }
 
   private Exchange dummyExchange() {

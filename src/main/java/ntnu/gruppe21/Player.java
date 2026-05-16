@@ -1,10 +1,9 @@
 package ntnu.gruppe21;
 
-import ntnu.gruppe21.gameEngine.Difficulty;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
+import ntnu.gruppe21.gameEngine.Difficulty;
 
 public class Player {
   /* Players name */
@@ -148,16 +147,23 @@ public class Player {
   }
 
   /**
-   * Calculates and returns the experience level of the player.
-   *    Higher difficulties get a little bonus.
+   * Calculates and returns the experience level of the player. Higher difficulties get a little
+   * bonus.
    *
    * @return A number representing the experience level. 1 = Novice, 2 = Investor, 3 = Speculator.
    */
   public int getStatus() {
     int weeks = transactionArchive.countDistinctWeeks();
-    BigDecimal bonusGrowthFactor = difficulty.getFinalScoreMultiplier().divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP).add(BigDecimal.ONE);
+    BigDecimal bonusGrowthFactor =
+        difficulty
+            .getFinalScoreMultiplier()
+            .divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP)
+            .add(BigDecimal.ONE);
     BigDecimal gain =
-        getNetWorth().subtract(startingMoney).divide(startingMoney, 8, RoundingMode.HALF_UP).multiply(bonusGrowthFactor);
+        getNetWorth()
+            .subtract(startingMoney)
+            .divide(startingMoney, 8, RoundingMode.HALF_UP)
+            .multiply(bonusGrowthFactor);
 
     if (weeks >= 20 && gain.compareTo(BigDecimal.ONE) >= 0) {
       return 3;

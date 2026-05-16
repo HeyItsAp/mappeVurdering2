@@ -33,5 +33,6 @@ public class Main {
 
     Player savedPlayer =
         FilehandlerPlayer.getPlayerSavedData("src/main/resources/saves/testgetsaveslot");
+    TestRun.run();
   }
 }

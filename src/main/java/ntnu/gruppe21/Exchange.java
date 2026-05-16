@@ -6,13 +6,9 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
-import ntnu.gruppe21.gameEngine.strategies.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
@@ -32,9 +28,8 @@ public class Exchange {
   /* Difficulty enum, difficulty chosen by player at start */
   private Difficulty difficulty;
 
-  /* Based onStrategy Behavioural design. Interchangeable
-  and handles calculated new Stock prices */
-  private PriceStrategy priceStrategy;
+  /* Drives per-week price advancement for all stocks */
+  private final MarketSimulator marketSimulator;
 
   /**
    * Creates a new Exchange with the specified name, week, stock map, and random number generator.
@@ -49,7 +44,7 @@ public class Exchange {
         stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
 
     this.transactionFactory = new TransactionFactory();
-    this.priceStrategy = null;
+    this.marketSimulator = new MarketSimulator();
     this.difficulty = null;
   }
 
@@ -61,7 +56,6 @@ public class Exchange {
   public String getName() {
     return name;
   }
-
 
   /**
    * Returns the current week of the game.
@@ -91,15 +85,6 @@ public class Exchange {
   }
 
   /**
-   * Price Strategy for current week
-   *
-   * @return PriceStrategy {@link PriceStrategy}
-   */
-  public PriceStrategy getPriceStrategy() {
-    return priceStrategy;
-  }
-
-  /**
    * TransactionFactory used for making transactions
    *
    * @return TransactionFactory {@link TransactionFactory}
@@ -111,11 +96,19 @@ public class Exchange {
   /**
    * Setting difficulty will be done after choosing exchange. This method reflects that.
    *
-   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and FinalScoreMultiplier.
+   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and
+   *     FinalScoreMultiplier.
    */
-  public void setDifficulty(Difficulty difficulty){
+  public void setDifficulty(Difficulty difficulty) {
     this.difficulty = difficulty;
+    marketSimulator.setChaosModifier(
+        switch (difficulty) {
+          case EASY -> 0.0;
+          case MEDIUM -> 0.5;
+          case HARD -> 1.0;
+        });
   }
+
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
@@ -189,15 +182,10 @@ public class Exchange {
     return transactionFactory.createSale(share, week);
   }
 
-  /** Advances the exchange by one week, updating the stock prices. */
+  /** Advances the exchange by one week, updating all stock prices via the market simulator. */
   public void advance() {
     week++;
-    this.priceStrategy = new StandardStrategy(difficulty, week);
-    for (Stock stock : stockMap.values()) {
-      BigDecimal currentPrice = stock.getSalesPrice();
-      BigDecimal newPrice = priceStrategy.calculateNewPrice(currentPrice);
-      stock.addNewSalesPrice(newPrice);
-    }
+    marketSimulator.tick(List.copyOf(stockMap.values()));
   }
 
   /**
