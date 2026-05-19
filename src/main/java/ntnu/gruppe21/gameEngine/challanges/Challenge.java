@@ -157,4 +157,6 @@ public class Challenge {
     public String getDescription() {
         return description;
     }
+
+    public ChallengeType getChallengeType(){return  challengeType;}
 }

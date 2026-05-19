@@ -5,6 +5,7 @@ import ntnu.gruppe21.Player;
 import java.util.*;
 
 /**
+ * TODO: Add as attribute in Player.java, get FilehandlerPlayer to handle said challanges and Junit test
  * Challenge Manager manges challenges by checking for if each challange is completed
  * and creates new challange.
  * <p>
@@ -50,6 +51,7 @@ public class ChallengeManager {
     public void evaluateChallenges(Player player) {
         boolean completedAll = true;
         for (Challenge c : challenges) {
+            c.refreshDescription(player, c.getChallengeType());
             if (!c.isCompleted() && !c.checkCompletion(player)) {
                 completedAll = false;
                 throw new IllegalStateException("All challenges are not completed");
