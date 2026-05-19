@@ -1,5 +1,8 @@
 package ntnu.gruppe21;
 
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.SimStock;
+
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,12 +15,12 @@ class TestRun {
     final int TICKS = 50;
 
     MarketSimulator sim = new MarketSimulator();
-    Stock stock = new Stock("SIM", "Simulator Co.", BigDecimal.valueOf(500.0));
+    SimStock stock = new SimStock("SIM", "Simulator Co.", BigDecimal.valueOf(500.0));
 
     List<Double> prices = new ArrayList<>();
     prices.add(stock.getSalesPrice().doubleValue());
     for (int t = 0; t < TICKS; t++) {
-      sim.tick(List.of(stock));
+      sim.calculateNewPrice(List.of(stock));
       prices.add(stock.getSalesPrice().doubleValue());
       System.out.println(stock.getD() + " " + t);
     }
@@ -82,7 +85,7 @@ class TestRun {
               g2.drawLine(x1, y1, x2, y2);
             }
 
-            // X-axis tick labels
+            // X-axis calculateNewPrice labels
             g2.setStroke(new BasicStroke(1f));
             g2.setColor(Color.DARK_GRAY);
             int xDivisions = 10;

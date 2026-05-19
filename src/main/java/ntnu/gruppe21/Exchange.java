@@ -9,8 +9,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
+
+import static java.util.stream.Collectors.toList;
 
 public class Exchange {
   /* Name of exchange */
@@ -28,11 +32,14 @@ public class Exchange {
   /* Difficulty enum, difficulty chosen by player at start */
   private Difficulty difficulty;
 
-  /* Drives per-week price advancement for all stocks */
-  private final MarketSimulator marketSimulator;
+  /**
+   * Drives per-week price advancement for all stocks
+   *    Strategies can be interchanged in the constructor.
+   */
+  private final PriceStrategy strategy;
 
   /**
-   * Creates a new Exchange with the specified name, week, stock map, and random number generator.
+   * Creates a new Exchange with the specified name, week 1, list of stocks and a pre-selected Strategy.
    *
    * @param name the name of the exchange.
    * @param stocks list of stocks to be traded at this exchange.
@@ -40,12 +47,16 @@ public class Exchange {
   public Exchange(String name, List<Stock> stocks) {
     this.name = name;
     this.week = 1;
-    this.stockMap =
-        stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
-
     this.transactionFactory = new TransactionFactory();
-    this.marketSimulator = new MarketSimulator();
     this.difficulty = null;
+
+    this.strategy = new MarketSimulator();
+    List<Stock> strategySpecificStock = stocks.stream()
+            .map(stock ->
+                strategy.createStock(stock.getSymbol(),stock.getCompany(), stock.getSalesPrice()))
+            .toList();
+    this.stockMap =
+            strategySpecificStock.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
   }
 
   /**
@@ -101,13 +112,9 @@ public class Exchange {
    */
   public void setDifficulty(Difficulty difficulty) {
     this.difficulty = difficulty;
-    marketSimulator.setChaosModifier(
-        switch (difficulty) {
-          case EASY -> 0.0;
-          case MEDIUM -> 0.5;
-          case HARD -> 1.0;
-        });
+    strategy.setDifficulty(difficulty);
   }
+
 
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.
@@ -185,7 +192,7 @@ public class Exchange {
   /** Advances the exchange by one week, updating all stock prices via the market simulator. */
   public void advance() {
     week++;
-    marketSimulator.tick(List.copyOf(stockMap.values()));
+    strategy.calculateNewPrice(List.copyOf(stockMap.values()));
   }
 
   /**
@@ -213,7 +220,7 @@ public class Exchange {
         stockMap.values().stream()
             .sorted(Comparator.comparing(Stock::getLatestPriceChange).reversed())
             .toList();
-    return winners.stream().limit(limit).collect(Collectors.toList());
+    return winners.stream().limit(limit).collect(toList());
   }
 
   /**
@@ -241,6 +248,6 @@ public class Exchange {
         stockMap.values().stream()
             .sorted(Comparator.comparing(Stock::getLatestPriceChange))
             .toList();
-    return losers.stream().limit(limit).collect(Collectors.toList());
+    return losers.stream().limit(limit).collect(toList());
   }
 }
