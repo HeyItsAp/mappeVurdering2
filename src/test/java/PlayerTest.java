@@ -102,7 +102,9 @@ public class PlayerTest {
   /* Player with 10+ weeks but less than 20% gain should still be Novice */
   @Test
   public void getStatusIsNoviceWithEnoughWeeksButInsufficientGain() {
-    player1.addMoney(new BigDecimal(1980)); // just under 20% because of easy difficulty (adding a 1.01 multiplier)
+    player1.addMoney(
+        new BigDecimal(
+            1980)); // just under 20% because of easy difficulty (adding a 1.01 multiplier)
     addWeeks(player1, 10);
     assertEquals(1, player1.getStatus());
   }

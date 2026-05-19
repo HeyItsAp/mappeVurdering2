@@ -6,16 +6,19 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
-import ntnu.gruppe21.gameEngine.strategies.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
+import static java.util.stream.Collectors.toList;
+
+/**
+ * TODO: Should add another constructor to handle saved exchanges.
+ */
 public class Exchange {
   /* Name of exchange */
   private final String name;
@@ -32,12 +35,14 @@ public class Exchange {
   /* Difficulty enum, difficulty chosen by player at start */
   private Difficulty difficulty;
 
-  /* Based onStrategy Behavioural design. Interchangeable
-  and handles calculated new Stock prices */
-  private PriceStrategy priceStrategy;
+  /**
+   * Drives per-week price advancement for all stocks
+   *    Strategies can be interchanged in the constructor.
+   */
+  private final PriceStrategy strategy;
 
   /**
-   * Creates a new Exchange with the specified name, week, stock map, and random number generator.
+   * Creates a new Exchange with the specified name, week 1, list of stocks and a pre-selected Strategy.
    *
    * @param name the name of the exchange.
    * @param stocks list of stocks to be traded at this exchange.
@@ -45,12 +50,16 @@ public class Exchange {
   public Exchange(String name, List<Stock> stocks) {
     this.name = name;
     this.week = 1;
-    this.stockMap =
-        stocks.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
-
     this.transactionFactory = new TransactionFactory();
-    this.priceStrategy = null;
     this.difficulty = null;
+
+    this.strategy = new MarketSimulator();
+    List<Stock> strategySpecificStock = stocks.stream()
+            .map(stock ->
+                strategy.createStock(stock.getSymbol(),stock.getCompany(), stock.getSalesPrice()))
+            .toList();
+    this.stockMap =
+            strategySpecificStock.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
   }
 
   /**
@@ -61,7 +70,6 @@ public class Exchange {
   public String getName() {
     return name;
   }
-
 
   /**
    * Returns the current week of the game.
@@ -91,15 +99,6 @@ public class Exchange {
   }
 
   /**
-   * Price Strategy for current week
-   *
-   * @return PriceStrategy {@link PriceStrategy}
-   */
-  public PriceStrategy getPriceStrategy() {
-    return priceStrategy;
-  }
-
-  /**
    * TransactionFactory used for making transactions
    *
    * @return TransactionFactory {@link TransactionFactory}
@@ -111,11 +110,15 @@ public class Exchange {
   /**
    * Setting difficulty will be done after choosing exchange. This method reflects that.
    *
-   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and FinalScoreMultiplier.
+   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and
+   *     FinalScoreMultiplier.
    */
-  public void setDifficulty(Difficulty difficulty){
+  public void setDifficulty(Difficulty difficulty) {
     this.difficulty = difficulty;
+    strategy.setDifficulty(difficulty);
   }
+
+
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.
    *
@@ -189,15 +192,10 @@ public class Exchange {
     return transactionFactory.createSale(share, week);
   }
 
-  /** Advances the exchange by one week, updating the stock prices. */
+  /** Advances the exchange by one week, updating all stock prices via the market simulator. */
   public void advance() {
     week++;
-    this.priceStrategy = new StandardStrategy(difficulty, week);
-    for (Stock stock : stockMap.values()) {
-      BigDecimal currentPrice = stock.getSalesPrice();
-      BigDecimal newPrice = priceStrategy.calculateNewPrice(currentPrice);
-      stock.addNewSalesPrice(newPrice);
-    }
+    strategy.calculateNewPrice(List.copyOf(stockMap.values()));
   }
 
   /**
@@ -225,7 +223,7 @@ public class Exchange {
         stockMap.values().stream()
             .sorted(Comparator.comparing(Stock::getLatestPriceChange).reversed())
             .toList();
-    return winners.stream().limit(limit).collect(Collectors.toList());
+    return winners.stream().limit(limit).collect(toList());
   }
 
   /**
@@ -253,6 +251,6 @@ public class Exchange {
         stockMap.values().stream()
             .sorted(Comparator.comparing(Stock::getLatestPriceChange))
             .toList();
-    return losers.stream().limit(limit).collect(Collectors.toList());
+    return losers.stream().limit(limit).collect(toList());
   }
 }

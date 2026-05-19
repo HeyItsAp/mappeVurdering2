@@ -1,5 +1,10 @@
 package filehandler;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
 import ntnu.gruppe21.Stock;
@@ -8,30 +13,17 @@ import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class HighScoreManagerTest {
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   // A minimal stock list — Exchange requires at least one stock to construct
-  private static final List<Stock> DUMMY_STOCKS = List.of(
-          new Stock("DUMMY", "Dummy Corp", new BigDecimal("100"))
-  );
-
+  private static final List<Stock> DUMMY_STOCKS =
+      List.of(new Stock("DUMMY", "Dummy Corp", new BigDecimal("100")));
 
   // ── Helpers ──────────────────────────────────────────────────────────
 
-  /**
-   * Returns an Exchange at week 1 (default after construction).
-   */
+  /** Returns an Exchange at week 1 (default after construction). */
   private Exchange exchangeAtWeek(int targetWeek) {
     Exchange exchange = new Exchange("TestExchange", DUMMY_STOCKS);
     // advance() increments week, so call it (targetWeek - 1) times
@@ -42,8 +34,8 @@ class HighScoreManagerTest {
   }
 
   /**
-   * Returns a Player whose currentMoney + portfolio networth equals {@code fortune}.
-   * We keep portfolio empty (worth 0) and put everything in currentMoney.
+   * Returns a Player whose currentMoney + portfolio networth equals {@code fortune}. We keep
+   * portfolio empty (worth 0) and put everything in currentMoney.
    */
   private Player playerWithFortune(String name, BigDecimal startingMoney, BigDecimal fortune) {
     Player player = new Player(name, startingMoney, Difficulty.EASY);
@@ -58,7 +50,6 @@ class HighScoreManagerTest {
   }
 
   // ── calculateFinalScore ───────────────────────────────────────────────────────────
-
 
   @Test
   void calculateFinalScore_knownInputs_returnsCorrectValue() {
@@ -77,13 +68,13 @@ class HighScoreManagerTest {
   void calculateFinalScore_doubledWeek_doublesScore() {
     Player player = playerWithFortune("Bob", new BigDecimal("1000"), new BigDecimal("2000"));
 
-
     BigDecimal scoreWeek5 = HighScoreManager.calculateFinalScore(exchangeAtWeek(5), player);
     BigDecimal scoreWeek10 = HighScoreManager.calculateFinalScore(exchangeAtWeek(10), player);
 
-    assertEquals(0, scoreWeek5.multiply(new BigDecimal("2"))
-                    .compareTo(scoreWeek10.stripTrailingZeros()),
-            "Score should double when week doubles");
+    assertEquals(
+        0,
+        scoreWeek5.multiply(new BigDecimal("2")).compareTo(scoreWeek10.stripTrailingZeros()),
+        "Score should double when week doubles");
   }
 
   @Test
@@ -92,8 +83,9 @@ class HighScoreManagerTest {
     // fortune=1, startingMoney=100000 → profitScore tiny → finalScore << 1
     Player player = playerWithFortune("Carol", new BigDecimal("100000"), new BigDecimal("-1"));
 
-    assertThrows(IllegalArgumentException.class,
-            () -> HighScoreManager.calculateFinalScore(exchange, player));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> HighScoreManager.calculateFinalScore(exchange, player));
   }
 
   @Test
@@ -117,5 +109,4 @@ class HighScoreManagerTest {
 
     assertFalse(result);
   }
-
 }
