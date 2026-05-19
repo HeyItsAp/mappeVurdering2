@@ -16,8 +16,8 @@ import javafx.scene.shape.Line;
 public class ExchangeMenu extends VBox {
   public ExchangeMenu() {
     super(20);
-    Label header = new Label("Oslo Stock Market");
-    header.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+    Label title = new Label("Oslo Stock Market");
+    title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
     Line line = new Line();
     line.setStartX(0);
@@ -29,7 +29,7 @@ public class ExchangeMenu extends VBox {
     line.setStrokeWidth(0.5);
 
     setStyle("-fx-padding: 20 20 30 20");
-    getChildren().addAll(header, line, buildFilterButtons(), buildMarketTable());
+    getChildren().addAll(title, line, buildFilterButtons(), buildMarketTable());
   }
 
   private HBox buildFilterButtons() {
