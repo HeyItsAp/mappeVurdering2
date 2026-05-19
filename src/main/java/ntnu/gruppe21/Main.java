@@ -38,7 +38,7 @@ public class Main extends Application {
     Player savedPlayer =
         FilehandlerPlayer.getPlayerSavedData("src/main/resources/saves/testgetsaveslot");
     TestRun.run();
-    launch(args);
+    // launch(args);
   }
 
   public void start(Stage stage) {

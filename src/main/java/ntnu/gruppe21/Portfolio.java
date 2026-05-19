@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.calculators.SaleCalculator;
 
 public class Portfolio {
@@ -81,12 +79,9 @@ public class Portfolio {
    *
    * @return the length of the list of distinct list, which is the number of distinct weeks.
    */
-  public int countDistinctStock(){
-    List<String> distinctStockSymobolList = shares.stream()
-            .map(s -> s.getStock().getSymbol())
-            .distinct()
-            .toList();
+  public int countDistinctStock() {
+    List<String> distinctStockSymobolList =
+        shares.stream().map(s -> s.getStock().getSymbol()).distinct().toList();
     return distinctStockSymobolList.size();
-
   }
 }

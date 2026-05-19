@@ -9,7 +9,6 @@ public class Stock {
   private final String company;
   private final List<BigDecimal> prices = new ArrayList<>();
 
-
   public Stock(String symbol, String company, BigDecimal salesPrice) {
     this.symbol = Objects.requireNonNull(symbol, "symbol must not be null");
     this.company = Objects.requireNonNull(company, "company must not be null");

@@ -2,10 +2,9 @@ package gameEngine;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
 
 /**
  * Tests for the Difficulty enum.
@@ -25,7 +24,6 @@ public class DifficultyTest {
     assertEquals(BigDecimal.ONE, Difficulty.EASY.getDifficultyMultiplier());
   }
 
-
   @Test
   void medium_shouldHaveCorrectVolatility() {
     assertEquals(BigDecimal.TWO, Difficulty.MEDIUM.getDifficultyMultiplier());
@@ -33,7 +31,8 @@ public class DifficultyTest {
 
   @Test
   void hard_shouldHaveCorrectVolatility() {
-    assertEquals(BigDecimal.TWO.multiply(BigDecimal.TWO), Difficulty.HARD.getDifficultyMultiplier());
+    assertEquals(
+        BigDecimal.TWO.multiply(BigDecimal.TWO), Difficulty.HARD.getDifficultyMultiplier());
   }
 
   @Test
@@ -45,12 +44,23 @@ public class DifficultyTest {
   // Negative / boundary tests
   // ----------------------------------------------------------------
 
-
   @Test
-  void harderDifficulty_shouldHaveHigherScoreMultiplier(){
+  void harderDifficulty_shouldHaveHigherScoreMultiplier() {
     // Volatility should increase (or stay equal) as difficulty rises
-    assertTrue(Difficulty.EASY.getDifficultyMultiplier().compareTo(Difficulty.MEDIUM.getDifficultyMultiplier()) < 0);
-    assertTrue(Difficulty.MEDIUM.getDifficultyMultiplier().compareTo(Difficulty.HARD.getDifficultyMultiplier()) < 0);
-    assertTrue(Difficulty.HARD.getDifficultyMultiplier().compareTo(Difficulty.REALISTIC.getDifficultyMultiplier()) < 0);
+    assertTrue(
+        Difficulty.EASY
+                .getDifficultyMultiplier()
+                .compareTo(Difficulty.MEDIUM.getDifficultyMultiplier())
+            < 0);
+    assertTrue(
+        Difficulty.MEDIUM
+                .getDifficultyMultiplier()
+                .compareTo(Difficulty.HARD.getDifficultyMultiplier())
+            < 0);
+    assertTrue(
+        Difficulty.HARD
+                .getDifficultyMultiplier()
+                .compareTo(Difficulty.REALISTIC.getDifficultyMultiplier())
+            < 0);
   }
 }
