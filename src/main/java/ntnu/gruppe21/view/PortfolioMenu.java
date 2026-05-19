@@ -3,12 +3,12 @@ package ntnu.gruppe21.view;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -37,11 +37,49 @@ public class PortfolioMenu extends VBox {
     leftPane.prefWidthProperty().bind(bottom.widthProperty().multiply(0.5).subtract(5));
     leftPane.setMaxWidth(Double.MAX_VALUE);
 
-    Region placeholder = new Region();
-    placeholder.setStyle("-fx-background-color: #e0e0e0; -fx-background-radius: 8;");
-    HBox.setHgrow(placeholder, Priority.ALWAYS);
+    VBox rightPane = new VBox(10);
+    HBox.setHgrow(rightPane, Priority.ALWAYS);
 
-    bottom.getChildren().addAll(leftPane, placeholder);
+    VBox chartPlaceholder = new VBox();
+    chartPlaceholder.setStyle(
+        "-fx-background-color: #e0e0e0; -fx-background-radius: 8; -fx-alignment: center;");
+    VBox.setVgrow(chartPlaceholder, Priority.ALWAYS);
+    Label chartLabel = new Label("Stock chart coming soon");
+    chartLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 13px;");
+    chartPlaceholder.getChildren().add(chartLabel);
+
+    String btnBase =
+        """
+        -fx-font-size: 13px;
+        -fx-font-weight: bold;
+        -fx-background-radius: 8;
+        -fx-padding: 10 0 10 0;
+        -fx-cursor: hand;
+        -fx-max-width: Infinity;
+        """;
+    Button buyBtn = new Button("Buy");
+    buyBtn.setMaxWidth(Double.MAX_VALUE);
+    buyBtn.setStyle(btnBase + "-fx-background-color: #1a1a1a; -fx-text-fill: white;");
+
+    Button sellBtn = new Button("Sell");
+    sellBtn.setMaxWidth(Double.MAX_VALUE);
+    sellBtn.setStyle(
+        btnBase
+            + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
+            + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
+
+    Button watchlistBtn = new Button("Add to Watchlist");
+    watchlistBtn.setMaxWidth(Double.MAX_VALUE);
+    watchlistBtn.setStyle(
+        btnBase
+            + "-fx-background-color: white; -fx-text-fill: #555;"
+            + "-fx-border-color: #ccc; -fx-border-radius: 8;");
+
+    VBox buttonPane = new VBox(8, buyBtn, sellBtn, watchlistBtn);
+    VBox.setVgrow(buttonPane, Priority.ALWAYS);
+
+    rightPane.getChildren().addAll(chartPlaceholder, buttonPane);
+    bottom.getChildren().addAll(leftPane, rightPane);
 
     getChildren().addAll(title, line, createMoneyDisplay(), bottom);
   }
