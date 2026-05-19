@@ -74,8 +74,7 @@ public class ExchangeMenu extends VBox {
   private TableView<MarketRow> buildMarketTable() {
 
     TableView<MarketRow> table = new TableView<>();
-    table.setStyle(
-        "-fx-background-color: white; -fx-border-color: #ddd; -fx-table-cell-border-color: transparent;");
+    table.getStylesheets().add(getClass().getResource("/styles/table.css").toExternalForm());
     table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     table.setMaxWidth(Double.MAX_VALUE);
     VBox.setVgrow(table, Priority.ALWAYS);
@@ -91,11 +90,11 @@ public class ExchangeMenu extends VBox {
     changeCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().week()));
 
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-    companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 55);
+    companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 45);
     priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
     changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
 
-    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: normal;";
+    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;";
     symbolCol.setStyle(headerStyle);
     companyCol.setStyle(headerStyle);
     priceCol.setStyle(headerStyle);
