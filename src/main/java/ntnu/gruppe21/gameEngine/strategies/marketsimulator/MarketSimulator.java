@@ -45,8 +45,9 @@ public class MarketSimulator implements PriceStrategy {
     // boom).
     // globP is the per-stock probability of being hit when a shock occurs.
     double globD = 0.0;
-    if (random.nextDouble() < 0.05 + 0.3 * chaosModifier) {
+    if (random.nextDouble() < 0.05 + 0.08 * chaosModifier) {
       globD = (random.nextDouble() - 0.5) * 2.0;
+      System.out.println("oop");
     }
 
     for (Stock stock : stocks) {
@@ -108,7 +109,7 @@ public class MarketSimulator implements PriceStrategy {
         System.out.println("IMPACT!");
         val -= (1 + d * Math.pow(random.nextDouble(), 3) * 10) * globD;
         val -= globD * (1 + Math.pow(random.nextDouble(), 3) * 20);
-        d += globD * (1 + random.nextDouble() * 4);
+        d += globD * (1 + random.nextDouble() * (3 + chaosModifier));
         dur = 0; // forces an immediate mode re-roll this calculateNewPrice
       }
 
@@ -137,7 +138,7 @@ public class MarketSimulator implements PriceStrategy {
       // Feature: Chaotic Mode Extra Noise
       if (mode == MODE_CHAOTIC) {
         if (random.nextDouble() < 0.5) val += (random.nextDouble() - 0.5) * 30;
-        if (random.nextDouble() < 0.3) d = (random.nextDouble() - 0.5) * (2 + 6 * chaosModifier);
+        if (random.nextDouble() < 0.05) d = (random.nextDouble() - 0.5) * (2 + chaosModifier);
       }
 
       // Feature: Extra Noise in fast-rise and fast-fall modes.
@@ -152,7 +153,7 @@ public class MarketSimulator implements PriceStrategy {
 
       // Feature: Fast rise-to-fall Transition
       // A 3% per-calculateNewPrice chance that a fast rise market tips into a fast fall market.
-      if (mode == MODE_FAST_RISE && random.nextDouble() < 0.03) {
+      if (mode == MODE_FAST_RISE && random.nextDouble() < 0.04 * d) {
         System.out.println("sike");
         mode = MODE_FAST_FALL;
         d *= 0.4;
@@ -160,7 +161,7 @@ public class MarketSimulator implements PriceStrategy {
       }
 
       // Feature: High-Price Momentum Cap
-      if (val > 2000 && d > 0) d *= 0.9;
+      if (val > 1000 && d > 0) d *= 0.9;
 
       // Apply accumulated momentum to price.
       val += d * val * 0.1;
@@ -176,8 +177,11 @@ public class MarketSimulator implements PriceStrategy {
       dur--;
       if (dur <= 0) {
         dur = 4 + random.nextInt(6); // 4–10 ticks
-        if (random.nextDouble() < chaosModifier && random.nextDouble() < 0.15) {
+        if (mode != MODE_CHAOTIC
+            && random.nextDouble() < chaosModifier
+            && random.nextDouble() < 0.15) {
           mode = MODE_CHAOTIC;
+          System.out.println(5);
         } else {
           int newMode = mode;
           while (newMode == mode) {

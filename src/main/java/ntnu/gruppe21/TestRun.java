@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock;
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 
@@ -14,6 +15,7 @@ class TestRun {
     final int TICKS = 50;
 
     MarketSimulator sim = new MarketSimulator();
+    sim.setDifficulty(Difficulty.EASY);
     MarketSimStock stock = new MarketSimStock("SIM", "Simulator Co.", BigDecimal.valueOf(500.0));
 
     List<Double> prices = new ArrayList<>();
