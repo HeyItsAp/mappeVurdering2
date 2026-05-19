@@ -69,13 +69,12 @@ public class PortfolioMenu extends VBox {
 
   private VBox buildHoldingsTable() {
     TableView<HoldingRow> table = new TableView<>();
-    table.setStyle(
-        "-fx-background-color: white; -fx-border-color: #ddd; -fx-table-cell-border-color: transparent;");
+    table.getStylesheets().add(getClass().getResource("/styles/table.css").toExternalForm());
     table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     table.setMaxWidth(Double.MAX_VALUE);
     VBox.setVgrow(table, Priority.ALWAYS);
 
-    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: normal;";
+    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;";
 
     TableColumn<HoldingRow, String> symbolCol = new TableColumn<>("SYMBOL");
     TableColumn<HoldingRow, String> companyCol = new TableColumn<>("COMPANY");
