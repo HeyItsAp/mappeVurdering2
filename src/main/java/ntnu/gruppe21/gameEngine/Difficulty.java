@@ -2,10 +2,11 @@ package ntnu.gruppe21.gameEngine;
 
 import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.HighScoreManager;
+import ntnu.gruppe21.gameEngine.challanges.Challenge;
 
 /**
  * The enum dictates the difficulty and has allocated attributes that effect gameplay
- * and final score. Follows a classic enum structure with a contrcutor.
+ * and final score. Follows a classic enum structure with a constructor.
  */
 public enum Difficulty {
 
@@ -25,10 +26,12 @@ public enum Difficulty {
 
     /**
      *
-     * FinalScoreMultiplier Higher difficulty yields a better finalScore.
-     * This attribute reflects that by giving a better multiplier, used in {@link HighScoreManager}
+     * DifficultyMultiplier, Higher difficulty yields a better finalScore and little more difficult challanges
+     * This attribute reflects that by giving a better multiplier, used in {@link HighScoreManager} and
+     * effects challanges in {@link Challenge}
+     *
     */
-    private final BigDecimal finalScoreMultiplier;
+    private final BigDecimal DifficultyMultiplier;
 
 
     /**
@@ -40,7 +43,7 @@ public enum Difficulty {
     Difficulty(double changeRate, int gracePeriodWeeks, BigDecimal finalScoreMultiplier){
         this.changeRate = changeRate;
         this.gracePeriodWeeks = gracePeriodWeeks;
-        this.finalScoreMultiplier = finalScoreMultiplier;
+        this.DifficultyMultiplier = finalScoreMultiplier;
     }
 
     /* Getters */
@@ -52,7 +55,7 @@ public enum Difficulty {
         return gracePeriodWeeks;
     }
 
-    public BigDecimal getFinalScoreMultiplier() {
-        return finalScoreMultiplier;
+    public BigDecimal getDifficultyMultiplier() {
+        return DifficultyMultiplier;
     }
 }
