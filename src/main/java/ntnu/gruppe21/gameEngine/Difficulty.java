@@ -11,7 +11,8 @@ import ntnu.gruppe21.gameEngine.challanges.Challenge;
 public enum Difficulty {
   EASY(0.03, 10, BigDecimal.ONE),
   MEDIUM(0.07, 5, BigDecimal.TWO),
-  HARD(0.15, 2, BigDecimal.TWO.multiply(BigDecimal.TWO));
+  HARD(0.15, 2, BigDecimal.TWO.multiply(BigDecimal.TWO)),
+  REALISTIC(0.25, 0, BigDecimal.TEN);
 
   /**
    * ChangeRate Effects how drastic the new stock prices can be. A maximum change percentage wise
