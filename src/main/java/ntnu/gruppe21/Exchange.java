@@ -2,6 +2,8 @@ package ntnu.gruppe21;
 
 /* UNFINISHED */
 
+import static java.util.stream.Collectors.toList;
+
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -9,16 +11,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
-import static java.util.stream.Collectors.toList;
-
-/**
- * TODO: Should add another constructor to handle saved exchanges.
- */
+/** TODO: Should add another constructor to handle saved exchanges. */
 public class Exchange {
   /* Name of exchange */
   private final String name;
@@ -36,13 +34,14 @@ public class Exchange {
   private Difficulty difficulty;
 
   /**
-   * Drives per-week price advancement for all stocks
-   *    Strategies can be interchanged in the constructor.
+   * Drives per-week price advancement for all stocks Strategies can be interchanged in the
+   * constructor.
    */
   private final PriceStrategy strategy;
 
   /**
-   * Creates a new Exchange with the specified name, week 1, list of stocks and a pre-selected Strategy.
+   * Creates a new Exchange with the specified name, week 1, list of stocks and a pre-selected
+   * Strategy.
    *
    * @param name the name of the exchange.
    * @param stocks list of stocks to be traded at this exchange.
@@ -54,12 +53,16 @@ public class Exchange {
     this.difficulty = null;
 
     this.strategy = new MarketSimulator();
-    List<Stock> strategySpecificStock = stocks.stream()
-            .map(stock ->
-                strategy.createStock(stock.getSymbol(),stock.getCompany(), stock.getSalesPrice()))
+    List<Stock> strategySpecificStock =
+        stocks.stream()
+            .map(
+                stock ->
+                    strategy.createStock(
+                        stock.getSymbol(), stock.getCompany(), stock.getSalesPrice()))
             .toList();
     this.stockMap =
-            strategySpecificStock.stream().collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
+        strategySpecificStock.stream()
+            .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
   }
 
   /**
@@ -117,7 +120,6 @@ public class Exchange {
     this.difficulty = difficulty;
     strategy.setDifficulty(difficulty);
   }
-
 
   /**
    * Returns the true or false based on if desired stock is contained in the exchange.

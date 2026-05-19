@@ -1,13 +1,12 @@
 package ntnu.gruppe21;
 
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock;
-
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 
 class TestRun {
 
