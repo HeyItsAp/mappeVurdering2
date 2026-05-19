@@ -1,6 +1,7 @@
 package ntnu.gruppe21.gameEngine.strategies;
 
 import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,4 +25,16 @@ public interface PriceStrategy {
      * @param stocks
      */
     public void calculateNewPrice(List<Stock> stocks);
+
+    /**
+     * Setter for strategies difficulty. Must be implemented
+     */
+    public void setDifficulty(Difficulty difficulty);
+
+    /**
+     * Optional: Different strategy might need different stock attributes. Override this if this is true.
+     */
+    default Stock createStock(String symbol, String company, BigDecimal price) {
+        return new Stock(symbol, company, price);
+    }
 }
