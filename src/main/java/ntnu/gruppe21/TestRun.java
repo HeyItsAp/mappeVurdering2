@@ -1,7 +1,7 @@
 package ntnu.gruppe21;
 
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.SimStock;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock;
 
 import java.awt.*;
 import java.math.BigDecimal;
@@ -15,7 +15,7 @@ class TestRun {
     final int TICKS = 50;
 
     MarketSimulator sim = new MarketSimulator();
-    SimStock stock = new SimStock("SIM", "Simulator Co.", BigDecimal.valueOf(500.0));
+    MarketSimStock stock = new MarketSimStock("SIM", "Simulator Co.", BigDecimal.valueOf(500.0));
 
     List<Double> prices = new ArrayList<>();
     prices.add(stock.getSalesPrice().doubleValue());

@@ -31,7 +31,7 @@ public class MarketSimulator implements PriceStrategy {
 
   @Override
   public Stock createStock(String symbol, String company, BigDecimal price) {
-    return new SimStock(symbol, company, price); // own type
+    return new MarketSimStock(symbol, company, price); // own type
   }
 
   /** Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in minigameMarket.js. */
@@ -47,7 +47,7 @@ public class MarketSimulator implements PriceStrategy {
 
     for (Stock stock : stocks) {
       // Check if stock is the extended.
-      SimStock me = (SimStock) stock;
+      MarketSimStock me = (MarketSimStock) stock;
       // Extract simulation state as locals so the arithmetic stays readable.
       double val = me.getSalesPrice().doubleValue();
       double d = me.getD();

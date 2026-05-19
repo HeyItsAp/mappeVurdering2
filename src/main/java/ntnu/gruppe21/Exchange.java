@@ -16,6 +16,9 @@ import ntnu.gruppe21.transaction.TransactionFactory;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * TODO: Should add another constructor to handle saved exchanges.
+ */
 public class Exchange {
   /* Name of exchange */
   private final String name;

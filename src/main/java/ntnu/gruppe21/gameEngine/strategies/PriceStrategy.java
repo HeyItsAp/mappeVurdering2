@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
+ * TODO: Implement handling of different strategies to FilehandlerExchange.
  * PriceStrategy interface is used to calculate a new stock price based on different
  * algorithms and/or special effects.
  * <p>

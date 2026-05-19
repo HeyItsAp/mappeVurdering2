@@ -20,6 +20,7 @@ import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.gameEngine.Difficulty;
 
 /**
+ * TODO: Implement handling of different strategies to FilehandlerExchange.java
  * Utility class responsible for handling file input and output operations related to {@link
  * Exchange} and {@link Stock} objects.
  *

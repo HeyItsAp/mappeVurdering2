@@ -4,13 +4,13 @@ import ntnu.gruppe21.Stock;
 
 import java.math.BigDecimal;
 
-public class SimStock extends Stock {
+public class MarketSimStock extends Stock {
     private double d;
     private int mode;
     private int dur;
     private int restingVal;
 
-    public SimStock(String symbol, String company, BigDecimal salesPrice) {
+    public MarketSimStock(String symbol, String company, BigDecimal salesPrice) {
         super(symbol, company, salesPrice);
         this.restingVal = (int) Math.round(salesPrice.doubleValue());
         this.d = 0.0;
