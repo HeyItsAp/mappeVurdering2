@@ -1,4 +1,8 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
+
+import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -6,9 +10,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Java translation of the Cookie Clicker bank minigame's stock price advancement logic (M.tick).
+ * Java translation of the Cookie Clicker bank minigame's stock price advancement logic (M.calculateNewPrice).
  */
-public class MarketSimulator {
+public class MarketSimulator implements PriceStrategy {
 
   // Market modes — each biases momentum in a different direction.
   public static final int MODE_STABLE = 0; // slow random walk around resting value
@@ -25,18 +29,25 @@ public class MarketSimulator {
   // Set to 0.0 (default) to leave it inert.
   private double chaosModifier = 0.0;
 
-  /** Advances all stocks by one tick. Equivalent to M.tick() in minigameMarket.js. */
-  public void tick(List<Stock> stocks) {
+  @Override
+  public Stock createStock(String symbol, String company, BigDecimal price) {
+    return new SimStock(symbol, company, price); // own type
+  }
 
+  /** Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in minigameMarket.js. */
+  @Override
+  public void calculateNewPrice(List<Stock> stocks) {
     // Feature: Global Market Event
-    // Roughly 1 tick in 20 triggers a correlated shock across the market (crash or boom).
+    // Roughly 1 calculateNewPrice in 20 triggers a correlated shock across the market (crash or boom).
     // globP is the per-stock probability of being hit when a shock occurs.
     double globD = 0.0;
     if (random.nextDouble() < 0.05 + 0.3 * chaosModifier) {
       globD = (random.nextDouble() - 0.5) * 2.0;
     }
 
-    for (Stock me : stocks) {
+    for (Stock stock : stocks) {
+      // Check if stock is the extended.
+      SimStock me = (SimStock) stock;
       // Extract simulation state as locals so the arithmetic stays readable.
       double val = me.getSalesPrice().doubleValue();
       double d = me.getD();
@@ -54,7 +65,7 @@ public class MarketSimulator {
       }
 
       // Feature: Momentum Decay
-      // Reduces momentum slightly every tick so it doesn't compound indefinitely.
+      // Reduces momentum slightly every calculateNewPrice so it doesn't compound indefinitely.
       d *= 0.97 + 0.01 * chaosModifier;
 
       // Feature: Mode-Based Momentum
@@ -84,7 +95,7 @@ public class MarketSimulator {
       }
 
       // Feature: Mean Reversion
-      // Nudges val 1% of the way toward restingVal each tick.
+      // Nudges val 1% of the way toward restingVal each calculateNewPrice.
       val += (restingVal - val) * 0.01;
 
       // Feature: Global Shock Impact
@@ -94,7 +105,7 @@ public class MarketSimulator {
         val -= (1 + d * Math.pow(random.nextDouble(), 3) * 10) * globD;
         val -= globD * (1 + Math.pow(random.nextDouble(), 3) * 20);
         d += globD * (1 + random.nextDouble() * 4);
-        dur = 0; // forces an immediate mode re-roll this tick
+        dur = 0; // forces an immediate mode re-roll this calculateNewPrice
       }
 
       // Feature: Rare Large Spike
@@ -107,7 +118,7 @@ public class MarketSimulator {
       if (random.nextDouble() < 0.15) val += (random.nextDouble() - 0.5) * 30;
 
       // Feature: Rare Large Jump
-      // 3% chance of a significant price move each tick.
+      // 3% chance of a significant price move each calculateNewPrice.
       if (random.nextDouble() < 0.03) {
         System.out.println("kabomba");
         val += (random.nextDouble() - 0.5) * (50 + 50 * chaosModifier);
@@ -136,7 +147,7 @@ public class MarketSimulator {
       }
 
       // Feature: Fast rise-to-fall Transition
-      // A 3% per-tick chance that a fast rise market tips into a fast fall market.
+      // A 3% per-calculateNewPrice chance that a fast rise market tips into a fast fall market.
       if (mode == MODE_FAST_RISE && random.nextDouble() < 0.03) {
         System.out.println("sike");
         mode = MODE_FAST_FALL;
@@ -193,7 +204,14 @@ public class MarketSimulator {
     return pool[random.nextInt(pool.length)];
   }
 
-  public void setChaosModifier(double boost) {
+  @Override
+  public void setDifficulty(Difficulty difficulty) {
+    double boost = switch (difficulty){
+      case EASY -> 0.0;
+      case MEDIUM -> 0.3;
+      case HARD -> 0.7;
+      case REALISTIC -> 1.0;
+    };
     this.chaosModifier = Math.max(0.0, Math.min(1.0, boost));
   }
 
