@@ -16,8 +16,8 @@ import javafx.scene.shape.Line;
 public class ExchangeMenu extends VBox {
   public ExchangeMenu() {
     super(20);
-    Label header = new Label("Oslo Stock Market");
-    header.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+    Label title = new Label("Oslo Stock Market");
+    title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
     Line line = new Line();
     line.setStartX(0);
@@ -29,7 +29,7 @@ public class ExchangeMenu extends VBox {
     line.setStrokeWidth(0.5);
 
     setStyle("-fx-padding: 20 20 30 20");
-    getChildren().addAll(header, line, buildFilterButtons(), buildMarketTable());
+    getChildren().addAll(title, line, buildFilterButtons(), buildMarketTable());
   }
 
   private HBox buildFilterButtons() {
@@ -74,8 +74,7 @@ public class ExchangeMenu extends VBox {
   private TableView<MarketRow> buildMarketTable() {
 
     TableView<MarketRow> table = new TableView<>();
-    table.setStyle(
-        "-fx-background-color: white; -fx-border-color: #ddd; -fx-table-cell-border-color: transparent;");
+    table.getStylesheets().add(getClass().getResource("/styles/table.css").toExternalForm());
     table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     table.setMaxWidth(Double.MAX_VALUE);
     VBox.setVgrow(table, Priority.ALWAYS);
@@ -91,11 +90,11 @@ public class ExchangeMenu extends VBox {
     changeCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().week()));
 
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
-    companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 55);
+    companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 45);
     priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
     changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
 
-    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: normal;";
+    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;";
     symbolCol.setStyle(headerStyle);
     companyCol.setStyle(headerStyle);
     priceCol.setStyle(headerStyle);

@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 
 public class Screen extends HBox {
   public Screen() {
-    VBox mainContent = new ExchangeMenu();
+    VBox mainContent = new PortfolioMenu();
     HBox.setHgrow(mainContent, Priority.ALWAYS);
 
     getChildren().addAll(createSidebar(), mainContent);
@@ -30,13 +30,24 @@ public class Screen extends HBox {
     Label subtitle = new Label("Level: Investor");
     subtitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
-    VBox money = new VBox(5);
+    VBox money = new VBox(6);
     money.setStyle(
-        "-fx-background-color: DARKGRAY; -fx-background-radius: 5; -fx-padding: 10 0 5 5;");
+        """
+        -fx-background-color: white;
+        -fx-background-radius: 8;
+        -fx-border-color: #c8c6c1;
+        -fx-border-radius: 8;
+        -fx-padding: 12;
+        """);
 
-    Label moneyLabel = new Label("Portfolio Summary");
-    Label balance = new Label("Net Worth:  78476");
-    Label netWorth = new Label("Balance:  643634");
+    Label moneyLabel = new Label("PORTFOLIO SUMMARY");
+    moneyLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
+
+    Label balance = new Label("Net Worth:  78 476");
+    balance.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+
+    Label netWorth = new Label("Balance:  643 634");
+    netWorth.setStyle("-fx-font-size: 13px; -fx-text-fill: #555;");
 
     money.getChildren().addAll(moneyLabel, balance, netWorth);
 
