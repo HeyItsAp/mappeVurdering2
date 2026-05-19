@@ -1,12 +1,16 @@
 package ntnu.gruppe21;
 
 import java.math.BigDecimal;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.TransactionException;
+import ntnu.gruppe21.view.Screen;
 
-public class Main {
+public class Main extends Application {
   public static void main(String[] args) {
 
     // Fragmentry Simulation for periodic/random save after some actions:
@@ -34,5 +38,14 @@ public class Main {
     Player savedPlayer =
         FilehandlerPlayer.getPlayerSavedData("src/main/resources/saves/testgetsaveslot");
     TestRun.run();
+    launch(args);
+  }
+
+  public void start(Stage stage) {
+    Scene scene = new Scene(new Screen(), 1000, 700);
+    stage.setScene(scene);
+    stage.setTitle("Lets go gambling!");
+    stage.setMaximized(true);
+    stage.show();
   }
 }
