@@ -2,10 +2,11 @@ package ntnu.gruppe21.gameEngine;
 
 import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.HighScoreManager;
+import ntnu.gruppe21.gameEngine.challanges.Challenge;
 
 /**
- * The enum dictates the difficulty and has allocated attributes that effect gameplay and final
- * score. Follows a classic enum structure with a contrcutor.
+ * The enum dictates the difficulty and has allocated attributes that effect gameplay
+ * and final score. Follows a classic enum structure with a constructor.
  */
 public enum Difficulty {
   EASY(0.03, 10, BigDecimal.ONE),
@@ -23,25 +24,27 @@ public enum Difficulty {
   //      This attribute determines how many weeks this period will last.
   private final int gracePeriodWeeks;
 
-  /**
-   * FinalScoreMultiplier Higher difficulty yields a better finalScore. This attribute reflects that
-   * by giving a better multiplier, used in {@link HighScoreManager}
-   */
-  private final BigDecimal finalScoreMultiplier;
+    /**
+     *
+     * DifficultyMultiplier, Higher difficulty yields a better finalScore and little more difficult challanges
+     * This attribute reflects that by giving a better multiplier, used in {@link HighScoreManager} and
+     * effects challanges in {@link Challenge}
+     *
+    */
+    private final BigDecimal DifficultyMultiplier;
 
-  /**
-   * Attributes that effect gameplay:
-   *
-   * @param changeRate Effects how drastic the new stock prices will be
-   * @param gracePeriodWeeks Grace reduces the changes to give players more time to develop their
-   *     portfolio
-   * @param finalScoreMultiplier Higher difficulty yields a better finalScore.
-   */
-  Difficulty(double changeRate, int gracePeriodWeeks, BigDecimal finalScoreMultiplier) {
-    this.changeRate = changeRate;
-    this.gracePeriodWeeks = gracePeriodWeeks;
-    this.finalScoreMultiplier = finalScoreMultiplier;
-  }
+
+    /**
+     * Attributes that effect gameplay:
+     * @param changeRate Effects how drastic the new stock prices will be
+     * @param gracePeriodWeeks Grace reduces the changes to give players more time to develop their portfolio
+     * @param finalScoreMultiplier Higher difficulty yields a better finalScore.
+     */
+    Difficulty(double changeRate, int gracePeriodWeeks, BigDecimal finalScoreMultiplier){
+        this.changeRate = changeRate;
+        this.gracePeriodWeeks = gracePeriodWeeks;
+        this.DifficultyMultiplier = finalScoreMultiplier;
+    }
 
   /* Getters */
   public double getChangeRate() {
@@ -52,7 +55,7 @@ public enum Difficulty {
     return gracePeriodWeeks;
   }
 
-  public BigDecimal getFinalScoreMultiplier() {
-    return finalScoreMultiplier;
-  }
+    public BigDecimal getDifficultyMultiplier() {
+        return DifficultyMultiplier;
+    }
 }
