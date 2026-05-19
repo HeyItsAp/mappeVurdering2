@@ -9,54 +9,29 @@ import ntnu.gruppe21.gameEngine.challanges.Challenge;
  * and final score. Follows a classic enum structure with a constructor.
  */
 public enum Difficulty {
-  EASY(0.03, 10, BigDecimal.ONE),
-  MEDIUM(0.07, 5, BigDecimal.TWO),
-  HARD(0.15, 2, BigDecimal.TWO.multiply(BigDecimal.TWO)),
-  REALISTIC(0.25, 0, BigDecimal.TEN);
+  EASY(BigDecimal.ONE),
+  MEDIUM(BigDecimal.TWO),
+  HARD(BigDecimal.TWO.multiply(BigDecimal.TWO)),
+  REALISTIC(BigDecimal.TEN);
 
   /**
-   * ChangeRate Effects how drastic the new stock prices can be. A maximum change percentage wise
-   * Percentage based. Easy: 3%, Medium 7%, Hard 15%, Realistic 25%.
+   * DifficultyMultiplier, Higher difficulty yields a better finalScore and little more difficult challanges
+   * This attribute reflects that by giving a better multiplier, used in {@link HighScoreManager} and
+   * effects challanges in {@link Challenge}
+  */
+  private final BigDecimal DifficultyMultiplier;
+
+
+  /**
+   * Attributes that effect gameplay:'
+   * @param DifficultyMultiplier Higher difficulty yields a better finalScore.
    */
-  private final double changeRate;
-
-  // GracePeriodWeeks. Grace reduces the changes to give players more time to develop their
-  // portfolio
-  //      This attribute determines how many weeks this period will last.
-  private final int gracePeriodWeeks;
-
-    /**
-     *
-     * DifficultyMultiplier, Higher difficulty yields a better finalScore and little more difficult challanges
-     * This attribute reflects that by giving a better multiplier, used in {@link HighScoreManager} and
-     * effects challanges in {@link Challenge}
-     *
-    */
-    private final BigDecimal DifficultyMultiplier;
-
-
-    /**
-     * Attributes that effect gameplay:
-     * @param changeRate Effects how drastic the new stock prices will be
-     * @param gracePeriodWeeks Grace reduces the changes to give players more time to develop their portfolio
-     * @param finalScoreMultiplier Higher difficulty yields a better finalScore.
-     */
-    Difficulty(double changeRate, int gracePeriodWeeks, BigDecimal finalScoreMultiplier){
-        this.changeRate = changeRate;
-        this.gracePeriodWeeks = gracePeriodWeeks;
-        this.DifficultyMultiplier = finalScoreMultiplier;
-    }
+  Difficulty(BigDecimal DifficultyMultiplier){
+      this.DifficultyMultiplier = DifficultyMultiplier;
+  }
 
   /* Getters */
-  public double getChangeRate() {
-    return changeRate;
+  public BigDecimal getDifficultyMultiplier() {
+      return DifficultyMultiplier;
   }
-
-  public int getGracePeriodWeeks() {
-    return gracePeriodWeeks;
-  }
-
-    public BigDecimal getDifficultyMultiplier() {
-        return DifficultyMultiplier;
-    }
 }

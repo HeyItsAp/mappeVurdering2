@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 /**
  * Tests for the Difficulty enum.
  *
@@ -19,76 +21,36 @@ public class DifficultyTest {
   // ----------------------------------------------------------------
 
   @Test
-  void easy_shouldHaveCorrectVolatility() {
-    assertEquals(0.03, Difficulty.EASY.getChangeRate(), 1e-9);
+  void easy_shouldHaveCorrectScoreMultiplier() {
+    assertEquals(BigDecimal.ONE, Difficulty.EASY.getDifficultyMultiplier());
   }
 
-  @Test
-  void easy_shouldHaveCorrectGracePeriod() {
-    assertEquals(10, Difficulty.EASY.getGracePeriodWeeks());
-  }
 
   @Test
   void medium_shouldHaveCorrectVolatility() {
-    assertEquals(0.07, Difficulty.MEDIUM.getChangeRate(), 1e-9);
-  }
-
-  @Test
-  void medium_shouldHaveCorrectGracePeriod() {
-    assertEquals(5, Difficulty.MEDIUM.getGracePeriodWeeks());
+    assertEquals(BigDecimal.TWO, Difficulty.MEDIUM.getDifficultyMultiplier());
   }
 
   @Test
   void hard_shouldHaveCorrectVolatility() {
-    assertEquals(0.15, Difficulty.HARD.getChangeRate(), 1e-9);
+    assertEquals(BigDecimal.TWO.multiply(BigDecimal.TWO), Difficulty.HARD.getDifficultyMultiplier());
   }
 
   @Test
-  void hard_shouldHaveCorrectGracePeriod() {
-    assertEquals(2, Difficulty.HARD.getGracePeriodWeeks());
-  }
-
-  @Test
-  void insane_shouldHaveCorrectVolatility() {
-    assertEquals(0.25, Difficulty.REALISTIC.getChangeRate(), 1e-9);
-  }
-
-  @Test
-  void insane_shouldHaveZeroGracePeriod() {
-    assertEquals(0, Difficulty.REALISTIC.getGracePeriodWeeks());
+  void insane_shouldHaveScoreMultiplier() {
+    assertEquals(BigDecimal.TWO, Difficulty.REALISTIC.getDifficultyMultiplier());
   }
 
   // ----------------------------------------------------------------
   // Negative / boundary tests
   // ----------------------------------------------------------------
 
-  @Test
-  void volatility_shouldNeverBeNegative() {
-    for (Difficulty d : Difficulty.values()) {
-      assertTrue(d.getChangeRate() > 0, "Volatility must be positive for " + d);
-    }
-  }
 
   @Test
-  void gracePeriod_shouldNeverBeNegative() {
-    for (Difficulty d : Difficulty.values()) {
-      assertTrue(d.getGracePeriodWeeks() >= 0, "Grace period must be >= 0 for " + d);
-    }
-  }
-
-  @Test
-  void harderDifficulty_shouldHaveHigherOrEqualVolatility() {
+  void harderDifficulty_shouldHaveHigherScoreMultiplier(){
     // Volatility should increase (or stay equal) as difficulty rises
-    assertTrue(Difficulty.EASY.getChangeRate() <= Difficulty.MEDIUM.getChangeRate());
-    assertTrue(Difficulty.MEDIUM.getChangeRate() <= Difficulty.HARD.getChangeRate());
-    assertTrue(Difficulty.HARD.getChangeRate() <= Difficulty.REALISTIC.getChangeRate());
-  }
-
-  @Test
-  void harderDifficulty_shouldHaveShorterOrEqualGracePeriod() {
-    // Grace period should decrease (or stay equal) as difficulty rises
-    assertTrue(Difficulty.EASY.getGracePeriodWeeks() >= Difficulty.MEDIUM.getGracePeriodWeeks());
-    assertTrue(Difficulty.MEDIUM.getGracePeriodWeeks() >= Difficulty.HARD.getGracePeriodWeeks());
-    assertTrue(Difficulty.HARD.getGracePeriodWeeks() >= Difficulty.REALISTIC.getGracePeriodWeeks());
+    assertTrue(Difficulty.EASY.getDifficultyMultiplier().compareTo(Difficulty.MEDIUM.getDifficultyMultiplier()) < 0);
+    assertTrue(Difficulty.MEDIUM.getDifficultyMultiplier().compareTo(Difficulty.HARD.getDifficultyMultiplier()) < 0);
+    assertTrue(Difficulty.HARD.getDifficultyMultiplier().compareTo(Difficulty.REALISTIC.getDifficultyMultiplier()) < 0);
   }
 }
