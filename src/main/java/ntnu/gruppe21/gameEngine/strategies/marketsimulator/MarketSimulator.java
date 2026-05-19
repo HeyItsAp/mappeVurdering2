@@ -1,16 +1,16 @@
 package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
 
-import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
+import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
 
 /**
- * Java translation of the Cookie Clicker bank minigame's stock price advancement logic (M.calculateNewPrice).
+ * Java translation of the Cookie Clicker bank minigame's stock price advancement logic
+ * (M.calculateNewPrice).
  */
 public class MarketSimulator implements PriceStrategy {
 
@@ -34,11 +34,15 @@ public class MarketSimulator implements PriceStrategy {
     return new MarketSimStock(symbol, company, price); // own type
   }
 
-  /** Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in minigameMarket.js. */
+  /**
+   * Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in
+   * minigameMarket.js.
+   */
   @Override
   public void calculateNewPrice(List<Stock> stocks) {
     // Feature: Global Market Event
-    // Roughly 1 calculateNewPrice in 20 triggers a correlated shock across the market (crash or boom).
+    // Roughly 1 calculateNewPrice in 20 triggers a correlated shock across the market (crash or
+    // boom).
     // globP is the per-stock probability of being hit when a shock occurs.
     double globD = 0.0;
     if (random.nextDouble() < 0.05 + 0.3 * chaosModifier) {
@@ -168,12 +172,6 @@ public class MarketSimulator implements PriceStrategy {
       // Feature: Hard Price Floor
       val = Math.max(val, 1.0);
 
-      // Commit the new price and write simulation state back to the stock.
-      me.addNewSalesPrice(BigDecimal.valueOf(val).setScale(2, RoundingMode.HALF_UP));
-      me.setD(d);
-      me.setMode(mode);
-      me.setDur(dur);
-
       // Feature: Mode Duration + Re-roll
       dur--;
       if (dur <= 0) {
@@ -189,10 +187,13 @@ public class MarketSimulator implements PriceStrategy {
           d *= 0.5;
           System.out.println(mode);
         }
-        me.setMode(mode);
-        me.setDur(dur);
-        me.setD(d);
       }
+
+      // Commit the new price and write simulation state back to the stock.
+      me.addNewSalesPrice(BigDecimal.valueOf(val).setScale(2, RoundingMode.HALF_UP));
+      me.setMode(mode);
+      me.setDur(dur);
+      me.setD(d);
     }
   }
 
@@ -206,12 +207,13 @@ public class MarketSimulator implements PriceStrategy {
 
   @Override
   public void setDifficulty(Difficulty difficulty) {
-    double boost = switch (difficulty){
-      case EASY -> 0.0;
-      case MEDIUM -> 0.3;
-      case HARD -> 0.7;
-      case REALISTIC -> 1.0;
-    };
+    double boost =
+        switch (difficulty) {
+          case EASY -> 0.0;
+          case MEDIUM -> 0.3;
+          case HARD -> 0.7;
+          case REALISTIC -> 1.0;
+        };
     this.chaosModifier = Math.max(0.0, Math.min(1.0, boost));
   }
 
