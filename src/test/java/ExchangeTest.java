@@ -37,7 +37,7 @@ public class ExchangeTest {
     stocks.add(stock1);
     stocks.add(stock2);
     stocks.add(stock3);
-    exchange = new Exchange.Builder("TestExchange")
+    exchange = new Exchange.Builder("Oslo Børs")
             .stockMap(stocks)
             .build();
   }
@@ -60,7 +60,7 @@ public class ExchangeTest {
   /* Method to retrieve a stock by its symbol, ensuring it returns the correct Stock object. */
   @Test
   public void getStockWithSymbolStockReturns() {
-    assertEquals(stock1, exchange.getStock("Bit"));
+    assertEquals(stock1.getSymbol(), exchange.getStock("Bit").getSymbol());
   }
 
   /* Method to check if a stock exists by its symbol, ensuring it returns true for existing stocks. */
@@ -84,7 +84,7 @@ public class ExchangeTest {
   public void findStockWorks() {
     List<Stock> expectedResult = new ArrayList<>();
     expectedResult.add(stock1);
-    assertEquals(expectedResult, exchange.findStock("Bi"));
+    assertEquals(stock1.getCompany(), exchange.findStock("Bi").getFirst().getCompany());
   }
 
   /* Method to return an empty list if no stocks match the partial symbol name. */

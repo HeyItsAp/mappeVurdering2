@@ -246,6 +246,10 @@ public class Exchange {
     return losers.stream().limit(limit).collect(toList());
   }
 
+  /**
+   * Standard builder following the standard builder creational pattern. Name and TransactionFactory does not have
+   * a default value, everything else does but can be subject to change when building.
+   */
   public static class Builder {
     private final String name;
     private final TransactionFactory transactionFactory;
@@ -253,7 +257,7 @@ public class Exchange {
     private PriceStrategy strategy = new MarketSimulator();
     private Difficulty difficulty = Difficulty.EASY;
     private int week = 1;
-    private Map<String, Stock> stockMap;
+    private Map<String, Stock> stockMap = Map.of();
 
 
 
