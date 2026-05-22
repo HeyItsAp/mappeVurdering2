@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 
 public class Screen extends HBox {
   public Screen() {
-    VBox mainContent = new PortfolioMenu();
+    VBox mainContent = new StockMenu();
     HBox.setHgrow(mainContent, Priority.ALWAYS);
 
     getChildren().addAll(createSidebar(), mainContent);
