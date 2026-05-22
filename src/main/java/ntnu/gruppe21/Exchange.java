@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javafx.util.Builder;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.gameEngine.strategies.standard.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
@@ -40,29 +43,17 @@ public class Exchange {
   private final PriceStrategy strategy;
 
   /**
-   * Creates a new Exchange with the specified name, week 1, list of stocks and a pre-selected
-   * Strategy.
+   * Creates a new Exchange with a builder. Builder is defined at the bottom of this file.
    *
-   * @param name the name of the exchange.
-   * @param stocks list of stocks to be traded at this exchange.
+   * @param builder builder, follows the principles of Builder Creational Design
    */
-  public Exchange(String name, List<Stock> stocks) {
-    this.name = name;
-    this.week = 1;
-    this.transactionFactory = new TransactionFactory();
-    this.difficulty = null;
-
-    this.strategy = new MarketSimulator();
-    List<Stock> strategySpecificStock =
-        stocks.stream()
-            .map(
-                stock ->
-                    strategy.createStock(
-                        stock.getSymbol(), stock.getCompany(), stock.getSalesPrice()))
-            .toList();
-    this.stockMap =
-        strategySpecificStock.stream()
-            .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
+  public Exchange(Builder builder) {
+    this.name = builder.name;
+    this.week = builder.week;
+    this.transactionFactory = builder.transactionFactory;
+    this.difficulty = builder.difficulty;
+    this.strategy = builder.strategy;
+    this.stockMap = builder.stockMap;
   }
 
   /**
@@ -113,8 +104,7 @@ public class Exchange {
   /**
    * Setting difficulty will be done after choosing exchange. This method reflects that.
    *
-   * @param difficulty {@link Difficulty}, contains changeRate, gracePeriod and
-   *     FinalScoreMultiplier.
+   * @param difficulty {@link Difficulty} contains the FinalScoreMultiplier.
    */
   public void setDifficulty(Difficulty difficulty) {
     this.difficulty = difficulty;
@@ -254,5 +244,46 @@ public class Exchange {
             .sorted(Comparator.comparing(Stock::getLatestPriceChange))
             .toList();
     return losers.stream().limit(limit).collect(toList());
+  }
+
+  public static class Builder {
+    private final String name;
+    private final TransactionFactory transactionFactory;
+
+    private PriceStrategy strategy = new MarketSimulator();
+    private Difficulty difficulty = Difficulty.EASY;
+    private int week = 1;
+    private Map<String, Stock> stockMap;
+
+
+
+    public Builder(String name){
+      this.name = name;
+      this.transactionFactory = new TransactionFactory();
+    }
+
+    public Builder strategy(PriceStrategy strategy, List<Stock> stocks){
+      this.strategy = strategy;
+      List<Stock> strategySpecificStock =
+              stocks.stream()
+                      .map(
+                              stock ->
+                                      strategy.createStock(
+                                              stock.getSymbol(), stock.getCompany(), stock.getSalesPrice()))
+                      .toList();
+      this.stockMap = strategySpecificStock.stream()
+              .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
+      return this;
+    }
+
+    public Builder difficulty(Difficulty difficulty){
+      this.difficulty = difficulty;
+      return this;
+    }
+
+    public Builder week(int week){
+      this.week = week;
+      return this;
+    }
   }
 }
