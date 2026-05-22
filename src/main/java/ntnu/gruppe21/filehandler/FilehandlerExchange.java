@@ -118,7 +118,7 @@ public class FilehandlerExchange {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return new Exchange("ExchangeFromFile", listOfStocks);
+    return new Exchange.Builder("ExchangeFromFile").stockMap(listOfStocks).build();
   }
 
   /**
@@ -182,7 +182,7 @@ public class FilehandlerExchange {
         }
         listOfStocks.add(stock);
       }
-      exchange = new Exchange(exchangeName, listOfStocks);
+      exchange = new Exchange.Builder(exchangeName).stockMap(listOfStocks).build();
       exchange.setDifficulty(difficulty);
     } catch (Exception e) {
       e.printStackTrace();
