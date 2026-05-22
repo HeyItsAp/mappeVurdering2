@@ -262,8 +262,12 @@ public class Exchange {
       this.transactionFactory = new TransactionFactory();
     }
 
-    public Builder strategy(PriceStrategy strategy, List<Stock> stocks){
+    public Builder strategy(PriceStrategy strategy){
       this.strategy = strategy;
+      return this;
+    }
+
+    public Builder stockMap(List<Stock> stocks){
       List<Stock> strategySpecificStock =
               stocks.stream()
                       .map(
