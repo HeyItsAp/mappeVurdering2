@@ -33,7 +33,7 @@ public class SaveManagerTest {
   }
 
   private Exchange dummyExchange() {
-    return new Exchange("TestExchange", List.of());
+    return new Exchange.Builder("TextExchange").stockMap(List.of()).build();
   }
 
   /* save() should create the save folder if it doesn't exist yet */

@@ -37,8 +37,10 @@ public class ExhangeTest {
     stocks.add(stock1);
     stocks.add(stock2);
     stocks.add(stock3);
-    exchange = new Exchange("Oslo Børs", stocks);
-    exchange.setDifficulty(Difficulty.EASY);
+    exchange = new Exchange.Builder("Oslo Børs")
+            .stockMap(stocks)
+            .difficulty(Difficulty.EASY)
+            .build();
   }
 
   /**
