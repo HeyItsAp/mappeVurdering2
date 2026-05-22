@@ -289,5 +289,10 @@ public class Exchange {
       this.week = week;
       return this;
     }
+
+
+    public Exchange build(){
+      return new Exchange(this);
+    }
   }
 }
