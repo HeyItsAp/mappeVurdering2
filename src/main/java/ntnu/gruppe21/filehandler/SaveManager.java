@@ -1,12 +1,15 @@
 package ntnu.gruppe21.filehandler;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
 
 /**
- * This class implements both Filehandlers {@link FilehandlerExchange} and {@link FilehandlerPlayer}
+ * This class implements both filehandlers {@link FilehandlerExchange} and {@link FilehandlerPlayer}
  * to manage saves by invoking static methods from both.
  *
  * <p>Mainly handles folders, creating them and places saved csv data into those folders. When
@@ -15,7 +18,7 @@ import ntnu.gruppe21.Player;
  */
 public class SaveManager {
   private static final String saves_root = "src/main/resources/saves";
-  private final String folderPath;
+  private final String folderSlot;
 
   /**
    * Constructor.
@@ -23,12 +26,12 @@ public class SaveManager {
    * @param saveName points to folder name containing csv files.
    */
   public SaveManager(String saveName) {
-    this.folderPath = saves_root + '/' + saveName;
+    this.folderSlot = saveName;
   }
 
   /** Test constructor — accepts a full path as-is */
   public SaveManager(String saveName, boolean fullPath) {
-    this.folderPath = fullPath ? saveName : saves_root + "/" + saveName;
+    this.folderSlot = fullPath ? saveName : saves_root + "/" + saveName;
   }
 
   /**
@@ -40,19 +43,28 @@ public class SaveManager {
    * @throws Exception
    */
   public void save(Player player, Exchange exchange) throws Exception {
-    Files.createDirectories(Paths.get(folderPath));
-    FilehandlerPlayer.savePlayerData(player, folderPath);
-    FilehandlerExchange.saveExchangeData(exchange, folderPath);
-    System.out.println("Game saved to: " + folderPath);
+    Files.createDirectories(Paths.get(folderSlot));
+    FilehandlerPlayer.savePlayerData(player, folderSlot);
+    FilehandlerExchange.saveExchangeData(exchange, folderSlot);
+    System.out.println("Game saved to: " + folderSlot);
   }
 
+  /**
+   * Getter, uses public static methods.
+   */
+  public List<String> getSaveOptions(){
+    return FilehandlerPlayer.getPlayerSaveOptions();
+  }
+  public List<String> getDataSetOptions(){
+    return FilehandlerExchange.getExchangeDatasetOptions();
+  }
   /**
    * Reads and returns Player object through static method.
    *
    * @return Player object
    */
   public Player loadPlayer() {
-    return FilehandlerPlayer.getPlayerSavedData(folderPath);
+    return FilehandlerPlayer.getPlayerSavedData(folderSlot);
   }
 
   /**
@@ -61,6 +73,6 @@ public class SaveManager {
    * @return Exchange object
    */
   public Exchange loadExchange() {
-    return FilehandlerExchange.getExchangeSaveData(folderPath);
+    return FilehandlerExchange.getExchangeSaveData(folderSlot);
   }
 }
