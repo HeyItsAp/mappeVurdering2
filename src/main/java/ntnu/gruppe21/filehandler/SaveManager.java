@@ -75,4 +75,8 @@ public class SaveManager {
   public Exchange loadExchange() {
     return FilehandlerExchange.getExchangeSaveData(folderSlot);
   }
+
+  public Exchange loadExchangeDataset(String nameOfSet){
+    return FilehandlerExchange.getExchangeDataset(nameOfSet);
+  }
 }
