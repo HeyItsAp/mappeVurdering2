@@ -76,8 +76,7 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Loads initial exchange data from a predefined CSV file REQUIRED method in del 2 Probably
-   * uploaded on BlackBoard on some point
+   * Loads initial exchange data from a predefined
    *
    * <p>The file is expected to be located at: {@code resources/Exchanges/exchangeDataSet1.csv}
    *
@@ -88,8 +87,14 @@ public class FilehandlerExchange {
    *
    * @return a new {@link Exchange} object populated with stocks from the file
    */
-  public static Exchange getExchangeData() {
-    String csvfile = "src/main/resources/datasets/exchangeDataSet1.csv";
+  public static Exchange getExchangeDataset(String filename) {
+    String folderLocationString = "src/main/resources/datasets/";
+    String csvfile = folderLocationString + filename + ".csv";
+    Path fullPath = Path.of(csvfile);
+    if (!validFormat(fullPath)){
+      throw new RuntimeException("Attempted getting dataset " + filename + ".csv, is invalid");
+    }
+
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
     try {
@@ -176,14 +181,19 @@ public class FilehandlerExchange {
         String[] savedPricesString = values[2].split(";");
         List<BigDecimal> savedPrices =
             Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
+
         Stock stock = new Stock(values[0], values[1], savedPrices.getFirst());
         for (int i = 1; i < savedPrices.size(); i++) {
           stock.addNewSalesPrice(savedPrices.get(i));
         }
         listOfStocks.add(stock);
+        stock.getPriceHistory().forEach(s -> {System.out.println("Reg: " + s);});
       }
-      exchange = new Exchange.Builder(exchangeName).stockMap(listOfStocks).build();
-      exchange.setDifficulty(difficulty);
+      exchange = new Exchange.Builder(exchangeName)
+              .stockMap(listOfStocks)
+              .difficulty(difficulty)
+              .build();
+      System.out.println("Post creation: " + exchange.getStock("MSFT").getPriceHistory().size());
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -282,5 +292,12 @@ public class FilehandlerExchange {
     Files.createDirectories(Paths.get(DATASETS_ROOT));
     Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     return destination;
+  }
+
+  /**
+   * Returns a string list of valid datasets in {@link resources/datasets}.
+   */
+  public static void getExchangeDatasetOptions(){
+
   }
 }

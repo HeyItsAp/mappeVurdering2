@@ -28,31 +28,32 @@ public class FilehandlerExchangeTest {
   private final String test_saves_root = "src/main/resources/saves/testsetsaveslot";
   // Second root will have static data
   private final String test_get_saves_root = "src/main/resources/saves/testgetsaveslot";
+  private final String defaultDatasetName = "exchangeDataSet1";
 
   // ── getExchangeData ──────────────────────────────────────────────────────
 
   /* Loading the default exchange file should return a non-null Exchange. */
   @Test
   public void getExchangeDataReturnsNonNull() {
-    assertNotNull(FilehandlerExchange.getExchangeData());
+    assertNotNull(FilehandlerExchange.getExchangeDataset(defaultDatasetName));
   }
 
   /* The exchange file has 3 data rows; the returned Exchange should contain exactly 3 stocks. */
   @Test
   public void getExchangeDataReturnsCorrectNumberOfStocks() {
-    assertEquals(4, FilehandlerExchange.getExchangeData().getStockMap().size());
+    assertEquals(5, FilehandlerExchange.getExchangeDataset(defaultDatasetName).getStockMap().size());
   }
 
   /* The exchange should be named "ExchangeFromFile" as defined in the method. */
   @Test
   public void getExchangeDataHasCorrectName() {
-    assertEquals("ExchangeFromFile", FilehandlerExchange.getExchangeData().getName());
+    assertEquals("ExchangeFromFile", FilehandlerExchange.getExchangeDataset(defaultDatasetName).getName());
   }
 
   /* A known stock from the file should exist with the correct price. */
   @Test
   public void getExchangeDataContainsNvidiaWithCorrectPrice() {
-    Exchange exchange = FilehandlerExchange.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeDataset(defaultDatasetName);
     assertTrue(exchange.hasStock("NVDA"));
     assertEquals(0, exchange.getStock("NVDA").getSalesPrice().compareTo(new BigDecimal("191.27")));
   }
@@ -60,7 +61,7 @@ public class FilehandlerExchangeTest {
   /* Comment lines (starting with '#') must not be parsed as stocks. */
   @Test
   public void getExchangeDataIgnoresCommentLines() {
-    Exchange exchange = FilehandlerExchange.getExchangeData();
+    Exchange exchange = FilehandlerExchange.getExchangeDataset(defaultDatasetName);
     assertFalse(exchange.hasStock("#"));
   }
 

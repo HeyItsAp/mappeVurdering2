@@ -1,6 +1,7 @@
 package ntnu.gruppe21.gameEngine.strategies;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.gameEngine.Difficulty;
@@ -29,7 +30,7 @@ public interface PriceStrategy {
    * Optional: Different strategy might need different stock attributes. Override this if this is
    * true.
    */
-  default Stock createStock(String symbol, String company, BigDecimal price) {
-    return new Stock(symbol, company, price);
+  default Stock createStock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
+    return new Stock(symbol, company, priceHistory);
   }
 }

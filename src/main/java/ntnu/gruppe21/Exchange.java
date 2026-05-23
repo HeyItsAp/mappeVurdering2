@@ -5,6 +5,7 @@ package ntnu.gruppe21;
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -272,12 +273,14 @@ public class Exchange {
     }
 
     public Builder stockMap(List<Stock> stocks){
+
       List<Stock> strategySpecificStock =
               stocks.stream()
                       .map(
                               stock ->
-                                      strategy.createStock(
-                                              stock.getSymbol(), stock.getCompany(), stock.getSalesPrice()))
+                                strategy.createStock(
+                                        stock.getSymbol(), stock.getCompany(), new ArrayList<>((stock.getPriceHistory())))
+                              )
                       .toList();
       this.stockMap = strategySpecificStock.stream()
               .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));

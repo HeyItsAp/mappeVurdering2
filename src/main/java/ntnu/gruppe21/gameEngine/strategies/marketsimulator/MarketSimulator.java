@@ -2,6 +2,7 @@ package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import ntnu.gruppe21.Stock;
@@ -30,8 +31,8 @@ public class MarketSimulator implements PriceStrategy {
   private double chaosModifier = 0.0;
 
   @Override
-  public Stock createStock(String symbol, String company, BigDecimal price) {
-    return new MarketSimStock(symbol, company, price); // own type
+  public Stock createStock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
+    return new MarketSimStock(symbol, company, priceHistory); // own type
   }
 
   /**

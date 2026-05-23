@@ -4,6 +4,6 @@
 # Ticker,Name,{Prices}
 HistoryTest,EASY
 
-NVDA,Nvidia,191.27
+NVDA,Nvidia,191.27;192.21
 HST,HistoryCo,100;110
 MSFT,Microsoft,404.68;312.12

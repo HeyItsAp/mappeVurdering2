@@ -1,5 +1,6 @@
 package ntnu.gruppe21;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -7,12 +8,19 @@ import java.util.*;
 public class Stock {
   private final String symbol;
   private final String company;
-  private final List<BigDecimal> prices = new ArrayList<>();
+  private final List<BigDecimal> prices;
 
   public Stock(String symbol, String company, BigDecimal salesPrice) {
     this.symbol = Objects.requireNonNull(symbol, "symbol must not be null");
     this.company = Objects.requireNonNull(company, "company must not be null");
+    this.prices = new ArrayList<>();
     prices.add(Objects.requireNonNull(salesPrice, "salesPrice must not be null"));
+  }
+
+  public Stock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
+    this.symbol = Objects.requireNonNull(symbol, "symbol must not be null");
+    this.company = Objects.requireNonNull(company, "company must not be null");
+    this.prices = Objects.requireNonNull(priceHistory, "priceHistory must not be null");
   }
 
   public String getSymbol() {
@@ -49,4 +57,5 @@ public class Stock {
     }
     return prices.getLast().subtract(prices.get(prices.size() - 2));
   }
+
 }
