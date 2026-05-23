@@ -35,6 +35,11 @@ public class MarketSimulator implements PriceStrategy {
     return new MarketSimStock(symbol, company, priceHistory); // own type
   }
 
+  @Override
+  public String getStrategyId() {
+    return "MARKET_SIMULATOR";
+  }
+
   /**
    * Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in
    * minigameMarket.js.

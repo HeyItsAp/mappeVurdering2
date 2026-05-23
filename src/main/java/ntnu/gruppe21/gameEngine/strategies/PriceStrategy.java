@@ -12,16 +12,26 @@ import ntnu.gruppe21.gameEngine.Difficulty;
  *
  * <p>Most Price Strategies will incorporate Difficulty and the Grace-mechanic in their
  * calculations. Strategies will always return a new price PriceStrategy follow the principles of
- * {@code Strategy Behavioral Pattern}. Different Algorithms as separate classes but still
- * interchangeable.
+ * {@code Strategy Behavioral Pattern}.
+ *
+ * <p>
+ *    Different Algorithms as separate classes but still interchangeable with some predefined structure:
+ *    Each Strategy needs a way correctly parse/serialize and format changes when saving or loading.
+ * </p>
  */
 public interface PriceStrategy {
+  /**
+   * All Strategies need a unique identifier. So saving can be done.
+   */
+  String getStrategyId();
   /**
    * All strategies most calculate a new by taking a list of the stock and updating it.
    *
    * @param stocks
    */
   public void calculateNewPrice(List<Stock> stocks);
+
+  /*
 
   /** Setter for strategies difficulty. Must be implemented */
   public void setDifficulty(Difficulty difficulty);
@@ -32,5 +42,15 @@ public interface PriceStrategy {
    */
   default Stock createStock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
     return new Stock(symbol, company, priceHistory);
+  }
+
+  /** Serializes any extras, in this case Stocks */
+  default String serializeStockExtras(Stock stock) {
+    return ""; // default: nothing extra to save
+  }
+
+  /** Reconstructs extras, in this case stocks and extras */
+  default void deserializeStockExtras(Stock stock, String extras) {
+    // default: nothing to restore
   }
 }
