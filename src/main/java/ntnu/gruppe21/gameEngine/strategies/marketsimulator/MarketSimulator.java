@@ -48,7 +48,7 @@ public class MarketSimulator implements PriceStrategy {
   @Override
   public String saveStockExtras(Stock stock) {
     MarketSimStock stockExtra = (MarketSimStock) stock;
-    return stockExtra.getD() + "|" +stockExtra.getDur() + "|" + stockExtra.getMode()+ "|" + stockExtra.getRestingVal();
+    return stockExtra.getD() + "|" +stockExtra.getMode() + "|" + stockExtra.getDur()+ "|" + stockExtra.getRestingVal();
   }
 
   /**
@@ -64,6 +64,16 @@ public class MarketSimulator implements PriceStrategy {
     s.setMode(Integer.parseInt(parts[1]));
     s.setDur(Integer.parseInt(parts[2]));
     s.setRestingVal(Integer.parseInt(parts[3]));
+  }
+
+  @Override
+  public void copyStockState(Stock source, Stock target) {
+    if (source instanceof MarketSimStock src && target instanceof MarketSimStock tgt) {
+      tgt.setD(src.getD());
+      tgt.setMode(src.getMode());
+      tgt.setDur(src.getDur());
+      tgt.setRestingVal(src.getRestingVal());
+    }
   }
 
   /**

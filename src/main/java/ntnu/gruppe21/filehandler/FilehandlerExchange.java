@@ -64,7 +64,7 @@ public class FilehandlerExchange {
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
-      pw.println(exchange.getName() + "," + exchange.getDifficulty().toString() + "," + strategy.getStrategyId());
+      pw.println(exchange.getName() + "," + exchange.getWeek() + "," + exchange.getDifficulty().toString() + "," + strategy.getStrategyId());
       pw.println(" ");
 
       exchange
@@ -145,7 +145,7 @@ public class FilehandlerExchange {
    * on {@link SaveManager}
    *
    * <p>
-   *    First row contains the Metadata: Name,difficulty,Strategy
+   *    First row contains the Metadata: Name,week,difficulty,Strategy
    *    THIS ONLY APPLIES TO SAVES, not regular/imported exchange data
    * </p>
    *
@@ -177,6 +177,7 @@ public class FilehandlerExchange {
     Difficulty difficulty = null;
     PriceStrategy strategy = null;
     boolean basedMetaDataline = false;
+    int week = 1;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -197,17 +198,18 @@ public class FilehandlerExchange {
         }
         System.out.print("\n");
 
-        if (values.length == 3 && !basedMetaDataline) {
+        if (values.length == 4 && !basedMetaDataline) {
           basedMetaDataline = true;
           exchangeName = values[0];
-          difficulty = Difficulty.valueOf(values[1]);
-          strategy = StrategyRegister.fromId(values[2]);
+          week = Integer.parseInt(values[1]);
+          difficulty = Difficulty.valueOf(values[2]);
+          strategy = StrategyRegister.fromId(values[3]);
           continue;
         }
 
         String[] savedPricesString = values[2].split(";");
-        ArrayList<BigDecimal> savedPrices =
-                (ArrayList<BigDecimal>) Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
+        ArrayList<BigDecimal> savedPrices = new ArrayList<>();
+        Arrays.stream(savedPricesString).map(BigDecimal::new).forEach(savedPrices::add);
 
         Stock stock = strategy.createStock(values[0], values[1], savedPrices);
         listOfStocks.add(stock);
@@ -218,7 +220,7 @@ public class FilehandlerExchange {
         }
       }
       exchange =
-          new Exchange.Builder(exchangeName).stockMap(listOfStocks).strategy(strategy).difficulty(difficulty).build();
+          new Exchange.Builder(exchangeName).strategy(strategy).difficulty(difficulty).week(week).stockMap(listOfStocks).build();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -290,7 +292,10 @@ public class FilehandlerExchange {
         if (values.length != 3) return false;
 
         try {
-          new BigDecimal(values[2].trim()); // price must be a number
+          BigDecimal importedNumber = new BigDecimal(values[2].trim()); // price must be a number
+          if (importedNumber.compareTo(BigDecimal.ZERO) < 0){
+            throw new NumberFormatException();
+          }
         } catch (NumberFormatException e) {
           return false;
         }

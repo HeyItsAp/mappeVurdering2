@@ -53,4 +53,9 @@ public interface PriceStrategy {
   default void deserializeStockExtras(Stock stock, String extras) {
     // default: nothing to restore
   }
+
+  /** Copy any strategy-specific state from source to target after creation */
+  default void copyStockState(Stock source, Stock target) {
+    // default: nothing to copy for plain stocks
+  }
 }

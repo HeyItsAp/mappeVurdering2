@@ -12,6 +12,9 @@ import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.gameEngine.strategies.standard.StandardStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -79,7 +82,7 @@ public class FilehandlerExchangeTest {
   @Test
   public void getExchangeSaveDataReturnsCorrectNumberOfStocks() {
     assertEquals(
-        3, FilehandlerExchange.getExchangeSaveData(test_get_saves_root).getStockMap().size());
+        5, FilehandlerExchange.getExchangeSaveData(test_get_saves_root).getStockMap().size());
   }
 
   /* MSFT in the save file has two prices (404.68;312.12), so price history size should be 2. */
@@ -238,8 +241,192 @@ public class FilehandlerExchangeTest {
 
   @Test
   void gettingExchangeDatasetOptionsShouldBeCorrect() {
-    assertEquals(2, FilehandlerExchange.getExchangeDatasetOptions().size());
+    assertEquals(4, FilehandlerExchange.getExchangeDatasetOptions().size());
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("exchangeDataSet1.csv"));
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("highscores.csv"));
+  }
+  // ── strategy serialization round-trip ────────────────────────────────────
+
+  /* Saving with MarketSimulator and reloading should reconstruct MarketSimStock instances. */
+  @Test
+  public void saveAndReloadWithMarketSimulatorCreatesSimStocks() {
+    List<Stock> stocks = new ArrayList<>();
+    stocks.add(new Stock("SIM", "SimCo", new BigDecimal("50.00")));
+    Exchange exchange = new Exchange.Builder("SimTest")
+            .strategy(new MarketSimulator())
+            .difficulty(Difficulty.HARD)
+            .stockMap(stocks)
+            .build();
+
+    FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
+    Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
+
+    assertInstanceOf(MarketSimStock.class, loaded.getStock("SIM"));
+  }
+
+  /*  simulation state (d, mode, dur, restingVal) should survive a save/reload cycle. */
+  @Test
+  public void saveAndReloadPreservesSimStockState() {
+    ArrayList<BigDecimal> price = new ArrayList<>();
+    price.add(new BigDecimal(100.00));
+    MarketSimStock marketStock = new MarketSimStock("SIM", "SimCo", price);
+    marketStock.setD(0.42);
+    marketStock.setMode(3);
+    marketStock.setDur(7);
+    marketStock.setRestingVal(95);
+
+    Exchange exchange = new Exchange.Builder("SimStateTest")
+            .strategy(new MarketSimulator())
+            .stockMap(List.of(marketStock))
+            .difficulty(Difficulty.HARD)
+            .build();
+
+    FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
+    Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
+
+    MarketSimStock restored = (MarketSimStock) loaded.getStock("SIM");
+    assertEquals(0.42, restored.getD(), 0.001);
+    assertEquals(3, restored.getMode());
+    assertEquals(7, restored.getDur());
+    assertEquals(95, restored.getRestingVal());
+  }
+
+  /* The default strategy (StandardStrategy) should produce plain Stock instances, not MarketSimStock. */
+  @Test
+  public void saveAndReloadWithDefaultStrategyCreatesPlainStocks() {
+    List<Stock> stocks = new ArrayList<>();
+    stocks.add(new Stock("PLN", "PlainCo", new BigDecimal("200.00")));
+    Exchange exchange = new Exchange.Builder("PlainTest")
+            .strategy(new StandardStrategy())
+            .stockMap(stocks)
+            .difficulty(Difficulty.EASY)
+            .build();
+
+    FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
+    Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
+
+    assertFalse(loaded.getStock("PLN") instanceof MarketSimStock);
+  }
+
+// ── getExchangeSaveData edge cases ───────────────────────────────────────
+
+  /* Loading from a non-existent save folder should return null without throwing. */
+  @Test
+  public void getExchangeSaveDataReturnsNullForMissingFile() {
+    assertNull(FilehandlerExchange.getExchangeSaveData("nonexistent_slot_xyz"));
+  }
+
+  /* A save file with an unrecognised strategy ID should throw IllegalArgumentException. */
+  @Test
+  public void getExchangeSaveDataThrowsForUnknownStrategyId() {
+    // Uses a hand-crafted save file in test resources with strategy "UNKNOWN_STRATEGY"
+    assertThrows(
+            IllegalArgumentException.class,
+            () -> FilehandlerExchange.getExchangeSaveData("testbadsaveslot")
+    );
+  }
+
+  /* Reloading a saved exchange should preserve the week number. */
+  @Test
+  public void saveAndReloadPreservesWeekNumber() {
+    List<Stock> stocks = new ArrayList<>();
+    stocks.add(new Stock("WK", "WeekCo", new BigDecimal("50.00")));
+    Exchange exchange = new Exchange.Builder("WeekTest")
+            .stockMap(stocks)
+            .difficulty(Difficulty.MEDIUM)
+            .build();
+
+    // Advance a few weeks so week != 1
+    exchange.advance();
+    exchange.advance();
+    exchange.advance();
+
+    FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
+    Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
+
+    assertEquals(exchange.getWeek(), loaded.getWeek());
+  }
+
+// ── validFormat edge cases ───────────────────────────────────────────────
+
+  /* A completely empty file should fail validation. */
+  @Test
+  void validFormat_returnsFalse_whenFileIsEmpty(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("empty.csv");
+    Files.write(csv, List.of());
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  /* A file with only comment lines should fail validation. */
+  @Test
+  void validFormat_returnsFalse_whenOnlyComments(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("comments.csv");
+    Files.write(csv, List.of("# comment one", "# comment two", "# comment three"));
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  /* Negative prices should fail validation. */
+  @Test
+  void validFormat_returnsFalse_whenPriceIsNegative(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("negative.csv");
+    Files.write(csv, List.of(
+            "TST,TestCo,100.00",
+            "TST,TestCo,100.00",
+            "TST,TestCo,100.00",
+            "TST,TestCo,100.00",
+            "TST,TestCo,-50.00"
+    ));
+    assertFalse(FilehandlerExchange.validFormat(csv));
+  }
+
+  /* Exactly 5 valid rows should pass – boundary condition. */
+  @Test
+  void validFormat_returnsTrue_atExactlyFiveRows(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("exact5.csv");
+    Files.write(csv, List.of(
+            "AAA,CompanyA,10.00",
+            "BBB,CompanyB,20.00",
+            "CCC,CompanyC,30.00",
+            "DDD,CompanyD,40.00",
+            "EEE,CompanyE,50.00"
+    ));
+    assertTrue(FilehandlerExchange.validFormat(csv));
+  }
+
+// ── copyToDatasets ───────────────────────────────────────────────────────
+
+  /* A valid CSV copied to datasets should appear in getExchangeDatasetOptions. */
+  @Test
+  void copyToDatasetsFileAppearsInOptions(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("testImport.csv");
+    Files.write(csv, List.of(
+            "AAA,CompanyA,10.00",
+            "BBB,CompanyB,20.00",
+            "CCC,CompanyC,30.00",
+            "DDD,CompanyD,40.00",
+            "EEE,CompanyE,50.00"
+    ));
+
+    FilehandlerExchange.copyToDatasets(csv);
+
+    assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("testImport.csv"));
+  }
+
+  /* Copying the same file twice should not throw – REPLACE_EXISTING should handle it. */
+  @Test
+  void copyToDatasetsOverwriteDoesNotThrow(@TempDir Path tempDir) throws IOException {
+    Path csv = tempDir.resolve("duplicate.csv");
+    Files.write(csv, List.of(
+            "AAA,CompanyA,10.00",
+            "BBB,CompanyB,20.00",
+            "CCC,CompanyC,30.00",
+            "DDD,CompanyD,40.00",
+            "EEE,CompanyE,50.00"
+    ));
+
+    assertDoesNotThrow(() -> {
+      FilehandlerExchange.copyToDatasets(csv);
+      FilehandlerExchange.copyToDatasets(csv);
+    });
   }
 }

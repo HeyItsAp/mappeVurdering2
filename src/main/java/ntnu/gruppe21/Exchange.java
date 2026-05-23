@@ -15,6 +15,7 @@ import javafx.util.Builder;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.gameEngine.strategies.standard.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
@@ -281,12 +282,16 @@ public class Exchange {
       List<Stock> strategySpecificStock =
           stocks.stream()
               .map(
-                  stock ->
-                      strategy.createStock(
+                  stock -> {
+                      Stock created = strategy.createStock(
                           stock.getSymbol(),
                           stock.getCompany(),
-                          new ArrayList<>((stock.getPriceHistory()))))
+                          new ArrayList<>((stock.getPriceHistory())));
+                    strategy.copyStockState(stock, created); // delegates to strategy
+                    return created;
+                  })
               .toList();
+
       this.stockMap =
           strategySpecificStock.stream()
               .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));

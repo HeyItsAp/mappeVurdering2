@@ -43,7 +43,7 @@ public class StandardStrategy implements PriceStrategy {
    */
   @Override
   public void calculateNewPrice(List<Stock> stocks) {
-    double randomBoost = random.nextDouble(0, boostStat);
+    double randomBoost = random.nextDouble(0, boostStat+0.01);
     double changePercent = (random.nextDouble() * 2 - 1) * changeRate;
     double finalChange = changePercent + randomBoost;
     for (Stock stock : stocks) {
