@@ -61,6 +61,6 @@ public class SaveManager {
    * @return Exchange object
    */
   public Exchange loadExchange() {
-    return FilehandlerExchange.getSaveData(folderPath);
+    return FilehandlerExchange.getExchangeSaveData(folderPath);
   }
 }

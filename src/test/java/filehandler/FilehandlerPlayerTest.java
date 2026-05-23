@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import ntnu.gruppe21.*;
+import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.Purchase;
@@ -182,4 +183,11 @@ public class FilehandlerPlayerTest {
           Player result = FilehandlerPlayer.getPlayerSavedData("not/valid/path");
         });
   }
+  @Test
+  void gettingPlayerSaveOptionsShouldBeCorrect(){
+    assertEquals(2, FilehandlerPlayer.getPlayerSaveOptions().size());
+    assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("testgetsaveslot"));
+    assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("testsetsaveslot"));
+  }
 }
+

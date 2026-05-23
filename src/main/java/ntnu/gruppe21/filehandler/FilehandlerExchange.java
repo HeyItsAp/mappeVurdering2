@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import ntnu.gruppe21.Exchange;
@@ -32,6 +33,8 @@ import ntnu.gruppe21.gameEngine.Difficulty;
 public class FilehandlerExchange {
   // Root path to datasets. Used for importing of datasets
   private static final String DATASETS_ROOT = "src/main/resources/datasets/";
+  private static final String SAVES_ROOT = "src/main/resources/saves/";
+
 
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
@@ -44,11 +47,17 @@ public class FilehandlerExchange {
    * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
-   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
+   * @param folderName THE SLOT FOLDER NAME, not the path.
    * @return the filename (without path) of the saved file
    */
-  public static boolean saveExchangeData(Exchange exchange, String folderPath) {
-    String filename = folderPath + "/exchangeData.csv";
+  public static boolean saveExchangeData(Exchange exchange, String folderName) {
+    String folderSlotPath = SAVES_ROOT + "/" + folderName;
+    try {
+      Files.createDirectories(Paths.get(folderSlotPath));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    String filename = folderSlotPath + "/exchangeData.csv";
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
@@ -141,11 +150,11 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
+   * @param folderName THE SLOT FOLDER.
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
-  public static Exchange getSaveData(String folderPath) {
-    String csvfile = folderPath + "/exchangeData.csv";
+  public static Exchange getExchangeSaveData(String folderName) {
+    String csvfile = SAVES_ROOT + "/"+ folderName + "/exchangeData.csv";
     String line = "";
 
     Exchange exchange = null;
@@ -193,7 +202,6 @@ public class FilehandlerExchange {
               .stockMap(listOfStocks)
               .difficulty(difficulty)
               .build();
-      System.out.println("Post creation: " + exchange.getStock("MSFT").getPriceHistory().size());
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -297,7 +305,16 @@ public class FilehandlerExchange {
   /**
    * Returns a string list of valid datasets in {@link resources/datasets}.
    */
-  public static void getExchangeDatasetOptions(){
-
+  public static List<String> getExchangeDatasetOptions(){
+    Path pathToDataset = Path.of(DATASETS_ROOT);
+    List<String> namesOfDatasets = null;
+    try (Stream<Path> stream = Files.list(pathToDataset)) {
+      namesOfDatasets = stream.filter(Files::isRegularFile)
+              .map(p -> p.getFileName().toString())
+              .toList();
+    } catch (IOException e) {
+      throw new RuntimeException("Getting options failed: " + e);
+    }
+    return namesOfDatasets;
   }
 }

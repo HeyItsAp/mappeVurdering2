@@ -1,5 +1,4 @@
-# Save on Exchange: HistoryTest, Week: 1
+# Save on Exchange: SaveTest, Week: 1
 # Ticker,Name,{Prices}
-HistoryTest,MEDIUM
+SaveTest,EASY
  
-HST,HistoryCo,100;110;120

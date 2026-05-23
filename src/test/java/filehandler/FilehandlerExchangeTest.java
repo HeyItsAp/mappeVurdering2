@@ -7,11 +7,15 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
+
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -25,9 +29,9 @@ import org.junit.jupiter.api.io.TempDir;
  */
 public class FilehandlerExchangeTest {
   // First root is subject to change
-  private final String test_saves_root = "src/main/resources/saves/testsetsaveslot";
+  private final String test_saves_name = "testsetsaveslot";
   // Second root will have static data
-  private final String test_get_saves_root = "src/main/resources/saves/testgetsaveslot";
+  private final String test_get_saves_root = "testgetsaveslot";
   private final String defaultDatasetName = "exchangeDataSet1";
 
   // ── getExchangeData ──────────────────────────────────────────────────────
@@ -69,35 +73,35 @@ public class FilehandlerExchangeTest {
 
   /* Loading a known save file should return a non-null Exchange. */
   @Test
-  public void getSaveDataReturnsNonNull() {
-    assertNotNull(FilehandlerExchange.getSaveData(test_get_saves_root));
+  public void getExchangeSaveDataReturnsNonNull() {
+    assertNotNull(FilehandlerExchange.getExchangeSaveData(test_get_saves_root));
   }
 
   /* The save file has 3 stocks; the returned Exchange should contain exactly 3. */
   @Test
-  public void getSaveDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, FilehandlerExchange.getSaveData(test_get_saves_root).getStockMap().size());
+  public void getExchangeSaveDataReturnsCorrectNumberOfStocks() {
+    assertEquals(3, FilehandlerExchange.getExchangeSaveData(test_get_saves_root).getStockMap().size());
   }
 
   /* MSFT in the save file has two prices (404.68;312.12), so price history size should be 2. */
   @Test
-  public void getSaveDataReconstructsFullPriceHistory() {
-    Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
+  public void getExchangeSaveDataReconstructsFullPriceHistory() {
+    Exchange exchange = FilehandlerExchange.getExchangeSaveData(test_get_saves_root);
     assertEquals(2, exchange.getStock("MSFT").getPriceHistory().size());
   }
 
   /* The current sales price should be the last price in the saved history, not the first. */
   @Test
-  public void getSaveDataUsesLatestPriceAsSalesPrice() {
-    Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
+  public void getExchangeSaveDataUsesLatestPriceAsSalesPrice() {
+    Exchange exchange = FilehandlerExchange.getExchangeSaveData(test_get_saves_root);
     // MSFT: 404.68;312.12 — latest (current) price is 312.12
     assertEquals(0, exchange.getStock("MSFT").getSalesPrice().compareTo(new BigDecimal("312.12")));
   }
 
   /* The exchange metadata is preserved */
   @Test
-  public void getSaveDataExchangeNameContainsFilenameAndDifficulty() {
-    Exchange exchange = FilehandlerExchange.getSaveData(test_get_saves_root);
+  public void getExchangeSaveDataExchangeNameContainsFilenameAndDifficulty() {
+    Exchange exchange = FilehandlerExchange.getExchangeSaveData(test_get_saves_root);
     assertEquals("HistoryTest", exchange.getName());
     assertEquals(Difficulty.EASY, exchange.getDifficulty());
   }
@@ -114,20 +118,21 @@ public class FilehandlerExchangeTest {
             .difficulty(Difficulty.EASY)
             .build();
 
-    Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
+    boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
     assertTrue(success);
   }
 
   /* If it fails, returns false*/
   @Test
-  public void saveExchangeDataReturnsFalseWhenNot() {
+  public void saveExchangeDataSavesToCorrect() throws IOException {
 
     Exchange exchange = new Exchange.Builder("SaveTest")
             .stockMap(List.of())
             .build();
 
-    Boolean success = FilehandlerExchange.saveExchangeData(exchange, "not/valid/path");
-    assertFalse(success);
+    Boolean success = FilehandlerExchange.saveExchangeData(exchange, "testsetsaveslot");
+    Exchange exchange1 = FilehandlerExchange.getExchangeSaveData("testsetsaveslot");
+    assertEquals(exchange.getName(),exchange1.getName());
   }
 
   /* Saving an exchange and reloading it should preserve all stocks. */
@@ -140,10 +145,11 @@ public class FilehandlerExchangeTest {
             .difficulty(Difficulty.HARD)
             .build();
 
-    boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
-    Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
+    boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
+    Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
 
     assertTrue(success);
+    assertEquals(Difficulty.HARD, loaded.getDifficulty());
     assertTrue(loaded.hasStock("RRT"));
     assertEquals(0, loaded.getStock("RRT").getSalesPrice().compareTo(new BigDecimal("75.00")));
   }
@@ -161,8 +167,8 @@ public class FilehandlerExchangeTest {
             .difficulty(Difficulty.MEDIUM)
             .build();
 
-    Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
-    Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
+    Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
+    Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
 
     assertEquals(3, loaded.getStock("HST").getPriceHistory().size());
     assertEquals(0, loaded.getStock("HST").getSalesPrice().compareTo(new BigDecimal("120")));
@@ -237,5 +243,12 @@ public class FilehandlerExchangeTest {
             "TST,TestCo,21.0"));
 
     assertTrue(FilehandlerExchange.validFormat(csv));
+  }
+
+  @Test
+  void gettingExchangeDatasetOptionsShouldBeCorrect(){
+    assertEquals(2, FilehandlerExchange.getExchangeDatasetOptions().size());
+    assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("exchangeDataSet1.csv"));
+    assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("highscores.csv"));
   }
 }
