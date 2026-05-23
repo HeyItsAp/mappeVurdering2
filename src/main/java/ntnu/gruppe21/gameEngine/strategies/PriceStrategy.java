@@ -44,12 +44,12 @@ public interface PriceStrategy {
     return new Stock(symbol, company, priceHistory);
   }
 
-  /** Serializes any extras, in this case Stocks */
-  default String serializeStockExtras(Stock stock) {
+  /** Serializes any extras, in this case Stocks @Override if necessary */
+  default String saveStockExtras(Stock stock) {
     return ""; // default: nothing extra to save
   }
 
-  /** Reconstructs extras, in this case stocks and extras */
+  /** Reconstructs extras, in this case stocks and extras. @Override if necessary*/
   default void deserializeStockExtras(Stock stock, String extras) {
     // default: nothing to restore
   }

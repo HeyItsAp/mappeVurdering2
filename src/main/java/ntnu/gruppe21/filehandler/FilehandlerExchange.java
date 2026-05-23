@@ -19,6 +19,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.gameEngine.strategies.StrategyRegister;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 
 /**
  * TODO: Implement handling of different strategies to FilehandlerExchange.java Utility class
@@ -41,7 +44,7 @@ public class FilehandlerExchange {
    *
    * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes
    * exchange name, difficulty during playtime and current week (as comments) All stocks with their
-   * symbol, company name, and price history
+   * symbol, company name, and price history AND Extras stock attributes if the strategy implemented
    *
    * <p>Uses comma as the seperator
    *
@@ -57,10 +60,11 @@ public class FilehandlerExchange {
       throw new RuntimeException(e);
     }
     String filename = folderSlotPath + "/exchangeData.csv";
+    PriceStrategy strategy = exchange.getStrategy();
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
-      pw.println(exchange.getName() + "," + exchange.getDifficulty().toString());
+      pw.println(exchange.getName() + "," + exchange.getDifficulty().toString() + "," + strategy.getStrategyId());
       pw.println(" ");
 
       exchange
@@ -72,7 +76,9 @@ public class FilehandlerExchange {
                         .map(BigDecimal::toString)
                         .collect(Collectors.joining(";"));
 
-                pw.println(value.getSymbol() + "," + value.getCompany() + "," + prices);
+                String extras = strategy.saveStockExtras(value); // If any extras within stock.
+
+                pw.println(value.getSymbol() + "," + value.getCompany() + "," + prices + "," + extras);
               });
 
     } catch (Exception e) {
@@ -138,11 +144,20 @@ public class FilehandlerExchange {
    * Loads a previously saved exchange state from a CSV file in a designated folder Usually invoke
    * on {@link SaveManager}
    *
-   * <p>Each data (expect the first) row must follow the format:
-   * Ticker,CompanyName,price1;price2;price3;...
+   * <p>
+   *    First row contains the Metadata: Name,difficulty,Strategy
+   *    THIS ONLY APPLIES TO SAVES, not regular/imported exchange data
+   * </p>
    *
-   * <p>First row contains the Metadata: Name,difficulty. THIS ONLY APPLIES TO SAVES, not
-   * regular/imported exchange data
+   * <p>
+   *    Each data (expect the first) row must follow the format:
+   *      Ticker,CompanyName,price1;price2;price3;...
+   *    Strategies might implement extra stock data, for example {@link MarketSimulator}.
+   *      Extras will then be inserted into a fourth row.
+   *      Ticker,CompanyName,price1;price2;price3,0|21|9|0
+   * </p>
+   *
+
    *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
    * remaining prices are added to reconstruct the full price history.
@@ -160,6 +175,8 @@ public class FilehandlerExchange {
     List<Stock> listOfStocks = new ArrayList<>();
     String exchangeName = "";
     Difficulty difficulty = null;
+    PriceStrategy strategy = null;
+    boolean basedMetaDataline = false;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -180,30 +197,28 @@ public class FilehandlerExchange {
         }
         System.out.print("\n");
 
-        if (values.length == 2) {
+        if (values.length == 3 && !basedMetaDataline) {
+          basedMetaDataline = true;
           exchangeName = values[0];
           difficulty = Difficulty.valueOf(values[1]);
+          strategy = StrategyRegister.fromId(values[2]);
           continue;
         }
 
         String[] savedPricesString = values[2].split(";");
-        List<BigDecimal> savedPrices =
-            Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
+        ArrayList<BigDecimal> savedPrices =
+                (ArrayList<BigDecimal>) Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
 
-        Stock stock = new Stock(values[0], values[1], savedPrices.getFirst());
-        for (int i = 1; i < savedPrices.size(); i++) {
-          stock.addNewSalesPrice(savedPrices.get(i));
-        }
+        Stock stock = strategy.createStock(values[0], values[1], savedPrices);
         listOfStocks.add(stock);
-        stock
-            .getPriceHistory()
-            .forEach(
-                s -> {
-                  System.out.println("Reg: " + s);
-                });
+
+        // if there are extra stuff, add it to stock.
+        if (values.length == 4 && !values[3].isBlank()) {
+          strategy.deserializeStockExtras(stock, values[3]);
+        }
       }
       exchange =
-          new Exchange.Builder(exchangeName).stockMap(listOfStocks).difficulty(difficulty).build();
+          new Exchange.Builder(exchangeName).stockMap(listOfStocks).strategy(strategy).difficulty(difficulty).build();
     } catch (Exception e) {
       e.printStackTrace();
     }

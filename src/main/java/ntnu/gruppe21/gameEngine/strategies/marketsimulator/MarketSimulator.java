@@ -41,6 +41,32 @@ public class MarketSimulator implements PriceStrategy {
   }
 
   /**
+   * When saving returns a extra line with the extra attributes for {@link MarketSimStock}
+   * @param stock stock
+   * @return line with the extra attributes
+   */
+  @Override
+  public String saveStockExtras(Stock stock) {
+    MarketSimStock stockExtra = (MarketSimStock) stock;
+    return stockExtra.getD() + "|" +stockExtra.getDur() + "|" + stockExtra.getMode()+ "|" + stockExtra.getRestingVal();
+  }
+
+  /**
+   * Parses extras to add to strategy specific stock
+   * @param stock
+   * @param extras
+   */
+  @Override
+  public void deserializeStockExtras(Stock stock, String extras){
+    MarketSimStock s = (MarketSimStock) stock;
+    String[] parts = extras.split("\\|");
+    s.setD(Double.parseDouble(parts[0]));
+    s.setMode(Integer.parseInt(parts[1]));
+    s.setDur(Integer.parseInt(parts[2]));
+    s.setRestingVal(Integer.parseInt(parts[3]));
+  }
+
+  /**
    * Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in
    * minigameMarket.js.
    */

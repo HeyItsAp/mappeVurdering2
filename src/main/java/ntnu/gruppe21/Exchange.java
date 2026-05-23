@@ -101,6 +101,14 @@ public class Exchange {
   }
 
   /**
+   * Getter for a {@link PriceStrategy} object
+   * @return {@link PriceStrategy} object
+   */
+  public PriceStrategy getStrategy() {
+    return strategy;
+  }
+
+  /**
    * Setting difficulty will be done after choosing exchange. This method reflects that.
    *
    * @param difficulty {@link Difficulty} contains the FinalScoreMultiplier.
