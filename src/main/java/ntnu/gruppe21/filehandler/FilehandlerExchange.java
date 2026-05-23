@@ -35,7 +35,6 @@ public class FilehandlerExchange {
   private static final String DATASETS_ROOT = "src/main/resources/datasets/";
   private static final String SAVES_ROOT = "src/main/resources/saves/";
 
-
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
    * Usually invoke on {@link SaveManager}
@@ -100,7 +99,7 @@ public class FilehandlerExchange {
     String folderLocationString = "src/main/resources/datasets/";
     String csvfile = folderLocationString + filename + ".csv";
     Path fullPath = Path.of(csvfile);
-    if (!validFormat(fullPath)){
+    if (!validFormat(fullPath)) {
       throw new RuntimeException("Attempted getting dataset " + filename + ".csv, is invalid");
     }
 
@@ -154,7 +153,7 @@ public class FilehandlerExchange {
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
   public static Exchange getExchangeSaveData(String folderName) {
-    String csvfile = SAVES_ROOT + "/"+ folderName + "/exchangeData.csv";
+    String csvfile = SAVES_ROOT + "/" + folderName + "/exchangeData.csv";
     String line = "";
 
     Exchange exchange = null;
@@ -196,12 +195,15 @@ public class FilehandlerExchange {
           stock.addNewSalesPrice(savedPrices.get(i));
         }
         listOfStocks.add(stock);
-        stock.getPriceHistory().forEach(s -> {System.out.println("Reg: " + s);});
+        stock
+            .getPriceHistory()
+            .forEach(
+                s -> {
+                  System.out.println("Reg: " + s);
+                });
       }
-      exchange = new Exchange.Builder(exchangeName)
-              .stockMap(listOfStocks)
-              .difficulty(difficulty)
-              .build();
+      exchange =
+          new Exchange.Builder(exchangeName).stockMap(listOfStocks).difficulty(difficulty).build();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -302,16 +304,13 @@ public class FilehandlerExchange {
     return destination;
   }
 
-  /**
-   * Returns a string list of valid datasets in {@link resources/datasets}.
-   */
-  public static List<String> getExchangeDatasetOptions(){
+  /** Returns a string list of valid datasets in {@link resources/datasets}. */
+  public static List<String> getExchangeDatasetOptions() {
     Path pathToDataset = Path.of(DATASETS_ROOT);
     List<String> namesOfDatasets = null;
     try (Stream<Path> stream = Files.list(pathToDataset)) {
-      namesOfDatasets = stream.filter(Files::isRegularFile)
-              .map(p -> p.getFileName().toString())
-              .toList();
+      namesOfDatasets =
+          stream.filter(Files::isRegularFile).map(p -> p.getFileName().toString()).toList();
     } catch (IOException e) {
       throw new RuntimeException("Getting options failed: " + e);
     }

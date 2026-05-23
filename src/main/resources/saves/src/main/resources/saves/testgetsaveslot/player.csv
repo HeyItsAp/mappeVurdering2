@@ -1,0 +1,22 @@
+# SaveFile for: Adrian
+
+# Player metadata:
+# name,startingMoney,currentMoney
+Adrian,20000,8267.467190000,EASY
+
+
+# First dataset, Portofolio/Shares:
+# stock,quantity,purchasePrice
+1,HistoryCo,HST,100,31,31
+1,Apple Inc.,AAPL,276.43,31,31
+1,Microsoft,MSFT,404.68,1,1
+
+# Second dataset, Purchases:
+# stock,quantity,purchasePrice,week
+2,HistoryCo,HST,31,100,100,1
+2,Apple Inc.,AAPL,31,276.43,276.43,1
+2,Microsoft,MSFT,1,404.68,404.68,1
+ 
+# Thrid dataset, Sales:
+# stock,quantity,purchasePrice,week
+3,Microsoft,MSFT,1,404.68,404.68,1

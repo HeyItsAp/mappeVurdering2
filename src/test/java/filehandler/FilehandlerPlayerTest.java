@@ -183,11 +183,11 @@ public class FilehandlerPlayerTest {
           Player result = FilehandlerPlayer.getPlayerSavedData("not/valid/path");
         });
   }
+
   @Test
-  void gettingPlayerSaveOptionsShouldBeCorrect(){
+  void gettingPlayerSaveOptionsShouldBeCorrect() {
     assertEquals(2, FilehandlerPlayer.getPlayerSaveOptions().size());
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("testgetsaveslot"));
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("testsetsaveslot"));
   }
 }
-

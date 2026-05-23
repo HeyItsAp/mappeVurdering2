@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import ntnu.gruppe21.*;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.transaction.Purchase;
@@ -36,8 +35,7 @@ public class FilehandlerPlayer {
    * Saves the current state of an {@link Player} to a CSV file in a designated save folder unqiue
    * to player. Create that folder if not created.
    *
-   * <p>Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link
-   * SaveManager}
+   * <p>Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link SaveManager}
    *
    * <p>The file will include: PlayerName, starting money, current money, difficulty, list of shares
    * {@link Portfolio} and list of transactions {@link TransactionArchive}
@@ -48,7 +46,7 @@ public class FilehandlerPlayer {
    * @param folderName The saveSLOT/Directory, not path to the resources/saves
    * @return true of false based on if succeed
    */
-  public static boolean savePlayerData(Player player, String folderName){
+  public static boolean savePlayerData(Player player, String folderName) {
     String folderSlotPath = SAVES_ROOT + "/" + folderName;
     try {
       Files.createDirectories(Paths.get(folderSlotPath));
@@ -268,14 +266,12 @@ public class FilehandlerPlayer {
     return player;
   }
 
-
-  public static List<String> getPlayerSaveOptions(){
+  public static List<String> getPlayerSaveOptions() {
     Path pathToDataset = Path.of("src/main/resources/datasets/saves");
     List<String> namesOfSaves = null;
     try (Stream<Path> stream = Files.list(pathToDataset)) {
-      namesOfSaves = stream.filter(Files::isDirectory)
-              .map(p -> p.getFileName().toString())
-              .toList();
+      namesOfSaves =
+          stream.filter(Files::isDirectory).map(p -> p.getFileName().toString()).toList();
     } catch (IOException e) {
       throw new RuntimeException("Getting options failed: " + e);
     }

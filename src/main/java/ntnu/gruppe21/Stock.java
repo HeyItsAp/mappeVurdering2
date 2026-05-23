@@ -1,6 +1,5 @@
 package ntnu.gruppe21;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -57,5 +56,4 @@ public class Stock {
     }
     return prices.getLast().subtract(prices.get(prices.size() - 2));
   }
-
 }

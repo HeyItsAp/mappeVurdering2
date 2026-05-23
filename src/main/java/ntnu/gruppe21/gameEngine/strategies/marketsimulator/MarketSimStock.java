@@ -2,7 +2,6 @@ package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-
 import ntnu.gruppe21.Stock;
 
 public class MarketSimStock extends Stock {

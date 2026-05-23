@@ -37,9 +37,7 @@ public class ExchangeTest {
     stocks.add(stock1);
     stocks.add(stock2);
     stocks.add(stock3);
-    exchange = new Exchange.Builder("Oslo Børs")
-            .stockMap(stocks)
-            .build();
+    exchange = new Exchange.Builder("Oslo Børs").stockMap(stocks).build();
   }
 
   /**

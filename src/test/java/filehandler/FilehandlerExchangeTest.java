@@ -7,15 +7,11 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
-
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.gameEngine.Difficulty;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -45,13 +41,15 @@ public class FilehandlerExchangeTest {
   /* The exchange file has 3 data rows; the returned Exchange should contain exactly 3 stocks. */
   @Test
   public void getExchangeDataReturnsCorrectNumberOfStocks() {
-    assertEquals(5, FilehandlerExchange.getExchangeDataset(defaultDatasetName).getStockMap().size());
+    assertEquals(
+        5, FilehandlerExchange.getExchangeDataset(defaultDatasetName).getStockMap().size());
   }
 
   /* The exchange should be named "ExchangeFromFile" as defined in the method. */
   @Test
   public void getExchangeDataHasCorrectName() {
-    assertEquals("ExchangeFromFile", FilehandlerExchange.getExchangeDataset(defaultDatasetName).getName());
+    assertEquals(
+        "ExchangeFromFile", FilehandlerExchange.getExchangeDataset(defaultDatasetName).getName());
   }
 
   /* A known stock from the file should exist with the correct price. */
@@ -80,7 +78,8 @@ public class FilehandlerExchangeTest {
   /* The save file has 3 stocks; the returned Exchange should contain exactly 3. */
   @Test
   public void getExchangeSaveDataReturnsCorrectNumberOfStocks() {
-    assertEquals(3, FilehandlerExchange.getExchangeSaveData(test_get_saves_root).getStockMap().size());
+    assertEquals(
+        3, FilehandlerExchange.getExchangeSaveData(test_get_saves_root).getStockMap().size());
   }
 
   /* MSFT in the save file has two prices (404.68;312.12), so price history size should be 2. */
@@ -113,10 +112,8 @@ public class FilehandlerExchangeTest {
   public void saveExchangeDataReturnsCorrect() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("TST", "TestCo", new BigDecimal("100")));
-    Exchange exchange = new Exchange.Builder("SaveTest")
-            .stockMap(stocks)
-            .difficulty(Difficulty.EASY)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("SaveTest").stockMap(stocks).difficulty(Difficulty.EASY).build();
 
     boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
     assertTrue(success);
@@ -126,13 +123,11 @@ public class FilehandlerExchangeTest {
   @Test
   public void saveExchangeDataSavesToCorrect() throws IOException {
 
-    Exchange exchange = new Exchange.Builder("SaveTest")
-            .stockMap(List.of())
-            .build();
+    Exchange exchange = new Exchange.Builder("SaveTest").stockMap(List.of()).build();
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, "testsetsaveslot");
     Exchange exchange1 = FilehandlerExchange.getExchangeSaveData("testsetsaveslot");
-    assertEquals(exchange.getName(),exchange1.getName());
+    assertEquals(exchange.getName(), exchange1.getName());
   }
 
   /* Saving an exchange and reloading it should preserve all stocks. */
@@ -140,10 +135,8 @@ public class FilehandlerExchangeTest {
   public void saveAndReloadPreservesStocks() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("RRT", "RoundTripCo", new BigDecimal("75.00")));
-    Exchange exchange = new Exchange.Builder("RoundTrip")
-            .stockMap(stocks)
-            .difficulty(Difficulty.HARD)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("RoundTrip").stockMap(stocks).difficulty(Difficulty.HARD).build();
 
     boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
     Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
@@ -162,10 +155,8 @@ public class FilehandlerExchangeTest {
     stock.addNewSalesPrice(new BigDecimal("120"));
     List<Stock> stocks = new ArrayList<>();
     stocks.add(stock);
-    Exchange exchange = new Exchange.Builder("HistoryTest")
-            .stockMap(stocks)
-            .difficulty(Difficulty.MEDIUM)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("HistoryTest").stockMap(stocks).difficulty(Difficulty.MEDIUM).build();
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_name);
     Exchange loaded = FilehandlerExchange.getExchangeSaveData(test_saves_name);
@@ -246,7 +237,7 @@ public class FilehandlerExchangeTest {
   }
 
   @Test
-  void gettingExchangeDatasetOptionsShouldBeCorrect(){
+  void gettingExchangeDatasetOptionsShouldBeCorrect() {
     assertEquals(2, FilehandlerExchange.getExchangeDatasetOptions().size());
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("exchangeDataSet1.csv"));
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("highscores.csv"));

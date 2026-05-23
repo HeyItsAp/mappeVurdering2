@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javafx.util.Builder;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
-import ntnu.gruppe21.gameEngine.strategies.standard.StandardStrategy;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
@@ -248,8 +246,8 @@ public class Exchange {
   }
 
   /**
-   * Standard builder following the standard builder creational pattern. Name and TransactionFactory does not have
-   * a default value, everything else does but can be subject to change when building.
+   * Standard builder following the standard builder creational pattern. Name and TransactionFactory
+   * does not have a default value, everything else does but can be subject to change when building.
    */
   public static class Builder {
     private final String name;
@@ -260,45 +258,44 @@ public class Exchange {
     private int week = 1;
     private Map<String, Stock> stockMap = Map.of();
 
-
-
-    public Builder(String name){
+    public Builder(String name) {
       this.name = name;
       this.transactionFactory = new TransactionFactory();
     }
 
-    public Builder strategy(PriceStrategy strategy){
+    public Builder strategy(PriceStrategy strategy) {
       this.strategy = strategy;
       return this;
     }
 
-    public Builder stockMap(List<Stock> stocks){
+    public Builder stockMap(List<Stock> stocks) {
 
       List<Stock> strategySpecificStock =
-              stocks.stream()
-                      .map(
-                              stock ->
-                                strategy.createStock(
-                                        stock.getSymbol(), stock.getCompany(), new ArrayList<>((stock.getPriceHistory())))
-                              )
-                      .toList();
-      this.stockMap = strategySpecificStock.stream()
+          stocks.stream()
+              .map(
+                  stock ->
+                      strategy.createStock(
+                          stock.getSymbol(),
+                          stock.getCompany(),
+                          new ArrayList<>((stock.getPriceHistory()))))
+              .toList();
+      this.stockMap =
+          strategySpecificStock.stream()
               .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
       return this;
     }
 
-    public Builder difficulty(Difficulty difficulty){
+    public Builder difficulty(Difficulty difficulty) {
       this.difficulty = difficulty;
       return this;
     }
 
-    public Builder week(int week){
+    public Builder week(int week) {
       this.week = week;
       return this;
     }
 
-
-    public Exchange build(){
+    public Exchange build() {
       return new Exchange(this);
     }
   }

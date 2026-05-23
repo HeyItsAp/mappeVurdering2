@@ -3,7 +3,6 @@ package ntnu.gruppe21;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.swing.*;
 import ntnu.gruppe21.gameEngine.Difficulty;
@@ -17,7 +16,9 @@ class TestRun {
 
     MarketSimulator sim = new MarketSimulator();
     sim.setDifficulty(Difficulty.EASY);
-    MarketSimStock stock = new MarketSimStock("SIM", "Simulator Co.", new ArrayList<BigDecimal>((Collection) BigDecimal.valueOf(500.0)));
+    ArrayList<BigDecimal> price = new ArrayList<>();
+    price.add(BigDecimal.valueOf(500.0));
+    MarketSimStock stock = new MarketSimStock("SIM", "Simulator Co.", price);
 
     List<Double> prices = new ArrayList<>();
     prices.add(stock.getSalesPrice().doubleValue());

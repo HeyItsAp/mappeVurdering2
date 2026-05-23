@@ -1,10 +1,8 @@
 package ntnu.gruppe21.filehandler;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
 
@@ -49,15 +47,15 @@ public class SaveManager {
     System.out.println("Game saved to: " + folderSlot);
   }
 
-  /**
-   * Getter, uses public static methods.
-   */
-  public List<String> getSaveOptions(){
+  /** Getter, uses public static methods. */
+  public List<String> getSaveOptions() {
     return FilehandlerPlayer.getPlayerSaveOptions();
   }
-  public List<String> getDataSetOptions(){
+
+  public List<String> getDataSetOptions() {
     return FilehandlerExchange.getExchangeDatasetOptions();
   }
+
   /**
    * Reads and returns Player object through static method.
    *
@@ -76,7 +74,7 @@ public class SaveManager {
     return FilehandlerExchange.getExchangeSaveData(folderSlot);
   }
 
-  public Exchange loadExchangeDataset(String nameOfSet){
+  public Exchange loadExchangeDataset(String nameOfSet) {
     return FilehandlerExchange.getExchangeDataset(nameOfSet);
   }
 }
