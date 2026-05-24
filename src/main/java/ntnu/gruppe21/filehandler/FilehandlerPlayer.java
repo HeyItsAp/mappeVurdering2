@@ -8,12 +8,14 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ntnu.gruppe21.*;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.challanges.Challenge;
+import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
+import ntnu.gruppe21.gameEngine.challanges.ChallengeType;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
 
@@ -60,7 +62,7 @@ public class FilehandlerPlayer {
 
       pw.println();
       pw.println("# Player metadata:");
-      pw.println("# name,startingMoney,currentMoney");
+      pw.println("# name,startingMoney,currentMoney,{challenges}");
       pw.println(
           player.getName()
               + ","
@@ -68,7 +70,10 @@ public class FilehandlerPlayer {
               + ","
               + player.getCurrentMoney()
               + ","
-              + player.getDifficulty().toString());
+              + player.getDifficulty().toString()
+              + ","
+              + player.getChallengeManager().saveChallenges()
+      );
       pw.println();
 
       pw.println();
@@ -172,7 +177,7 @@ public class FilehandlerPlayer {
    * SaveManager}
    *
    * <p>Data is split into paragraphs: First LINE will be the players metadata:
-   * Name,startingMoney,currentMoney,difficulty First paragraph will contain shares:
+   * Name,startingMoney,currentMoney,difficulty,{challengeType}First paragraph will contain shares:
    * 1,company,symbol,{prices},quantity,purchasePrice; Second paragraph will contain Purchases:
    * 2,company,symbol,quantity,{prices},purchasePrice,week Thrid paragraph will contain Sales:
    * 3,company,symbol,stock,quantity,{prices},purchasePrice,week
@@ -196,6 +201,8 @@ public class FilehandlerPlayer {
     BigDecimal startingMoney = null;
     BigDecimal currentMoney = null;
     Difficulty difficulty = null;
+    Map<ChallengeType, Integer> challengeMetadataMap = new HashMap<>();
+    boolean metadataLinePassed = false;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -217,11 +224,21 @@ public class FilehandlerPlayer {
         }
         System.out.print("\n");
 
-        if (values.length == 4) {
+        if (values.length == 5 && !metadataLinePassed) {
+          metadataLinePassed = true;
           playerName = values[0];
           startingMoney = BigDecimal.valueOf(Double.parseDouble(values[1]));
           currentMoney = BigDecimal.valueOf(Double.parseDouble(values[2]));
           difficulty = Difficulty.valueOf(values[3]);
+
+          String[] challengeString = values[4].split("|");
+          for (String s : challengeString){
+            String[] challangeMetadata = s.split(";");
+            ChallengeType challengeType = ChallengeType.valueOf(challangeMetadata[0]);
+            Integer timeCompleted = Integer.valueOf(challangeMetadata[1]);
+
+            challengeMetadataMap.put(challengeType, timeCompleted);
+          }
           continue;
         }
 
@@ -257,8 +274,13 @@ public class FilehandlerPlayer {
         }
       }
       player =
-          new Player(
-              playerName, startingMoney, currentMoney, portfolio, transactionArchive, difficulty);
+          new Player.Builder(playerName, startingMoney, difficulty)
+                  .difficulty(difficulty)
+                  .currentMoney(currentMoney)
+                  .portfolio(portfolio)
+                  .transactionArchive(transactionArchive)
+                  .build();
+      player.getChallengeManager().parseChallenges(challengeMetadataMap, player);
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException();

@@ -34,6 +34,9 @@ public class Challenge {
   // Standard boolean to mark if challenge is completed or not
   private boolean completed;
 
+  // Standard counter for how many times it has been completed.
+  private int timesCompleted;
+
   /**
    * Creates a uncompleted challenge of {@link ChallengeType} and {@link Difficulty}.
    *
@@ -47,7 +50,35 @@ public class Challenge {
     this.completed = false;
     this.targetValue = setInitialValue(challengeType, difficulty, player);
     this.description = challengeType.getChallengeTitle() + ": 0 / " + targetValue;
+    this.timesCompleted = 0;
   }
+
+    /**
+     * Creates previously completed challenge of {@link ChallengeType} and {@link Difficulty}. Evoked
+     * when getting a saved challenge.
+     *  For getting the right values, advances the challanges by how many times it has been completed.
+     *  Forces the challenge to be completed before advancing.
+     *  Then sets it back to right values
+     *
+     *
+     * @param challengeType Right now, can be of two types.
+     * @param difficulty effect how difficult the challenge will be by updating targetValue
+     * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+     */
+    public Challenge(ChallengeType challengeType, Difficulty difficulty, Player player, int timesCompleted) {
+        this.challengeType = challengeType;
+        this.difficulty = difficulty;
+
+        this.completed = true;
+        this.targetValue = setInitialValue(challengeType, difficulty, player);
+        for (int i = 0; i < timesCompleted; i++){
+            advanceChallenge(
+                    1, player);
+            this.completed = true;
+        }
+        this.completed = false;
+        this.timesCompleted = timesCompleted;
+    }
 
   /**
    * Updates the visual/progress/description of the challenge.
@@ -172,4 +203,8 @@ public class Challenge {
   public ChallengeType getChallengeType() {
     return challengeType;
   }
+
+    public int getTimesCompleted() {
+        return timesCompleted;
+    }
 }

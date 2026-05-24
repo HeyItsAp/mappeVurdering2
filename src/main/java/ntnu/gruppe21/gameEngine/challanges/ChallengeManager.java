@@ -2,6 +2,7 @@ package ntnu.gruppe21.gameEngine.challanges;
 
 import java.util.*;
 import ntnu.gruppe21.Player;
+import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 
 /**
  * TODO: Add as attribute in Player.java, get FilehandlerPlayer to handle said challanges and Junit
@@ -11,6 +12,12 @@ import ntnu.gruppe21.Player;
  * <p>To keep it simple, players will JUST HAVE ONE CHALLENGE, but this class definitely opens the
  * possibility for multiple challenges. Thigh coupling with player as certain challanges highly
  * depend on players actions, for example starting money.
+ *
+ * <p>
+ *     At the start, creaetes an empty set of challanges. Challenges need to be set after player creation:
+ *     1. use {@link #generateChallenges(Player)} to create new random fresh challenges
+ *     2. when loading from a save, {@link #parseChallenges(Map, Player)} is used in {@link FilehandlerPlayer}
+ * </p>
  */
 public class ChallengeManager {
   /** List of {@link Challenge} */
@@ -71,9 +78,21 @@ public class ChallengeManager {
   public String saveChallenges(){
     StringBuilder stringBuilder = new StringBuilder(100);
     for (Challenge c : challenges){
-      stringBuilder.append(c.getChallengeType()+ "|");
+      stringBuilder.append(c.getChallengeType()+";"+ c.getTimesCompleted()+ "|");
     }
     stringBuilder.deleteCharAt(-1); // Remove last |
     return stringBuilder.toString();
+  }
+
+  /**
+   * Saved challanges are just challengeTypes, so when loading a save it just creates overwrites the first challenges
+   * then creates new challanges with same types.
+   * @param challengeMetaDataMap Map containing unique challengeType with how many times it has been completed
+   * @param player contain coupled metadata.
+   */
+  public void parseChallenges(Map<ChallengeType, Integer> challengeMetaDataMap, Player player){
+    challengeMetaDataMap.forEach((key, value) -> {
+      challenges.add(new Challenge(key, player.getDifficulty(), player, value));
+    });
   }
 }
