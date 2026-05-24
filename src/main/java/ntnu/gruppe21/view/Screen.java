@@ -5,21 +5,25 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
-public class Screen extends HBox {
+public class Screen extends StackPane {
   private Pane currentView;
   private Button currentButton;
+  private final HBox mainPane;
 
   public Screen() {
+    mainPane = new HBox();
+
     currentView = new TodayMenu();
     HBox.setHgrow(currentView, Priority.ALWAYS);
 
-    getChildren().addAll(createSidebar(), currentView);
+    mainPane.getChildren().addAll(createSidebar(), currentView);
+    getChildren().add(mainPane);
   }
 
   private void showView(Supplier<Pane> supplier) {
     currentView = supplier.get();
     HBox.setHgrow(currentView, Priority.ALWAYS);
-    getChildren().set(1, currentView);
+    mainPane.getChildren().set(1, currentView);
   }
 
   private VBox createSidebar() {
