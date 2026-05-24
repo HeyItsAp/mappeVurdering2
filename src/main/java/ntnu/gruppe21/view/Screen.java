@@ -108,14 +108,36 @@ public class Screen extends HBox {
         -fx-alignment: CENTER-LEFT;
         -fx-cursor: hand;
         """);
+    btn.setOnMouseEntered(
+        ignored -> {
+          if (btn != currentButton) setHoverStyle(btn);
+        });
+    btn.setOnMouseExited(
+        ignored -> {
+          if (btn != currentButton) setUnselectedStyle(btn);
+        });
     btn.setOnAction(
-        e -> {
+        ignored -> {
           showView(supplier);
           setUnselectedStyle(currentButton);
           currentButton = btn;
           setSelectedStyle(currentButton);
         });
     return btn;
+  }
+
+  private void setHoverStyle(Button btn) {
+    btn.setStyle(
+        """
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: #d0ceca;
+        -fx-background-radius: 8;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        """);
   }
 
   private void setSelectedStyle(Button btn) {
