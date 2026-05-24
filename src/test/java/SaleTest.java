@@ -28,7 +28,7 @@ public class SaleTest {
   public void setup() {
     Stock stock1 = new Stock("Bit", "Company1", new BigDecimal(1000));
     Share share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
-    player1 = new Player("Name", new BigDecimal(100000), Difficulty.EASY);
+    player1 = new Player.Builder("Name", new BigDecimal(100000), Difficulty.EASY).build();
     sale = new Sale(share, 1);
   }
 

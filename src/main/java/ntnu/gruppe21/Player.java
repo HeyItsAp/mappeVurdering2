@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
 
 public class Player {
   /* Players name */
@@ -25,42 +26,24 @@ public class Player {
   private final Difficulty difficulty;
 
   /**
-   * Creates a new Player with the specified name and starting money.
-   *
-   * @param name player name.
-   * @param startingMoney money the player starts with.
+   * ChallengeManager, track challanges {@link ChallengeManager}
+   *  Challenges need to be created after player creation, as challanges and player have necessarily tight coupling.
    */
-  public Player(String name, BigDecimal startingMoney, Difficulty difficulty) {
-    this.name = name;
-    this.startingMoney = startingMoney;
-    this.currentMoney = startingMoney;
-    this.portfolio = new Portfolio();
-    this.transactionArchive = new TransactionArchive();
-    this.difficulty = difficulty;
-  }
+  private final ChallengeManager challengeManager;
 
   /**
-   * Creates previous Player, usually from a csv load.
+   * Creates a new Player with through a builder. Builder is at the bottom
    *
-   * @param name player name.
-   * @param startingMoney money the player starts with.
-   * @param currentMoney amount the player exited the game with
-   * @param portfolio list of shares before exiting
-   * @param transactionArchive list of transactions before exiting
+   * @param builder Builder, follows Builder Creational Pattern.
    */
-  public Player(
-      String name,
-      BigDecimal startingMoney,
-      BigDecimal currentMoney,
-      Portfolio portfolio,
-      TransactionArchive transactionArchive,
-      Difficulty difficulty) {
-    this.name = name;
-    this.startingMoney = startingMoney;
-    this.currentMoney = currentMoney;
-    this.portfolio = portfolio;
-    this.transactionArchive = transactionArchive;
-    this.difficulty = difficulty;
+  public Player(Builder builder) {
+    this.name = builder.name;
+    this.startingMoney = builder.startingMoney;
+    this.currentMoney = builder.currentMoney;
+    this.portfolio = builder.portfolio;
+    this.transactionArchive = builder.transactionArchive;
+    this.difficulty = builder.difficulty;
+    this.challengeManager = builder.challengeManager;
   }
 
   /**
@@ -138,6 +121,14 @@ public class Player {
   }
 
   /**
+   * Returns challengeManager
+   * @return Manager class contain challanges
+   */
+  public ChallengeManager getChallengeManager() {
+    return challengeManager;
+  }
+
+  /**
    * Calculates and returns the net worth of the player.
    *
    * @return Net worth of the player.
@@ -172,5 +163,56 @@ public class Player {
     } else {
       return 1;
     }
+  }
+
+  /**
+   * Standard builder that have base values that are necessary to make a new player. If necessary attributes
+   * can be changed.
+   *  Challenges need to be created after player creation, as challanges and player have necessarily tight coupling.
+   *
+   */
+  public static class Builder {
+    private final String name;
+    private final BigDecimal startingMoney;
+    private BigDecimal currentMoney;
+    private Portfolio portfolio;
+    private TransactionArchive transactionArchive;
+    private Difficulty difficulty;
+    private ChallengeManager challengeManager;
+
+    public Builder (String name, BigDecimal startingMoney, Difficulty difficulty){
+      this.name = name;
+      this.startingMoney = startingMoney;
+      this.currentMoney = startingMoney;
+      this.portfolio = new Portfolio();
+      this.transactionArchive = new TransactionArchive();
+      this.difficulty = difficulty;
+      this.challengeManager = new ChallengeManager();
+    }
+
+    public Builder currentMoney(BigDecimal currentMoney){
+      this.currentMoney = currentMoney;
+      return this;
+    }
+    public Builder portfolio(Portfolio portfolio){
+      this.portfolio = portfolio;
+      return this;
+    }
+    public Builder transactionArchive(TransactionArchive transactionArchive){
+      this.transactionArchive = transactionArchive;
+      return this;
+    }
+    public Builder difficulty(Difficulty difficulty){
+      this.difficulty = difficulty;
+      return this;
+    }
+    public Builder challengeManager(ChallengeManager challengeManager){
+      this.challengeManager = challengeManager;
+      return this;
+    }
+    public Player build() {
+      return new Player(this);
+    }
+
   }
 }

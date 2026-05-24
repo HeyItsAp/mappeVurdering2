@@ -9,7 +9,7 @@ import ntnu.gruppe21.Player;
  * creates new challange.
  *
  * <p>To keep it simple, players will JUST HAVE ONE CHALLENGE, but this class definitely opens the
- * possibility for multiple challenges. Thight coupling with player as certain challanges highly
+ * possibility for multiple challenges. Thigh coupling with player as certain challanges highly
  * depend on players actions, for example starting money.
  */
 public class ChallengeManager {
@@ -19,25 +19,21 @@ public class ChallengeManager {
   // Random to produce random {@link ChallengeType}
   private final Random random = new Random();
 
-  public ChallengeManager(Player player) {
-    this.challenges = generateChallenges(player);
+  public ChallengeManager() {
+    this.challenges = new ArrayList<>();
   }
 
   /**
    * Currently makes one {@link Challenge} with a random {@link ChallengeType}, but changing it to
    * multiple is no problem.
    *
-   * @return list of ONE {@link Challenge}
    */
-  private List<Challenge> generateChallenges(Player player) {
-    List<Challenge> challenges = new ArrayList<>();
-
+  public void generateChallenges(Player player) {
     List<ChallengeType> challengeTypesList = List.of(ChallengeType.values());
     int size = challengeTypesList.size();
     ChallengeType randomChallengeType = challengeTypesList.get(random.nextInt(size));
 
     challenges.add(new Challenge(randomChallengeType, player.getDifficulty(), player));
-    return challenges;
   }
 
   /**
@@ -67,5 +63,17 @@ public class ChallengeManager {
    */
   public List<Challenge> getActiveChallenges() {
     return Collections.unmodifiableList(challenges);
+  }
+
+  /**
+   * Returns a String with all challenges type with | as seperator.
+   */
+  public String saveChallenges(){
+    StringBuilder stringBuilder = new StringBuilder(100);
+    for (Challenge c : challenges){
+      stringBuilder.append(c.getChallengeType()+ "|");
+    }
+    stringBuilder.deleteCharAt(-1); // Remove last |
+    return stringBuilder.toString();
   }
 }

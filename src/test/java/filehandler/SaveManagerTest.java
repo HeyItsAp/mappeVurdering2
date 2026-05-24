@@ -23,13 +23,10 @@ public class SaveManagerTest {
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   private Player dummyPlayer() {
-    return new Player(
-        "TestPlayer",
-        new BigDecimal("5000"),
-        new BigDecimal("3000"),
-        new Portfolio(),
-        new TransactionArchive(),
-        Difficulty.EASY);
+    return new Player.Builder("TestPlayer", new BigDecimal("5000"), Difficulty.EASY)
+            .currentMoney(new BigDecimal(3000))
+            .build();
+
   }
 
   private Exchange dummyExchange() {

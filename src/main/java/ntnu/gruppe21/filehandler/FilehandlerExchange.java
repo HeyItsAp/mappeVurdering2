@@ -24,8 +24,7 @@ import ntnu.gruppe21.gameEngine.strategies.StrategyRegister;
 import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 
 /**
- * TODO: Implement handling of different strategies to FilehandlerExchange.java Utility class
- * responsible for handling file input and output operations related to {@link Exchange} and {@link
+ * Responsible for handling file input and output operations related to {@link Exchange} and {@link
  * Stock} objects.
  *
  * <p>This class provides functionality for: Saving exchange data to CSV files Loading initial

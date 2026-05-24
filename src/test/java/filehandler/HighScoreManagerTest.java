@@ -38,7 +38,7 @@ class HighScoreManagerTest {
    * portfolio empty (worth 0) and put everything in currentMoney.
    */
   private Player playerWithFortune(String name, BigDecimal startingMoney, BigDecimal fortune) {
-    Player player = new Player(name, startingMoney, Difficulty.EASY);
+    Player player = new Player.Builder(name, startingMoney, Difficulty.EASY).build();
     // currentMoney starts at startingMoney; adjust it to reach the desired fortune
     BigDecimal delta = fortune.subtract(startingMoney);
     if (delta.compareTo(BigDecimal.ZERO) >= 0) {
