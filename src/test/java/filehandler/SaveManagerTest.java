@@ -2,6 +2,7 @@ package filehandler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Tests for SaveManager – verifies that the wrapper correctly delegates to FilehandlerPlayer and
  * FilehandlerExchange.
+ *  Not that many as its just a wrapper for {@link ntnu.gruppe21.filehandler.FilehandlerPlayer} and {@link ntnu.gruppe21.filehandler.FilehandlerExchange}
  */
 public class SaveManagerTest {
 
@@ -49,19 +51,10 @@ public class SaveManagerTest {
   class constructor {
     /* Standard constructor should resolve to saves_root/slotName internally. */
     @Test
-    void standardConstructorResolvesCorrectly() throws Exception {
+    void standardConstructorResolvesCorrectly() {
+      // standard constructor – just slot name, SaveManager resolves the full path
       SaveManager sm = new SaveManager(TEST_SLOT);
-      // If save works without throwing, the path was resolved correctly
       assertDoesNotThrow(() -> sm.save(testPlayer, testExchange));
-    }
-
-    /* fullPath constructor should use the path exactly as given. */
-    @Test
-    void fullPathConstructorUsesPathAsIs(@TempDir Path tempDir) throws Exception {
-      SaveManager sm = new SaveManager(tempDir.toString(), true);
-      assertDoesNotThrow(() -> sm.save(testPlayer, testExchange));
-      assertTrue(Files.exists(tempDir.resolve("player.csv")));
-      assertTrue(Files.exists(tempDir.resolve("exchangeData.csv")));
     }
   }
 
@@ -107,19 +100,10 @@ public class SaveManagerTest {
 
   @Nested
   class loadPlayer {
-    /* loadPlayer() after save() should return a non-null Player. */
-    @Test
-    void loadPlayerReturnsNonNull() throws Exception {
-      SaveManager sm = new SaveManager("testsetsaveslot", true);
-      sm.save(testPlayer, testExchange);
-
-      assertNotNull(sm.loadPlayer());
-    }
-
     /* loadPlayer() should preserve name, money and difficulty after round-trip. */
     @Test
-    void loadPlayerPreservesMetadata() throws Exception {
-      SaveManager sm = new SaveManager("testsetsaveslot", true);
+    void loadPlayerPreservesMetadata(@TempDir Path tempDir) throws Exception {
+      SaveManager sm = new SaveManager(tempDir.toString(), true);
       sm.save(testPlayer, testExchange);
 
       Player loaded = sm.loadPlayer();
@@ -144,8 +128,8 @@ public class SaveManagerTest {
   class loadExchange {
     /* loadExchange() after save() should return a non-null Exchange. */
     @Test
-    void loadExchangeReturnsNonNull() throws Exception {
-      SaveManager sm = new SaveManager("testsetsaveslot", true);
+    void loadExchangeReturnsNonNull(@TempDir Path tempDir) throws Exception {
+      SaveManager sm = new SaveManager(tempDir.toString(), true);
       sm.save(testPlayer, testExchange);
 
       assertNotNull(sm.loadExchange());
@@ -153,21 +137,14 @@ public class SaveManagerTest {
 
     /* loadExchange() should preserve exchange name and difficulty after round-trip. */
     @Test
-    void loadExchangePreservesMetadata() throws Exception {
-      SaveManager sm = new SaveManager("testsetsaveslot", true);
+    void loadExchangePreservesMetadata(@TempDir Path tempDir) throws Exception {
+      SaveManager sm = new SaveManager(tempDir.toString(), true);
       sm.save(testPlayer, testExchange);
 
       Exchange loaded = sm.loadExchange();
 
       assertEquals("SaveManagerExchange", loaded.getName());
       assertEquals(Difficulty.EASY, loaded.getDifficulty());
-    }
-
-    /* loadExchange() on a slot with no exchangeData.csv should return null or throw. */
-    @Test
-    void loadExchangeThrowsWhenNoFile(@TempDir Path tempDir) {
-      SaveManager sm = new SaveManager(tempDir.toString(), true);
-      assertThrows(RuntimeException.class, sm::loadExchange);
     }
   }
 

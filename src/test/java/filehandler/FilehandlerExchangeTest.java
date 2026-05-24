@@ -136,8 +136,8 @@ public class FilehandlerExchangeTest {
 
       Exchange exchange = new Exchange.Builder("SaveTest").stockMap(List.of()).build();
 
-      Boolean success = FilehandlerExchange.saveExchangeData(exchange, "testsetsaveslot");
-      Exchange exchange1 = FilehandlerExchange.getExchangeSaveData("testsetsaveslot");
+      Boolean success = FilehandlerExchange.saveExchangeData(exchange, "src/main/resources/saves/testsetsaveslot");
+      Exchange exchange1 = FilehandlerExchange.getExchangeSaveData("src/main/resources/saves/testsetsaveslot");
       assertEquals(exchange.getName(), exchange1.getName());
     }
 
