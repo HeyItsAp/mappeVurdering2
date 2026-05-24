@@ -9,6 +9,12 @@ public class Stock {
   private final String company;
   private final List<BigDecimal> prices;
 
+  /**
+   * Creates a stock with initial sales price
+   * @param symbol Symbol, represented as shorted string of the Company
+   * @param company Company name. For example 'Microsoft'
+   * @param salesPrice Initial Sales price
+   */
   public Stock(String symbol, String company, BigDecimal salesPrice) {
     this.symbol = Objects.requireNonNull(symbol, "symbol must not be null");
     this.company = Objects.requireNonNull(company, "company must not be null");
@@ -16,6 +22,13 @@ public class Stock {
     prices.add(Objects.requireNonNull(salesPrice, "salesPrice must not be null"));
   }
 
+  /**
+   * Creates a stock with premade history list. Usually used in {@link ntnu.gruppe21.filehandler.FilehandlerExchange}
+   * and {@link ntnu.gruppe21.filehandler.FilehandlerPlayer} to easily and correctly make stock with history.
+   * @param symbol Symbol, represented as shorted string of the Company
+   * @param company Company name. For example 'Microsoft'
+   * @param priceHistory List of prices over time
+   */
   public Stock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
     this.symbol = Objects.requireNonNull(symbol, "symbol must not be null");
     this.company = Objects.requireNonNull(company, "company must not be null");

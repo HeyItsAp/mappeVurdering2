@@ -267,16 +267,30 @@ public class Exchange {
     private int week = 1;
     private Map<String, Stock> stockMap = Map.of();
 
+    /**
+     * Starts a builder object with the minimum for an Exchange, the name
+     * @param name Name for the Exchange
+     */
     public Builder(String name) {
       this.name = name;
       this.transactionFactory = new TransactionFactory();
     }
 
+    /**
+     * Set-method through builder.
+     * @param strategy Strategy to be changed
+     * @return Builder with updated strategy
+     */
     public Builder strategy(PriceStrategy strategy) {
       this.strategy = strategy;
       return this;
     }
 
+    /**
+     * Set-method through builder. Stock go through strategy stock creation factory
+     * @param stocks Strategy to be changed
+     * @return Builder with updated strategy
+     */
     public Builder stockMap(List<Stock> stocks) {
 
       List<Stock> strategySpecificStock =
@@ -299,16 +313,30 @@ public class Exchange {
       return this;
     }
 
+    /**
+     * Set-method through builder. Stock go through strategy stock creation factory
+     * @param difficulty difficulty to be changed
+     * @return Builder with updated difficulty
+     */
     public Builder difficulty(Difficulty difficulty) {
       this.difficulty = difficulty;
       return this;
     }
 
+    /**
+     * Set-method through builder.
+     * @param week week to be changed
+     * @return Builder with updated week
+     */
     public Builder week(int week) {
       this.week = week;
       return this;
     }
 
+    /**
+     * Build-method, finalizes all changes and returns a complete Exchange Object
+     * @return complete Exchange Object
+     */
     public Exchange build() {
       return new Exchange(this);
     }

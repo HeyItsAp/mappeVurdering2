@@ -39,7 +39,6 @@ public class StandardStrategy implements PriceStrategy {
    * changePercent = changeRate(5%, 10%, 15%, 25%) + boost
    *
    * @param stocks contains stock prices to be looped around
-   * @return New calculated price.
    */
   @Override
   public void calculateNewPrice(List<Stock> stocks) {
@@ -63,7 +62,7 @@ public class StandardStrategy implements PriceStrategy {
    *
    * <p>EASY -> 0.10 (10%) MEDIUM -> 0.20 (20%) HARD -> 0.40 (40%) REALISTIC -> 1.00 (80%)
    *
-   * @param difficulty
+   * @param difficulty {@link Difficulty}
    */
   @Override
   public void setDifficulty(Difficulty difficulty) {

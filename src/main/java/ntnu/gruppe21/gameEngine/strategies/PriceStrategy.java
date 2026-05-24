@@ -19,40 +19,65 @@ import ntnu.gruppe21.gameEngine.Difficulty;
  * loading. This also makes Junit testing impractical as values are everchanging.
  */
 public interface PriceStrategy {
-  /** All Strategies need a unique identifier. So saving can be done. */
+  /**
+   * All Strategies need a unique identifier. So saving can be done.
+   * @return returns unique identifier for Strategy
+   */
   String getStrategyId();
 
   /**
    * All strategies most calculate a new by taking a list of the stock and updating it.
    *
-   * @param stocks
+   * @param stocks Method needs to loop through list of stock to update current price
    */
   public void calculateNewPrice(List<Stock> stocks);
 
-  /*
-
-  /** Setter for strategies difficulty. Must be implemented */
+  /**
+   * Setter for strategies difficulty. Must be implemented
+   *
+   * @param difficulty Difficulty to be set
+   */
   public void setDifficulty(Difficulty difficulty);
 
   /**
    * Optional: Different strategy might need different stock attributes. Override this if this is
    * true.
+   * @param symbol Symbol of the {@link Stock}
+   * @param company Company of the {@link Stock}
+   * @param priceHistory List of prices throughout in {@link Stock}
+   * @return normal or entirely new type of stock, depended on if it gets overwritten or not
    */
   default Stock createStock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
     return new Stock(symbol, company, priceHistory);
   }
 
-  /** Serializes any extras, in this case Stocks @Override if necessary */
+  /**
+   * Serializes any extras, in this case Stocks @Override if necessary
+   *
+   * @param stock {@link Stock} object or a UNIQUE (for example {@link ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock} to be saved.
+   * @return String containing extras
+   */
   default String saveStockExtras(Stock stock) {
     return ""; // default: nothing extra to save
   }
 
-  /** Reconstructs extras, in this case stocks and extras. @Override if necessary */
+  /**
+   * Reconstructs extras, in this case stocks and extras. Does nothing but @Override if to implement
+   * parsing of unique stock object
+   *
+   * @param stock usually unique stock for example {@link ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock}
+   * @param extras extras
+   */
   default void deserializeStockExtras(Stock stock, String extras) {
     // default: nothing to restore
   }
 
-  /** Copy any strategy-specific state from source to target after creation */
+  /**
+   * Copy any strategy-specific state from source to target after creation
+   *
+   * @param source Usually default stock
+   * @param target Unique stock
+   */
   default void copyStockState(Stock source, Stock target) {
     // default: nothing to copy for plain stocks
   }

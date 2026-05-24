@@ -62,6 +62,7 @@ public class Challenge {
    * @param challengeType Right now, can be of two types.
    * @param difficulty effect how difficult the challenge will be by updating targetValue
    * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   * @param timesCompleted number of times this has previously been completed
    */
   public Challenge(
       ChallengeType challengeType, Difficulty difficulty, Player player, int timesCompleted) {
@@ -146,7 +147,7 @@ public class Challenge {
    * Checks if challenge is completed by player by going through values according to {@link
    * ChallengeType}
    *
-   * @param player
+   * @param player Player object to check stats
    * @return {@code True} or {@code False} based on if it fills the requirement
    */
   public boolean checkCompletion(Player player) {
@@ -173,7 +174,6 @@ public class Challenge {
    *
    * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
    * @param newWeek Unnecessary parameter, but opens for development.
-   * @return new Initial requirement
    */
   public void advanceChallenge(int newWeek, Player player) {
     if (!completed) throw new IllegalStateException("Challenge is not completed");
@@ -192,19 +192,34 @@ public class Challenge {
     refreshDescription(player, challengeType);
   }
 
-  /** Simple getters */
+/**
+ * Get-method for completed
+ * @return True/false
+ */
   public boolean isCompleted() {
     return completed;
   }
 
+    /**
+     * Get-method for attribute description
+     * @return description
+     */
   public String getDescription() {
     return description;
   }
 
+    /**
+     * Get-method for enum challengeType
+     * @return enum challengeType
+     */
   public ChallengeType getChallengeType() {
     return challengeType;
   }
 
+    /**
+     * Get-method for int timesCompleted
+     * @return number of times the challenge completed
+     */
   public int getTimesCompleted() {
     return timesCompleted;
   }

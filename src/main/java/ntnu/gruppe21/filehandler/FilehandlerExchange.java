@@ -100,6 +100,7 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
+   * @param filename filename to a csv file in resources/datasets
    * @return a new {@link Exchange} object populated with stocks from the file
    */
   public static Exchange getExchangeDataset(String filename) {
@@ -230,7 +231,7 @@ public class FilehandlerExchange {
    * Method to import your own Exchange Data in a valid csv format that resembles ours.
    *
    * <p>Should be able to access the systems file explorer, search for a csv file, add it and be
-   * sent into the {@link resources/datasets} folder. This method cannot be Unit tested as it
+   * sent into the resources/datasets folder. This method cannot be Unit tested as it
    * incorporates GUI dialogs which cannot be tested.
    *
    * @return true/false based on if it worked or not.
@@ -275,6 +276,7 @@ public class FilehandlerExchange {
    *   <li>Third column is parsable to BigDecimal
    * </ul>
    *
+   * @param filePath The file path to the dataset
    * @return true/false based on if the selected is valid format or not
    */
   public static boolean validFormat(Path filePath) {
@@ -309,12 +311,12 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Helper function for {@link #importExternalData()} method that copies the selected csv file to
-   * the {@link resources/datasets} folder to be selected later.
+   * Helper function for #importExternalData() method that copies the selected csv file to
+   * the resources/datasets folder to be selected later.
    *
    * @param source Selected file during ui file selecting
    * @return Destination
-   * @throws IOException, if something wrong. Catched in {@link #importExternalData()} method
+   * @throws IOException if something wrong. Caught in #importExternalData() method
    */
   public static Path copyToDatasets(Path source) throws IOException {
     Path destination = Paths.get(DATASETS_ROOT + source.getFileName());
@@ -323,7 +325,10 @@ public class FilehandlerExchange {
     return destination;
   }
 
-  /** Returns a string list of valid datasets in {@link resources/datasets}. */
+  /**
+   * Returns all (should be) valid datasets in datasets folder
+   * @return list of names to valid datasets
+   */
   public static List<String> getExchangeDatasetOptions() {
     Path pathToDataset = Path.of(DATASETS_ROOT);
     List<String> namesOfDatasets = null;

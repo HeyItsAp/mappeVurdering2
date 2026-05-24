@@ -27,7 +27,11 @@ public class SaveManager {
     this.folderSlot = saveName;
   }
 
-  /** Test constructor — accepts a full path as-is */
+  /**
+   * Test constructor — accepts a full path as-is
+   * @param saveName name of the folder. SaveSlot
+   * @param fullPath boolean to add saves_root before SaveSlot
+   */
   public SaveManager(String saveName, boolean fullPath) {
     this.folderSlot = fullPath ? saveName : saves_root + "/" + saveName;
   }
@@ -36,9 +40,9 @@ public class SaveManager {
    * Performs a full save of the exchange and player data. Creates folder, csv files through static
    * methods and then prints out.
    *
-   * @param player
-   * @param exchange
-   * @throws Exception
+   * @param player {@link Player} object to be saved
+   * @param exchange {@link Exchange} object to be saved
+   * @throws Exception if anything goes wrong
    */
   public void save(Player player, Exchange exchange) throws Exception {
     Files.createDirectories(Paths.get(folderSlot));
@@ -47,11 +51,18 @@ public class SaveManager {
     System.out.println("Game saved to: " + folderSlot);
   }
 
-  /** Getter, uses public static methods. */
+  /**
+   * Getter, uses public static methods.
+   * @return List of String containing saves folderName
+   */
   public List<String> getSaveOptions() {
     return FilehandlerPlayer.getPlayerSaveOptions();
   }
 
+  /**
+   * Getter, uses public static methods.
+   * @return List of String containing names of datasets in resoucres/datasets
+   */
   public List<String> getDataSetOptions() {
     return FilehandlerExchange.getExchangeDatasetOptions();
   }
@@ -59,7 +70,7 @@ public class SaveManager {
   /**
    * Reads and returns Player object through static method.
    *
-   * @return Player object
+   * @return {@link Player} object
    */
   public Player loadPlayer() {
     return FilehandlerPlayer.getPlayerSavedData(folderSlot);
@@ -68,12 +79,17 @@ public class SaveManager {
   /**
    * Reads and returns Exchange object through static method.
    *
-   * @return Exchange object
+   * @return {@link Exchange} object
    */
   public Exchange loadExchange() {
     return FilehandlerExchange.getExchangeSaveData(folderSlot);
   }
 
+  /**
+   * Gets new exchange based on a Dataset in resoucres/datasets
+   * @param nameOfSet name of the csv file in resoucres/datasets
+   * @return complete {@link Exchange} object
+   */
   public Exchange loadExchangeDataset(String nameOfSet) {
     return FilehandlerExchange.getExchangeDataset(nameOfSet);
   }

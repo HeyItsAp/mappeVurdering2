@@ -25,6 +25,9 @@ public class ChallengeManager {
   // Random to produce random {@link ChallengeType}
   private final Random random = new Random();
 
+  /**
+   * Creates a new ChallengeManager with empty challenges list;
+   */
   public ChallengeManager() {
     this.challenges = new ArrayList<>();
   }
@@ -44,7 +47,7 @@ public class ChallengeManager {
   /**
    * Checks if all challanges are complete for {@link Player}. If it is, advance the challanges.
    *
-   * @param player
+   * @param player Player object to compare player stats and targetValue
    */
   public void evaluateChallenges(Player player) {
     boolean completedAll = true;
@@ -70,7 +73,11 @@ public class ChallengeManager {
     return Collections.unmodifiableList(challenges);
   }
 
-  /** Returns a String with all challenges type with | as seperator. */
+  /**
+   * Returns a String with all challenges type with | as seperator.
+   *
+   * @return String with containing each Challenge object as ChallengeType;timesCompleted then separated by "|";
+   */
   public String saveChallenges() {
     StringBuilder stringBuilder = new StringBuilder(100);
     for (Challenge c : challenges) {

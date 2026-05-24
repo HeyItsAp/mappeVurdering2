@@ -7,22 +7,34 @@ import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
 
 public class Player {
-  /* Players name */
+  /**
+   * Players name
+   */
   private final String name;
 
-  /* Starting money for the player */
+  /**
+   * Starting money for the player
+   */
   private final BigDecimal startingMoney;
 
-  /* Current money for the player */
+  /**
+   * Current money for the player
+   */
   private BigDecimal currentMoney;
 
-  /* Players purchase portfolio */
+  /**
+   * Players purchase portfolio
+   */
   private final Portfolio portfolio;
 
-  /* Players transaction archive */
+  /**
+   * Players transaction archive
+   */
   private final TransactionArchive transactionArchive;
 
-  /* Players chosen difficulty, used for GUI */
+  /**
+   * Players chosen difficulty, used for GUI
+   */
   private final Difficulty difficulty;
 
   /**
@@ -180,6 +192,12 @@ public class Player {
     private Difficulty difficulty;
     private ChallengeManager challengeManager;
 
+    /**
+     * Starts a builder object with the minimum attributes for a Player.
+     * @param name Name of the Player
+     * @param startingMoney Player chosen starting amount
+     * @param difficulty Difficulty.enum
+     */
     public Builder(String name, BigDecimal startingMoney, Difficulty difficulty) {
       this.name = name;
       this.startingMoney = startingMoney;
@@ -190,31 +208,60 @@ public class Player {
       this.challengeManager = new ChallengeManager();
     }
 
+    /**
+     * Set-method through builder.
+     * @param currentMoney currentMoney to be changed
+     * @return Builder with updated currentMoney
+     */
     public Builder currentMoney(BigDecimal currentMoney) {
       this.currentMoney = currentMoney;
       return this;
     }
 
+    /**
+     * Set-method through builder.
+     * @param portfolio portfolio to be changed
+     * @return Builder with updated portfolio
+     */
     public Builder portfolio(Portfolio portfolio) {
       this.portfolio = portfolio;
       return this;
     }
 
+    /**
+     * Set-method through builder.
+     * @param transactionArchive transactionArchive to be changed
+     * @return Builder with updated transactionArchive
+     */
     public Builder transactionArchive(TransactionArchive transactionArchive) {
       this.transactionArchive = transactionArchive;
       return this;
     }
 
+    /**
+     * Set-method through builder.
+     * @param difficulty difficulty to be changed
+     * @return Builder with updated difficulty
+     */
     public Builder difficulty(Difficulty difficulty) {
       this.difficulty = difficulty;
       return this;
     }
 
+    /**
+     * Set-method through builder.
+     * @param challengeManager challengeManager to be changed
+     * @return Builder with updated challengeManager
+     */
     public Builder challengeManager(ChallengeManager challengeManager) {
       this.challengeManager = challengeManager;
       return this;
     }
 
+    /**
+     * Build-method, finalizes all changes and returns a complete Player Object
+     * @return complete Player Object
+     */
     public Player build() {
       return new Player(this);
     }

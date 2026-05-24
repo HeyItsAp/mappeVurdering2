@@ -278,6 +278,10 @@ public class FilehandlerPlayer {
     return player;
   }
 
+  /**
+   * Returns string of names of saves in saves folder
+   * @return list of names for folder in resoucres/saves
+   */
   public static List<String> getPlayerSaveOptions() {
     Path pathToDataset = Path.of("src/main/resources/saves");
     List<String> namesOfSaves = null;
