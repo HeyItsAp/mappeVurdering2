@@ -43,10 +43,10 @@ public class TodayMenu extends VBox {
   }
 
   private VBox buildLeftPane() {
-    VBox movers = buildMoversSection();
-    VBox.setVgrow(movers, Priority.ALWAYS);
+    VBox GainLosss = buildGainLosssSection();
+    VBox.setVgrow(GainLosss, Priority.ALWAYS);
 
-    VBox pane = new VBox(16, buildNetWorthCard(), buildSummaryRow(), movers);
+    VBox pane = new VBox(16, buildNetWorthCard(), buildSummaryRow(), GainLosss);
     VBox.setVgrow(pane, Priority.ALWAYS);
     return pane;
   }
@@ -89,12 +89,12 @@ public class TodayMenu extends VBox {
     return row;
   }
 
-  private VBox buildMoversSection() {
+  private VBox buildGainLosssSection() {
     HBox row = new HBox(10);
     VBox.setVgrow(row, Priority.ALWAYS);
 
-    VBox gainers = buildMoverList("TOP GAINERS", true);
-    VBox losers = buildMoverList("TOP LOSERS", false);
+    VBox gainers = buildGainLossList("TOP GAINERS", true);
+    VBox losers = buildGainLossList("TOP LOSERS", false);
     HBox.setHgrow(gainers, Priority.ALWAYS);
     HBox.setHgrow(losers, Priority.ALWAYS);
 
@@ -105,23 +105,23 @@ public class TodayMenu extends VBox {
     return section;
   }
 
-  record MoverRow(String symbol, String company, String change) {}
+  record GainLossRow(String symbol, String company, String change) {}
 
-  private VBox buildMoverList(String heading, boolean gainers) {
+  private VBox buildGainLossList(String heading, boolean gainers) {
     Label title = new Label(heading);
     title.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
     String sign = gainers ? "+" : "-";
-    java.util.List<MoverRow> entries =
+    java.util.List<GainLossRow> entries =
         java.util.List.of(
-            new MoverRow("SYMB", "Company A", sign + "8.14%"),
-            new MoverRow("SYMB", "Company B", sign + "5.32%"),
-            new MoverRow("SYMB", "Company C", sign + "3.90%"),
-            new MoverRow("SYMB", "Company D", sign + "2.11%"));
+            new GainLossRow("SYMB", "Company A", sign + "8.14%"),
+            new GainLossRow("SYMB", "Company B", sign + "5.32%"),
+            new GainLossRow("SYMB", "Company C", sign + "3.90%"),
+            new GainLossRow("SYMB", "Company D", sign + "2.11%"));
 
     VBox cards = new VBox(6);
-    for (MoverRow row : entries) {
-      cards.getChildren().add(buildMoverCard(row));
+    for (GainLossRow row : entries) {
+      cards.getChildren().add(buildGainLossCard(row));
     }
 
     VBox pane = new VBox(8, title, cards);
@@ -129,7 +129,7 @@ public class TodayMenu extends VBox {
     return pane;
   }
 
-  private HBox buildMoverCard(MoverRow row) {
+  private HBox buildGainLossCard(GainLossRow row) {
     Label symbol = new Label(row.symbol());
     symbol.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
