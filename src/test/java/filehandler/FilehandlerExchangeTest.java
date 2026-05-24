@@ -245,6 +245,7 @@ public class FilehandlerExchangeTest {
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("exchangeDataSet1.csv"));
     assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("highscores.csv"));
   }
+
   // ── strategy serialization round-trip ────────────────────────────────────
 
   /* Saving with MarketSimulator and reloading should reconstruct MarketSimStock instances. */
@@ -252,7 +253,8 @@ public class FilehandlerExchangeTest {
   public void saveAndReloadWithMarketSimulatorCreatesSimStocks() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("SIM", "SimCo", new BigDecimal("50.00")));
-    Exchange exchange = new Exchange.Builder("SimTest")
+    Exchange exchange =
+        new Exchange.Builder("SimTest")
             .strategy(new MarketSimulator())
             .difficulty(Difficulty.HARD)
             .stockMap(stocks)
@@ -275,7 +277,8 @@ public class FilehandlerExchangeTest {
     marketStock.setDur(7);
     marketStock.setRestingVal(95);
 
-    Exchange exchange = new Exchange.Builder("SimStateTest")
+    Exchange exchange =
+        new Exchange.Builder("SimStateTest")
             .strategy(new MarketSimulator())
             .stockMap(List.of(marketStock))
             .difficulty(Difficulty.HARD)
@@ -296,7 +299,8 @@ public class FilehandlerExchangeTest {
   public void saveAndReloadWithDefaultStrategyCreatesPlainStocks() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("PLN", "PlainCo", new BigDecimal("200.00")));
-    Exchange exchange = new Exchange.Builder("PlainTest")
+    Exchange exchange =
+        new Exchange.Builder("PlainTest")
             .strategy(new StandardStrategy())
             .stockMap(stocks)
             .difficulty(Difficulty.EASY)
@@ -308,7 +312,7 @@ public class FilehandlerExchangeTest {
     assertFalse(loaded.getStock("PLN") instanceof MarketSimStock);
   }
 
-// ── getExchangeSaveData edge cases ───────────────────────────────────────
+  // ── getExchangeSaveData edge cases ───────────────────────────────────────
 
   /* Loading from a non-existent save folder should return null without throwing. */
   @Test
@@ -321,9 +325,8 @@ public class FilehandlerExchangeTest {
   public void getExchangeSaveDataThrowsForUnknownStrategyId() {
     // Uses a hand-crafted save file in test resources with strategy "UNKNOWN_STRATEGY"
     assertThrows(
-            IllegalArgumentException.class,
-            () -> FilehandlerExchange.getExchangeSaveData("testbadsaveslot")
-    );
+        IllegalArgumentException.class,
+        () -> FilehandlerExchange.getExchangeSaveData("testbadsaveslot"));
   }
 
   /* Reloading a saved exchange should preserve the week number. */
@@ -331,10 +334,8 @@ public class FilehandlerExchangeTest {
   public void saveAndReloadPreservesWeekNumber() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("WK", "WeekCo", new BigDecimal("50.00")));
-    Exchange exchange = new Exchange.Builder("WeekTest")
-            .stockMap(stocks)
-            .difficulty(Difficulty.MEDIUM)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("WeekTest").stockMap(stocks).difficulty(Difficulty.MEDIUM).build();
 
     // Advance a few weeks so week != 1
     exchange.advance();
@@ -347,7 +348,7 @@ public class FilehandlerExchangeTest {
     assertEquals(exchange.getWeek(), loaded.getWeek());
   }
 
-// ── validFormat edge cases ───────────────────────────────────────────────
+  // ── validFormat edge cases ───────────────────────────────────────────────
 
   /* A completely empty file should fail validation. */
   @Test
@@ -369,13 +370,14 @@ public class FilehandlerExchangeTest {
   @Test
   void validFormat_returnsFalse_whenPriceIsNegative(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("negative.csv");
-    Files.write(csv, List.of(
+    Files.write(
+        csv,
+        List.of(
             "TST,TestCo,100.00",
             "TST,TestCo,100.00",
             "TST,TestCo,100.00",
             "TST,TestCo,100.00",
-            "TST,TestCo,-50.00"
-    ));
+            "TST,TestCo,-50.00"));
     assertFalse(FilehandlerExchange.validFormat(csv));
   }
 
@@ -383,29 +385,31 @@ public class FilehandlerExchangeTest {
   @Test
   void validFormat_returnsTrue_atExactlyFiveRows(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("exact5.csv");
-    Files.write(csv, List.of(
+    Files.write(
+        csv,
+        List.of(
             "AAA,CompanyA,10.00",
             "BBB,CompanyB,20.00",
             "CCC,CompanyC,30.00",
             "DDD,CompanyD,40.00",
-            "EEE,CompanyE,50.00"
-    ));
+            "EEE,CompanyE,50.00"));
     assertTrue(FilehandlerExchange.validFormat(csv));
   }
 
-// ── copyToDatasets ───────────────────────────────────────────────────────
+  // ── copyToDatasets ───────────────────────────────────────────────────────
 
   /* A valid CSV copied to datasets should appear in getExchangeDatasetOptions. */
   @Test
   void copyToDatasetsFileAppearsInOptions(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("testImport.csv");
-    Files.write(csv, List.of(
+    Files.write(
+        csv,
+        List.of(
             "AAA,CompanyA,10.00",
             "BBB,CompanyB,20.00",
             "CCC,CompanyC,30.00",
             "DDD,CompanyD,40.00",
-            "EEE,CompanyE,50.00"
-    ));
+            "EEE,CompanyE,50.00"));
 
     FilehandlerExchange.copyToDatasets(csv);
 
@@ -416,17 +420,19 @@ public class FilehandlerExchangeTest {
   @Test
   void copyToDatasetsOverwriteDoesNotThrow(@TempDir Path tempDir) throws IOException {
     Path csv = tempDir.resolve("duplicate.csv");
-    Files.write(csv, List.of(
+    Files.write(
+        csv,
+        List.of(
             "AAA,CompanyA,10.00",
             "BBB,CompanyB,20.00",
             "CCC,CompanyC,30.00",
             "DDD,CompanyD,40.00",
-            "EEE,CompanyE,50.00"
-    ));
+            "EEE,CompanyE,50.00"));
 
-    assertDoesNotThrow(() -> {
-      FilehandlerExchange.copyToDatasets(csv);
-      FilehandlerExchange.copyToDatasets(csv);
-    });
+    assertDoesNotThrow(
+        () -> {
+          FilehandlerExchange.copyToDatasets(csv);
+          FilehandlerExchange.copyToDatasets(csv);
+        });
   }
 }

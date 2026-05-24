@@ -63,7 +63,14 @@ public class FilehandlerExchange {
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
-      pw.println(exchange.getName() + "," + exchange.getWeek() + "," + exchange.getDifficulty().toString() + "," + strategy.getStrategyId());
+      pw.println(
+          exchange.getName()
+              + ","
+              + exchange.getWeek()
+              + ","
+              + exchange.getDifficulty().toString()
+              + ","
+              + strategy.getStrategyId());
       pw.println(" ");
 
       exchange
@@ -77,7 +84,8 @@ public class FilehandlerExchange {
 
                 String extras = strategy.saveStockExtras(value); // If any extras within stock.
 
-                pw.println(value.getSymbol() + "," + value.getCompany() + "," + prices + "," + extras);
+                pw.println(
+                    value.getSymbol() + "," + value.getCompany() + "," + prices + "," + extras);
               });
 
     } catch (Exception e) {
@@ -143,20 +151,13 @@ public class FilehandlerExchange {
    * Loads a previously saved exchange state from a CSV file in a designated folder Usually invoke
    * on {@link SaveManager}
    *
-   * <p>
-   *    First row contains the Metadata: Name,week,difficulty,Strategy
-   *    THIS ONLY APPLIES TO SAVES, not regular/imported exchange data
-   * </p>
+   * <p>First row contains the Metadata: Name,week,difficulty,Strategy THIS ONLY APPLIES TO SAVES,
+   * not regular/imported exchange data
    *
-   * <p>
-   *    Each data (expect the first) row must follow the format:
-   *      Ticker,CompanyName,price1;price2;price3;...
-   *    Strategies might implement extra stock data, for example {@link MarketSimulator}.
-   *      Extras will then be inserted into a fourth row.
-   *      Ticker,CompanyName,price1;price2;price3,0|21|9|0
-   * </p>
-   *
-
+   * <p>Each data (expect the first) row must follow the format:
+   * Ticker,CompanyName,price1;price2;price3;... Strategies might implement extra stock data, for
+   * example {@link MarketSimulator}. Extras will then be inserted into a fourth row.
+   * Ticker,CompanyName,price1;price2;price3,0|21|9|0
    *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
    * remaining prices are added to reconstruct the full price history.
@@ -219,7 +220,12 @@ public class FilehandlerExchange {
         }
       }
       exchange =
-          new Exchange.Builder(exchangeName).strategy(strategy).difficulty(difficulty).week(week).stockMap(listOfStocks).build();
+          new Exchange.Builder(exchangeName)
+              .strategy(strategy)
+              .difficulty(difficulty)
+              .week(week)
+              .stockMap(listOfStocks)
+              .build();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -292,7 +298,7 @@ public class FilehandlerExchange {
 
         try {
           BigDecimal importedNumber = new BigDecimal(values[2].trim()); // price must be a number
-          if (importedNumber.compareTo(BigDecimal.ZERO) < 0){
+          if (importedNumber.compareTo(BigDecimal.ZERO) < 0) {
             throw new NumberFormatException();
           }
         } catch (NumberFormatException e) {

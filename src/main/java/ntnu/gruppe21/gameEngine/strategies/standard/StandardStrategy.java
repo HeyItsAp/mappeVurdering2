@@ -26,12 +26,12 @@ public class StandardStrategy implements PriceStrategy {
   // Random API to generate random percentages
   private final Random random = new Random();
 
-    @Override
-    public String getStrategyId() {
-        return "STANDARD";
-    }
+  @Override
+  public String getStrategyId() {
+    return "STANDARD";
+  }
 
-    /**
+  /**
    * Algorithm that calculates a new stock price based on {@code changeRate} and {@code boostStat}.
    *
    * <p>First random boost calculated based on {@code boostStat}. Random produces a number between
@@ -43,7 +43,7 @@ public class StandardStrategy implements PriceStrategy {
    */
   @Override
   public void calculateNewPrice(List<Stock> stocks) {
-    double randomBoost = random.nextDouble(0, boostStat+0.01);
+    double randomBoost = random.nextDouble(0, boostStat + 0.01);
     double changePercent = (random.nextDouble() * 2 - 1) * changeRate;
     double finalChange = changePercent + randomBoost;
     for (Stock stock : stocks) {

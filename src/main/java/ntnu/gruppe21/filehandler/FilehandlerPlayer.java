@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ntnu.gruppe21.*;
 import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.challanges.Challenge;
-import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
 import ntnu.gruppe21.gameEngine.challanges.ChallengeType;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
@@ -72,8 +70,7 @@ public class FilehandlerPlayer {
               + ","
               + player.getDifficulty().toString()
               + ","
-              + player.getChallengeManager().saveChallenges()
-      );
+              + player.getChallengeManager().saveChallenges());
       pw.println();
 
       pw.println();
@@ -232,7 +229,7 @@ public class FilehandlerPlayer {
           difficulty = Difficulty.valueOf(values[3]);
 
           String[] challengeString = values[4].split("|");
-          for (String s : challengeString){
+          for (String s : challengeString) {
             String[] challangeMetadata = s.split(";");
             ChallengeType challengeType = ChallengeType.valueOf(challangeMetadata[0]);
             Integer timeCompleted = Integer.valueOf(challangeMetadata[1]);
@@ -275,11 +272,11 @@ public class FilehandlerPlayer {
       }
       player =
           new Player.Builder(playerName, startingMoney, difficulty)
-                  .difficulty(difficulty)
-                  .currentMoney(currentMoney)
-                  .portfolio(portfolio)
-                  .transactionArchive(transactionArchive)
-                  .build();
+              .difficulty(difficulty)
+              .currentMoney(currentMoney)
+              .portfolio(portfolio)
+              .transactionArchive(transactionArchive)
+              .build();
       player.getChallengeManager().parseChallenges(challengeMetadataMap, player);
     } catch (Exception e) {
       e.printStackTrace();

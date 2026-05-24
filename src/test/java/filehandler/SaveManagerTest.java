@@ -7,8 +7,6 @@ import java.nio.file.Path;
 import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
-import ntnu.gruppe21.Portfolio;
-import ntnu.gruppe21.TransactionArchive;
 import ntnu.gruppe21.filehandler.SaveManager;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
@@ -24,9 +22,8 @@ public class SaveManagerTest {
 
   private Player dummyPlayer() {
     return new Player.Builder("TestPlayer", new BigDecimal("5000"), Difficulty.EASY)
-            .currentMoney(new BigDecimal(3000))
-            .build();
-
+        .currentMoney(new BigDecimal(3000))
+        .build();
   }
 
   private Exchange dummyExchange() {

@@ -13,11 +13,10 @@ import ntnu.gruppe21.filehandler.FilehandlerPlayer;
  * possibility for multiple challenges. Thigh coupling with player as certain challanges highly
  * depend on players actions, for example starting money.
  *
- * <p>
- *     At the start, creaetes an empty set of challanges. Challenges need to be set after player creation:
- *     1. use {@link #generateChallenges(Player)} to create new random fresh challenges
- *     2. when loading from a save, {@link #parseChallenges(Map, Player)} is used in {@link FilehandlerPlayer}
- * </p>
+ * <p>At the start, creaetes an empty set of challanges. Challenges need to be set after player
+ * creation: 1. use {@link #generateChallenges(Player)} to create new random fresh challenges 2.
+ * when loading from a save, {@link #parseChallenges(Map, Player)} is used in {@link
+ * FilehandlerPlayer}
  */
 public class ChallengeManager {
   /** List of {@link Challenge} */
@@ -33,7 +32,6 @@ public class ChallengeManager {
   /**
    * Currently makes one {@link Challenge} with a random {@link ChallengeType}, but changing it to
    * multiple is no problem.
-   *
    */
   public void generateChallenges(Player player) {
     List<ChallengeType> challengeTypesList = List.of(ChallengeType.values());
@@ -72,27 +70,28 @@ public class ChallengeManager {
     return Collections.unmodifiableList(challenges);
   }
 
-  /**
-   * Returns a String with all challenges type with | as seperator.
-   */
-  public String saveChallenges(){
+  /** Returns a String with all challenges type with | as seperator. */
+  public String saveChallenges() {
     StringBuilder stringBuilder = new StringBuilder(100);
-    for (Challenge c : challenges){
-      stringBuilder.append(c.getChallengeType()+";"+ c.getTimesCompleted()+ "|");
+    for (Challenge c : challenges) {
+      stringBuilder.append(c.getChallengeType()).append(";").append(c.getTimesCompleted()).append("|");
     }
-    stringBuilder.deleteCharAt(-1); // Remove last |
+    stringBuilder.deleteCharAt(stringBuilder.length() -1); // Remove last |
     return stringBuilder.toString();
   }
 
   /**
-   * Saved challanges are just challengeTypes, so when loading a save it just creates overwrites the first challenges
-   * then creates new challanges with same types.
-   * @param challengeMetaDataMap Map containing unique challengeType with how many times it has been completed
+   * Saved challanges are just challengeTypes, so when loading a save it just creates overwrites the
+   * first challenges then creates new challanges with same types.
+   *
+   * @param challengeMetaDataMap Map containing unique challengeType with how many times it has been
+   *     completed
    * @param player contain coupled metadata.
    */
-  public void parseChallenges(Map<ChallengeType, Integer> challengeMetaDataMap, Player player){
-    challengeMetaDataMap.forEach((key, value) -> {
-      challenges.add(new Challenge(key, player.getDifficulty(), player, value));
-    });
+  public void parseChallenges(Map<ChallengeType, Integer> challengeMetaDataMap, Player player) {
+    challengeMetaDataMap.forEach(
+        (key, value) -> {
+          challenges.add(new Challenge(key, player.getDifficulty(), player, value));
+        });
   }
 }

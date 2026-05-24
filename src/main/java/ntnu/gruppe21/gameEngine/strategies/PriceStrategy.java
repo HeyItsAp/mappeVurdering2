@@ -15,15 +15,16 @@ import ntnu.gruppe21.gameEngine.Difficulty;
  * {@code Strategy Behavioral Pattern}.
  *
  * <p>
- *    Different Algorithms as separate classes but still interchangeable with some predefined structure:
- *    Each Strategy needs a way correctly parse/serialize and format changes when saving or loading.
+ *     Different Algorithms as separate classes but still interchangeable with some predefined
+ * structure: Each Strategy needs a way correctly parse/serialize and format changes when saving or
+ * loading.
+ *     This also makes Junit testing impractical as values are everchanging.
  * </p>
  */
 public interface PriceStrategy {
-  /**
-   * All Strategies need a unique identifier. So saving can be done.
-   */
+  /** All Strategies need a unique identifier. So saving can be done. */
   String getStrategyId();
+
   /**
    * All strategies most calculate a new by taking a list of the stock and updating it.
    *
@@ -49,7 +50,7 @@ public interface PriceStrategy {
     return ""; // default: nothing extra to save
   }
 
-  /** Reconstructs extras, in this case stocks and extras. @Override if necessary*/
+  /** Reconstructs extras, in this case stocks and extras. @Override if necessary */
   default void deserializeStockExtras(Stock stock, String extras) {
     // default: nothing to restore
   }

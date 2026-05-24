@@ -26,8 +26,8 @@ public class Player {
   private final Difficulty difficulty;
 
   /**
-   * ChallengeManager, track challanges {@link ChallengeManager}
-   *  Challenges need to be created after player creation, as challanges and player have necessarily tight coupling.
+   * ChallengeManager, track challanges {@link ChallengeManager} Challenges need to be created after
+   * player creation, as challanges and player have necessarily tight coupling.
    */
   private final ChallengeManager challengeManager;
 
@@ -122,6 +122,7 @@ public class Player {
 
   /**
    * Returns challengeManager
+   *
    * @return Manager class contain challanges
    */
   public ChallengeManager getChallengeManager() {
@@ -166,10 +167,9 @@ public class Player {
   }
 
   /**
-   * Standard builder that have base values that are necessary to make a new player. If necessary attributes
-   * can be changed.
-   *  Challenges need to be created after player creation, as challanges and player have necessarily tight coupling.
-   *
+   * Standard builder that have base values that are necessary to make a new player. If necessary
+   * attributes can be changed. Challenges need to be created after player creation, as challanges
+   * and player have necessarily tight coupling.
    */
   public static class Builder {
     private final String name;
@@ -180,7 +180,7 @@ public class Player {
     private Difficulty difficulty;
     private ChallengeManager challengeManager;
 
-    public Builder (String name, BigDecimal startingMoney, Difficulty difficulty){
+    public Builder(String name, BigDecimal startingMoney, Difficulty difficulty) {
       this.name = name;
       this.startingMoney = startingMoney;
       this.currentMoney = startingMoney;
@@ -190,29 +190,33 @@ public class Player {
       this.challengeManager = new ChallengeManager();
     }
 
-    public Builder currentMoney(BigDecimal currentMoney){
+    public Builder currentMoney(BigDecimal currentMoney) {
       this.currentMoney = currentMoney;
       return this;
     }
-    public Builder portfolio(Portfolio portfolio){
+
+    public Builder portfolio(Portfolio portfolio) {
       this.portfolio = portfolio;
       return this;
     }
-    public Builder transactionArchive(TransactionArchive transactionArchive){
+
+    public Builder transactionArchive(TransactionArchive transactionArchive) {
       this.transactionArchive = transactionArchive;
       return this;
     }
-    public Builder difficulty(Difficulty difficulty){
+
+    public Builder difficulty(Difficulty difficulty) {
       this.difficulty = difficulty;
       return this;
     }
-    public Builder challengeManager(ChallengeManager challengeManager){
+
+    public Builder challengeManager(ChallengeManager challengeManager) {
       this.challengeManager = challengeManager;
       return this;
     }
+
     public Player build() {
       return new Player(this);
     }
-
   }
 }

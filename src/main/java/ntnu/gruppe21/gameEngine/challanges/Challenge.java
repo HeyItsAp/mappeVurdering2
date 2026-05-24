@@ -53,32 +53,30 @@ public class Challenge {
     this.timesCompleted = 0;
   }
 
-    /**
-     * Creates previously completed challenge of {@link ChallengeType} and {@link Difficulty}. Evoked
-     * when getting a saved challenge.
-     *  For getting the right values, advances the challanges by how many times it has been completed.
-     *  Forces the challenge to be completed before advancing.
-     *  Then sets it back to right values
-     *
-     *
-     * @param challengeType Right now, can be of two types.
-     * @param difficulty effect how difficult the challenge will be by updating targetValue
-     * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
-     */
-    public Challenge(ChallengeType challengeType, Difficulty difficulty, Player player, int timesCompleted) {
-        this.challengeType = challengeType;
-        this.difficulty = difficulty;
+  /**
+   * Creates previously completed challenge of {@link ChallengeType} and {@link Difficulty}. Evoked
+   * when getting a saved challenge. For getting the right values, advances the challanges by how
+   * many times it has been completed. Forces the challenge to be completed before advancing. Then
+   * sets it back to right values
+   *
+   * @param challengeType Right now, can be of two types.
+   * @param difficulty effect how difficult the challenge will be by updating targetValue
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   */
+  public Challenge(
+      ChallengeType challengeType, Difficulty difficulty, Player player, int timesCompleted) {
+    this.challengeType = challengeType;
+    this.difficulty = difficulty;
 
-        this.completed = true;
-        this.targetValue = setInitialValue(challengeType, difficulty, player);
-        for (int i = 0; i < timesCompleted; i++){
-            advanceChallenge(
-                    1, player);
-            this.completed = true;
-        }
-        this.completed = false;
-        this.timesCompleted = timesCompleted;
+    this.completed = true;
+    this.targetValue = setInitialValue(challengeType, difficulty, player);
+    for (int i = 0; i < timesCompleted; i++) {
+      advanceChallenge(1, player);
+      this.completed = true;
     }
+    this.completed = false;
+    this.timesCompleted = timesCompleted;
+  }
 
   /**
    * Updates the visual/progress/description of the challenge.
@@ -154,6 +152,9 @@ public class Challenge {
   public boolean checkCompletion(Player player) {
     if (completed) return true;
 
+    System.out.println(player.getCurrentMoney());
+    System.out.println(targetValue);
+
     boolean done =
         switch (challengeType) {
           case BALANCE_REQUIREMENT ->
@@ -184,7 +185,7 @@ public class Challenge {
               };
           case BALANCE_REQUIREMENT ->
               switch (difficulty) {
-                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + targetValue / 100;
+                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + (targetValue * 2 / 100);
               };
         };
     completed = false;
@@ -204,7 +205,7 @@ public class Challenge {
     return challengeType;
   }
 
-    public int getTimesCompleted() {
-        return timesCompleted;
-    }
+  public int getTimesCompleted() {
+    return timesCompleted;
+  }
 }

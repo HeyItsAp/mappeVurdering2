@@ -57,9 +57,9 @@ public class FilehandlerPlayerTest {
   @Test
   public void savePlayerDataReturnsTrueOnValidPath() {
     Player player =
-        new Player.Builder("TestPlayer",new BigDecimal("5000"), Difficulty.EASY)
-                .currentMoney(new BigDecimal("3000"))
-                .build();
+        new Player.Builder("TestPlayer", new BigDecimal("5000"), Difficulty.EASY)
+            .currentMoney(new BigDecimal("3000"))
+            .build();
 
     boolean success = FilehandlerPlayer.savePlayerData(player, test_saves_root);
     assertTrue(success);
@@ -70,8 +70,8 @@ public class FilehandlerPlayerTest {
   public void savePlayerDataReturnsFalseOnInvalidPath() {
     Player player =
         new Player.Builder("TestPlayer", new BigDecimal("5000"), Difficulty.EASY)
-                .currentMoney(new BigDecimal("3000"))
-                .build();
+            .currentMoney(new BigDecimal("3000"))
+            .build();
 
     boolean success = FilehandlerPlayer.savePlayerData(player, "not/valid/path");
     assertFalse(success);
@@ -81,10 +81,9 @@ public class FilehandlerPlayerTest {
   @Test
   public void saveAndReloadPreservesMetadata() {
     Player original =
-        new Player.Builder(
-            "RoundTrip",
-            new BigDecimal("5000"),
-            Difficulty.EASY).currentMoney(new BigDecimal("3000")).build();
+        new Player.Builder("RoundTrip", new BigDecimal("5000"), Difficulty.EASY)
+            .currentMoney(new BigDecimal("3000"))
+            .build();
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -103,11 +102,10 @@ public class FilehandlerPlayerTest {
     portfolio.addShare(new Share(stock, new BigDecimal("5"), new BigDecimal("100")));
 
     Player original =
-        new Player.Builder("PortfolioTest", new BigDecimal("5000"),
-            Difficulty.EASY)
-                .currentMoney(new BigDecimal("3000"))
-                .portfolio(portfolio)
-                        .build();
+        new Player.Builder("PortfolioTest", new BigDecimal("5000"), Difficulty.EASY)
+            .currentMoney(new BigDecimal("3000"))
+            .portfolio(portfolio)
+            .build();
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
 
@@ -124,11 +122,9 @@ public class FilehandlerPlayerTest {
 
     Player original =
         new Player.Builder("PurchaseTest", new BigDecimal("5000"), Difficulty.EASY)
-                .currentMoney(new BigDecimal("3000"))
-                .transactionArchive(archive)
-                .build();
-
-
+            .currentMoney(new BigDecimal("3000"))
+            .transactionArchive(archive)
+            .build();
 
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
@@ -146,9 +142,9 @@ public class FilehandlerPlayerTest {
 
     Player original =
         new Player.Builder("SaleTest", new BigDecimal("5000"), Difficulty.EASY)
-                .currentMoney(new BigDecimal("3000"))
-                .transactionArchive(archive)
-                .build();
+            .currentMoney(new BigDecimal("3000"))
+            .transactionArchive(archive)
+            .build();
     FilehandlerPlayer.savePlayerData(original, test_saves_root);
     Player loaded = FilehandlerPlayer.getPlayerSavedData(test_saves_root);
 
