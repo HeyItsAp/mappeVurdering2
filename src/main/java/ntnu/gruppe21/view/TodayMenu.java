@@ -105,23 +105,21 @@ public class TodayMenu extends VBox {
     return section;
   }
 
-  record GainLossRow(String symbol, String company, String change) {}
-
   private VBox buildGainLossList(String heading, boolean gainers) {
     Label title = new Label(heading);
     title.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
     String sign = gainers ? "+" : "-";
-    java.util.List<GainLossRow> entries =
-        java.util.List.of(
-            new GainLossRow("SYMB", "Company A", sign + "8.14%"),
-            new GainLossRow("SYMB", "Company B", sign + "5.32%"),
-            new GainLossRow("SYMB", "Company C", sign + "3.90%"),
-            new GainLossRow("SYMB", "Company D", sign + "2.11%"));
 
     VBox cards = new VBox(6);
-    for (GainLossRow row : entries) {
-      cards.getChildren().add(buildGainLossCard(row));
+    for (String[] entry :
+        new String[][] {
+          {"SYMB", "420.00", sign + "8.14%"},
+          {"SYMB", "380.50", sign + "5.32%"},
+          {"SYMB", "210.75", sign + "3.90%"},
+          {"SYMB", "155.20", sign + "2.11%"}
+        }) {
+      cards.getChildren().add(buildGainLossCard(entry[0], entry[1], entry[2]));
     }
 
     VBox pane = new VBox(8, title, cards);
@@ -129,22 +127,20 @@ public class TodayMenu extends VBox {
     return pane;
   }
 
-  private HBox buildGainLossCard(GainLossRow row) {
-    Label symbol = new Label(row.symbol());
-    symbol.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+  private HBox buildGainLossCard(String symbol, String value, String change) {
+    Label symbolLabel = new Label(symbol);
+    symbolLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    Label company = new Label(row.company());
-    company.setStyle("-fx-font-size: 11px; -fx-text-fill: #888;");
+    Label valueLabel = new Label(value);
+    valueLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
 
-    VBox left = new VBox(2, symbol, company);
-
-    Label change = new Label(row.change());
-    change.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+    Label changeLabel = new Label(change);
+    changeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
 
-    HBox card = new HBox(left, spacer, change);
+    HBox card = new HBox(10, symbolLabel, valueLabel, spacer, changeLabel);
     card.setStyle(
         """
         -fx-padding: 10 12 10 12;
