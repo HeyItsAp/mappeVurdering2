@@ -108,10 +108,8 @@ public class FilehandlerExchangeTest {
   public void saveExchangeDataReturnsCorrect() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("TST", "TestCo", new BigDecimal("100")));
-    Exchange exchange = new Exchange.Builder("SaveTest")
-            .stockMap(stocks)
-            .difficulty(Difficulty.EASY)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("SaveTest").stockMap(stocks).difficulty(Difficulty.EASY).build();
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     assertTrue(success);
@@ -121,9 +119,7 @@ public class FilehandlerExchangeTest {
   @Test
   public void saveExchangeDataReturnsFalseWhenNot() {
 
-    Exchange exchange = new Exchange.Builder("SaveTest")
-            .stockMap(List.of())
-            .build();
+    Exchange exchange = new Exchange.Builder("SaveTest").stockMap(List.of()).build();
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, "not/valid/path");
     assertFalse(success);
@@ -134,10 +130,8 @@ public class FilehandlerExchangeTest {
   public void saveAndReloadPreservesStocks() {
     List<Stock> stocks = new ArrayList<>();
     stocks.add(new Stock("RRT", "RoundTripCo", new BigDecimal("75.00")));
-    Exchange exchange = new Exchange.Builder("RoundTrip")
-            .stockMap(stocks)
-            .difficulty(Difficulty.HARD)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("RoundTrip").stockMap(stocks).difficulty(Difficulty.HARD).build();
 
     boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
@@ -155,10 +149,8 @@ public class FilehandlerExchangeTest {
     stock.addNewSalesPrice(new BigDecimal("120"));
     List<Stock> stocks = new ArrayList<>();
     stocks.add(stock);
-    Exchange exchange = new Exchange.Builder("HistoryTest")
-            .stockMap(stocks)
-            .difficulty(Difficulty.MEDIUM)
-            .build();
+    Exchange exchange =
+        new Exchange.Builder("HistoryTest").stockMap(stocks).difficulty(Difficulty.MEDIUM).build();
 
     Boolean success = FilehandlerExchange.saveExchangeData(exchange, test_saves_root);
     Exchange loaded = FilehandlerExchange.getSaveData(test_saves_root);
