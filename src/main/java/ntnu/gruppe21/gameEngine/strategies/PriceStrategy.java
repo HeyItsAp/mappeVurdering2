@@ -14,12 +14,9 @@ import ntnu.gruppe21.gameEngine.Difficulty;
  * calculations. Strategies will always return a new price PriceStrategy follow the principles of
  * {@code Strategy Behavioral Pattern}.
  *
- * <p>
- *     Different Algorithms as separate classes but still interchangeable with some predefined
+ * <p>Different Algorithms as separate classes but still interchangeable with some predefined
  * structure: Each Strategy needs a way correctly parse/serialize and format changes when saving or
- * loading.
- *     This also makes Junit testing impractical as values are everchanging.
- * </p>
+ * loading. This also makes Junit testing impractical as values are everchanging.
  */
 public interface PriceStrategy {
   /** All Strategies need a unique identifier. So saving can be done. */

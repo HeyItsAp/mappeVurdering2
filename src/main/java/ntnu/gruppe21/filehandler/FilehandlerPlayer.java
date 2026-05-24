@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +28,6 @@ import ntnu.gruppe21.transaction.Sale;
  * <p>All methods are static and the class is not intended to be instantiated.
  */
 public class FilehandlerPlayer {
-  private static final String SAVES_ROOT = "src/main/resources/saves/";
 
   /**
    * Saves the current state of an {@link Player} to a CSV file in a designated save folder unqiue
@@ -43,18 +41,11 @@ public class FilehandlerPlayer {
    * <p>The price history is stored as a semicolon-separated list in a single column.
    *
    * @param player {@link Player} object to be saved
-   * @param folderName The saveSLOT/Directory, not path to the resources/saves
+   * @param folderPath Full path to saves, provided by {@link SaveManager}
    * @return true of false based on if succeed
    */
-  public static boolean savePlayerData(Player player, String folderName) {
-    String folderSlotPath = SAVES_ROOT + "/" + folderName;
-    try {
-      Files.createDirectories(Paths.get(folderSlotPath));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    String filename = folderSlotPath + "/player.csv";
+  public static boolean savePlayerData(Player player, String folderPath) {
+    String filename = folderPath + "/player.csv";
     try (PrintWriter pw = new PrintWriter(filename)) {
       pw.println("# SaveFile for: " + player.getName());
 
@@ -165,7 +156,7 @@ public class FilehandlerPlayer {
       e.printStackTrace();
       return false;
     }
-    System.out.println("Attempt to save file: " + filename + ".csv; At resources/saves");
+    System.out.println("Attempt to save file: " + filename + "; At resources/saves");
     return true;
   }
 
@@ -184,11 +175,11 @@ public class FilehandlerPlayer {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderName THE SLOT FOLDER.
+   * @param folderPath Full path, provided by {@link SaveManager}
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
-  public static Player getPlayerSavedData(String folderName) {
-    String csvfile = SAVES_ROOT + "/" + folderName + "/player.csv";
+  public static Player getPlayerSavedData(String folderPath) {
+    String csvfile = folderPath + "/player.csv";
     String line = "";
 
     Player player = null;
@@ -228,7 +219,7 @@ public class FilehandlerPlayer {
           currentMoney = BigDecimal.valueOf(Double.parseDouble(values[2]));
           difficulty = Difficulty.valueOf(values[3]);
 
-          String[] challengeString = values[4].split("|");
+          String[] challengeString = values[4].split("\\|");
           for (String s : challengeString) {
             String[] challangeMetadata = s.split(";");
             ChallengeType challengeType = ChallengeType.valueOf(challangeMetadata[0]);
@@ -239,6 +230,7 @@ public class FilehandlerPlayer {
           continue;
         }
 
+        System.out.println("Checkpoint 1");
         String[] stockPricesString = values[3].split(";");
         List<BigDecimal> stockPrices =
             Arrays.stream(stockPricesString).map(BigDecimal::new).toList();
@@ -279,6 +271,7 @@ public class FilehandlerPlayer {
               .build();
       player.getChallengeManager().parseChallenges(challengeMetadataMap, player);
     } catch (Exception e) {
+      System.out.println("Error when saving. Remember to add challanges after player creation");
       e.printStackTrace();
       throw new RuntimeException();
     }
@@ -286,7 +279,7 @@ public class FilehandlerPlayer {
   }
 
   public static List<String> getPlayerSaveOptions() {
-    Path pathToDataset = Path.of("src/main/resources/datasets/saves");
+    Path pathToDataset = Path.of("src/main/resources/saves");
     List<String> namesOfSaves = null;
     try (Stream<Path> stream = Files.list(pathToDataset)) {
       namesOfSaves =

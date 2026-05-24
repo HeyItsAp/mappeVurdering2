@@ -35,7 +35,6 @@ import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 public class FilehandlerExchange {
   // Root path to datasets. Used for importing of datasets
   private static final String DATASETS_ROOT = "src/main/resources/datasets/";
-  private static final String SAVES_ROOT = "src/main/resources/saves/";
 
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
@@ -48,19 +47,14 @@ public class FilehandlerExchange {
    * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
-   * @param folderName THE SLOT FOLDER NAME, not the path.
+   * @param folderPath THE FULL PATH, provided by {@link SaveManager}
    * @return the filename (without path) of the saved file
    */
-  public static boolean saveExchangeData(Exchange exchange, String folderName) {
-    String folderSlotPath = SAVES_ROOT + "/" + folderName;
-    try {
-      Files.createDirectories(Paths.get(folderSlotPath));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    String filename = folderSlotPath + "/exchangeData.csv";
+  public static boolean saveExchangeData(Exchange exchange, String folderPath) {
+    String filename = folderPath + "/exchangeData.csv";
     PriceStrategy strategy = exchange.getStrategy();
-    try (PrintWriter pw = new PrintWriter(filename)) {
+    try (PrintWriter pw =
+        new PrintWriter(new java.io.BufferedWriter(new java.io.FileWriter(filename)))) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
       pw.println(
@@ -109,8 +103,7 @@ public class FilehandlerExchange {
    * @return a new {@link Exchange} object populated with stocks from the file
    */
   public static Exchange getExchangeDataset(String filename) {
-    String folderLocationString = "src/main/resources/datasets/";
-    String csvfile = folderLocationString + filename + ".csv";
+    String csvfile = DATASETS_ROOT + filename + ".csv";
     Path fullPath = Path.of(csvfile);
     if (!validFormat(fullPath)) {
       throw new RuntimeException("Attempted getting dataset " + filename + ".csv, is invalid");
@@ -164,11 +157,11 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderName THE SLOT FOLDER.
+   * @param folderPath THE FULL PATH, provided by {@link SaveManager}
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
-  public static Exchange getExchangeSaveData(String folderName) {
-    String csvfile = SAVES_ROOT + "/" + folderName + "/exchangeData.csv";
+  public static Exchange getExchangeSaveData(String folderPath) {
+    String csvfile = folderPath + "/exchangeData.csv";
     String line = "";
 
     Exchange exchange = null;
@@ -203,6 +196,7 @@ public class FilehandlerExchange {
           exchangeName = values[0];
           week = Integer.parseInt(values[1]);
           difficulty = Difficulty.valueOf(values[2]);
+          System.out.println(values[3]);
           strategy = StrategyRegister.fromId(values[3]);
           continue;
         }

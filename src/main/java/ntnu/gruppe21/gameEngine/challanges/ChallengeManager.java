@@ -74,9 +74,13 @@ public class ChallengeManager {
   public String saveChallenges() {
     StringBuilder stringBuilder = new StringBuilder(100);
     for (Challenge c : challenges) {
-      stringBuilder.append(c.getChallengeType()).append(";").append(c.getTimesCompleted()).append("|");
+      stringBuilder
+          .append(c.getChallengeType())
+          .append(";")
+          .append(c.getTimesCompleted())
+          .append("|");
     }
-    stringBuilder.deleteCharAt(stringBuilder.length() -1); // Remove last |
+    stringBuilder.deleteCharAt(stringBuilder.length() - 1); // Remove last |
     return stringBuilder.toString();
   }
 

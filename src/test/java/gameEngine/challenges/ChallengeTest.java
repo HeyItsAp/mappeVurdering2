@@ -9,7 +9,6 @@ import ntnu.gruppe21.Portfolio;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.challanges.Challenge;
 import ntnu.gruppe21.gameEngine.challanges.ChallengeType;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -111,16 +110,15 @@ class ChallengeTest {
       Player startingPlayer = mockPlayer(1000, 0, Difficulty.EASY);
       Player playerAfterSomeAdvances = mockPlayer(520, 0, Difficulty.EASY);
 
-      Challenge fresh = new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, startingPlayer);
+      Challenge fresh =
+          new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, startingPlayer);
       Challenge restored =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, startingPlayer, 5);
 
       // Fresh challenge: 520 >= 500 → true. Restored: target has been raised 3 times.
-      assertTrue(
-          fresh.checkCompletion(playerAfterSomeAdvances));
+      assertTrue(fresh.checkCompletion(playerAfterSomeAdvances));
       // With only 520 and a raised target the restored challenge should NOT be completable.
-      assertFalse(
-          restored.checkCompletion(playerAfterSomeAdvances));
+      assertFalse(restored.checkCompletion(playerAfterSomeAdvances));
     }
   }
 
@@ -205,8 +203,7 @@ class ChallengeTest {
       // For difficulties other than EASY, the same amount should NOT be enough.
       if (difficulty != Difficulty.EASY) {
         when(testPlayer.getCurrentMoney()).thenReturn(BigDecimal.valueOf(5000));
-        assertFalse(
-            test.checkCompletion(testPlayer));
+        assertFalse(test.checkCompletion(testPlayer));
       }
     }
   }
@@ -242,8 +239,7 @@ class ChallengeTest {
       Challenge challenge =
           new Challenge(ChallengeType.UNIQUE_SHARE_REQUIREMENT, Difficulty.HARD, player);
 
-      assertFalse(
-          challenge.checkCompletion(player));
+      assertFalse(challenge.checkCompletion(player));
     }
   }
 
@@ -286,8 +282,7 @@ class ChallengeTest {
       challenge.advanceChallenge(1, player);
 
       // Target is now 3; player still has 2 → should fail
-      assertFalse(
-          challenge.checkCompletion(player));
+      assertFalse(challenge.checkCompletion(player));
     }
 
     @Test
@@ -304,8 +299,7 @@ class ChallengeTest {
 
       // New target = 500 + 500/100 = 505
       when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(500));
-      assertFalse(
-          challenge.checkCompletion(player));
+      assertFalse(challenge.checkCompletion(player));
     }
   }
 
@@ -323,8 +317,7 @@ class ChallengeTest {
       when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(750));
       challenge.refreshDescription(player, ChallengeType.BALANCE_REQUIREMENT);
 
-      assertTrue(
-          challenge.getDescription().contains("750"));
+      assertTrue(challenge.getDescription().contains("750"));
     }
 
     @Test
@@ -335,8 +328,7 @@ class ChallengeTest {
 
       challenge.refreshDescription(player, ChallengeType.UNIQUE_SHARE_REQUIREMENT);
 
-      assertTrue(
-          challenge.getDescription().contains("3"));
+      assertTrue(challenge.getDescription().contains("3"));
     }
   }
 }
