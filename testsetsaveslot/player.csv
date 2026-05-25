@@ -1,0 +1,15 @@
+# SaveFile for: SaveManagerPlayer
+
+# Player metadata:
+# name,startingMoney,currentMoney,{challenges}
+SaveManagerPlayer,5000,3000,EASY,BALANCE_REQUIREMENT;0
+
+
+# First dataset, Portofolio/Shares:
+# stock,quantity,purchasePrice
+
+# Second dataset, Purchases:
+# stock,quantity,purchasePrice,week
+ 
+# Thrid dataset, Sales:
+# stock,quantity,purchasePrice,week

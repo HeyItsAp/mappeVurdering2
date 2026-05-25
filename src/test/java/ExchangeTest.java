@@ -95,7 +95,7 @@ public class ExchangeTest {
   /* Method to return a Purchase object when a player buys a stock. */
   @Test
   public void buyingReturnsCorrectType() {
-    Player player = new Player("Name1", new BigDecimal(10000000), Difficulty.EASY);
+    Player player = new Player.Builder("Name1", new BigDecimal(10000000), Difficulty.EASY).build();
     assertInstanceOf(Purchase.class, exchange.buy("Bit", new BigDecimal(10), player));
   }
 
@@ -104,7 +104,7 @@ public class ExchangeTest {
   public void buyingThrowsExceptionIfNotEnoughMoney() {
     Share share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
     Purchase purchase = new Purchase(share, 1);
-    Player player = new Player("Name1", new BigDecimal(1), Difficulty.EASY);
+    Player player = new Player.Builder("Name1", new BigDecimal(1), Difficulty.EASY).build();
 
     assertThrows(
         IllegalArgumentException.class,
@@ -116,7 +116,7 @@ public class ExchangeTest {
   /* Method to return a Sale object when a player sells a stock. */
   @Test
   public void saleReturnsCorrectType() {
-    Player player = new Player("Name1", new BigDecimal(10000000), Difficulty.EASY);
+    Player player = new Player.Builder("Name1", new BigDecimal(10000000), Difficulty.EASY).build();
     assertInstanceOf(Sale.class, exchange.sell("Bit", new BigDecimal(10), player));
   }
 

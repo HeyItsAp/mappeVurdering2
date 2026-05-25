@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PurchaseCalculator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.transaction.calculators</a> &gt; <span class="el_source">PurchaseCalculator.java</span></div><h1>PurchaseCalculator.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.transaction.calculators;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import ntnu.gruppe21.Share;
+
+/** Calculator class for purchases. */
+public class PurchaseCalculator implements TransactionCalculator {
+  private final BigDecimal purchasePrice;
+  private final BigDecimal quantity;
+
+  /**
+   * Creates a new purchase calculator.
+   *
+   * @param share The share linked to the transaction
+   */
+<span class="fc" id="L17">  public PurchaseCalculator(Share share) {</span>
+<span class="fc" id="L18">    purchasePrice = share.getPurchasePrice();</span>
+<span class="fc" id="L19">    quantity = share.getQuantity();</span>
+<span class="fc" id="L20">  }</span>
+
+  public BigDecimal calculateGross() {
+<span class="fc" id="L23">    return purchasePrice.multiply(quantity);</span>
+  }
+
+  public BigDecimal calculateCommission() {
+<span class="fc" id="L27">    return calculateGross().divide(BigDecimal.valueOf(200), 8, RoundingMode.HALF_UP);</span>
+  }
+
+  public BigDecimal calculateTax() {
+<span class="fc" id="L31">    return BigDecimal.valueOf(0);</span>
+  }
+
+  public BigDecimal calculateTotal() {
+<span class="fc" id="L35">    return calculateGross().add(calculateCommission()).add(calculateTax());</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

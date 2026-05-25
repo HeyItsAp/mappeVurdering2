@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilehandlerPlayer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.filehandler</a> &gt; <span class="el_source">FilehandlerPlayer.java</span></div><h1>FilehandlerPlayer.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.filehandler;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import ntnu.gruppe21.*;
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.challanges.ChallengeType;
+import ntnu.gruppe21.transaction.Purchase;
+import ntnu.gruppe21.transaction.Sale;
+
+/**
+ * Utility class responsible for handling file input and output operations related to {@link Player}
+ * and each of its attributes.
+ *
+ * &lt;p&gt;This class provides functionality for: Saving Player data to CSV files which includes saving
+ * Player's {@link Portfolio} and {@link TransactionArchive} and Loading Player data from a CSV
+ * which should include all shares of stock and respective transactions (an others) to form the
+ * {@link Player}s {@link Portfolio} and {@link TransactionArchive}.
+ *
+ * &lt;p&gt;All methods are static and the class is not intended to be instantiated.
+ */
+<span class="nc" id="L30">public class FilehandlerPlayer {</span>
+
+  /**
+   * Saves the current state of an {@link Player} to a CSV file in a designated save folder unqiue
+   * to player. Create that folder if not created.
+   *
+   * &lt;p&gt;Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link SaveManager}
+   *
+   * &lt;p&gt;The file will include: PlayerName, starting money, current money, difficulty, list of shares
+   * {@link Portfolio} and list of transactions {@link TransactionArchive}
+   *
+   * &lt;p&gt;The price history is stored as a semicolon-separated list in a single column.
+   *
+   * @param player {@link Player} object to be saved
+   * @param folderPath Full path to saves, provided by {@link SaveManager}
+   * @return true of false based on if succeed
+   */
+  public static boolean savePlayerData(Player player, String folderPath) {
+<span class="fc" id="L48">    String filename = folderPath + &quot;/player.csv&quot;;</span>
+<span class="fc" id="L49">    try (PrintWriter pw = new PrintWriter(filename)) {</span>
+<span class="fc" id="L50">      pw.println(&quot;# SaveFile for: &quot; + player.getName());</span>
+
+<span class="fc" id="L52">      pw.println();</span>
+<span class="fc" id="L53">      pw.println(&quot;# Player metadata:&quot;);</span>
+<span class="fc" id="L54">      pw.println(&quot;# name,startingMoney,currentMoney,{challenges}&quot;);</span>
+<span class="fc" id="L55">      pw.println(</span>
+<span class="fc" id="L56">          player.getName()</span>
+              + &quot;,&quot;
+<span class="fc" id="L58">              + player.getStartingMoney()</span>
+              + &quot;,&quot;
+<span class="fc" id="L60">              + player.getCurrentMoney()</span>
+              + &quot;,&quot;
+<span class="fc" id="L62">              + player.getDifficulty().toString()</span>
+              + &quot;,&quot;
+<span class="fc" id="L64">              + player.getChallengeManager().saveChallenges());</span>
+<span class="fc" id="L65">      pw.println();</span>
+
+<span class="fc" id="L67">      pw.println();</span>
+<span class="fc" id="L68">      pw.println(&quot;# First dataset, Portofolio/Shares:&quot;);</span>
+<span class="fc" id="L69">      pw.println(&quot;# stock,quantity,purchasePrice&quot;);</span>
+<span class="fc" id="L70">      player</span>
+<span class="fc" id="L71">          .getPortfolio()</span>
+<span class="fc" id="L72">          .getShares()</span>
+<span class="fc" id="L73">          .forEach(</span>
+              (value) -&gt; {
+<span class="fc" id="L75">                Stock stock = value.getStock();</span>
+<span class="fc" id="L76">                String stockPrices =</span>
+<span class="fc" id="L77">                    stock.getPriceHistory().stream()</span>
+<span class="fc" id="L78">                        .map(BigDecimal::toString)</span>
+<span class="fc" id="L79">                        .collect(Collectors.joining(&quot;;&quot;));</span>
+
+<span class="fc" id="L81">                pw.println(</span>
+                    &quot;1,&quot;
+<span class="fc" id="L83">                        + stock.getCompany()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L85">                        + stock.getSymbol()</span>
+                        + &quot;,&quot;
+                        + stockPrices
+                        + &quot;,&quot;
+<span class="fc" id="L89">                        + value.getQuantity()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L91">                        + value.getQuantity());</span>
+<span class="fc" id="L92">              });</span>
+<span class="fc" id="L93">      pw.println();</span>
+<span class="fc" id="L94">      pw.println(&quot;# Second dataset, Purchases:&quot;);</span>
+<span class="fc" id="L95">      pw.println(&quot;# stock,quantity,purchasePrice,week&quot;);</span>
+<span class="fc" id="L96">      player</span>
+<span class="fc" id="L97">          .getTransactionArchive()</span>
+<span class="fc" id="L98">          .getPurchases()</span>
+<span class="fc" id="L99">          .forEach(</span>
+              (value) -&gt; {
+<span class="fc" id="L101">                Share purchasedShare = value.getShare();</span>
+
+<span class="fc" id="L103">                Stock stock = purchasedShare.getStock();</span>
+<span class="fc" id="L104">                String stockPrices =</span>
+<span class="fc" id="L105">                    stock.getPriceHistory().stream()</span>
+<span class="fc" id="L106">                        .map(BigDecimal::toString)</span>
+<span class="fc" id="L107">                        .collect(Collectors.joining(&quot;;&quot;));</span>
+
+<span class="fc" id="L109">                pw.println(</span>
+                    &quot;2,&quot;
+<span class="fc" id="L111">                        + stock.getCompany()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L113">                        + stock.getSymbol()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L115">                        + purchasedShare.getQuantity()</span>
+                        + &quot;,&quot;
+                        + stockPrices
+                        + &quot;,&quot;
+<span class="fc" id="L119">                        + purchasedShare.getPurchasePrice()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L121">                        + value.getWeek());</span>
+<span class="fc" id="L122">              });</span>
+
+<span class="fc" id="L124">      pw.println(&quot; &quot;);</span>
+<span class="fc" id="L125">      pw.println(&quot;# Thrid dataset, Sales:&quot;);</span>
+<span class="fc" id="L126">      pw.println(&quot;# stock,quantity,purchasePrice,week&quot;);</span>
+<span class="fc" id="L127">      player</span>
+<span class="fc" id="L128">          .getTransactionArchive()</span>
+<span class="fc" id="L129">          .getSales()</span>
+<span class="fc" id="L130">          .forEach(</span>
+              (value) -&gt; {
+<span class="fc" id="L132">                Share purchasedShare = value.getShare();</span>
+
+<span class="fc" id="L134">                Stock stock = purchasedShare.getStock();</span>
+<span class="fc" id="L135">                String stockPrices =</span>
+<span class="fc" id="L136">                    stock.getPriceHistory().stream()</span>
+<span class="fc" id="L137">                        .map(BigDecimal::toString)</span>
+<span class="fc" id="L138">                        .collect(Collectors.joining(&quot;;&quot;));</span>
+
+<span class="fc" id="L140">                pw.println(</span>
+                    &quot;3,&quot;
+<span class="fc" id="L142">                        + stock.getCompany()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L144">                        + stock.getSymbol()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L146">                        + purchasedShare.getQuantity()</span>
+                        + &quot;,&quot;
+                        + stockPrices
+                        + &quot;,&quot;
+<span class="fc" id="L150">                        + purchasedShare.getPurchasePrice()</span>
+                        + &quot;,&quot;
+<span class="fc" id="L152">                        + value.getWeek());</span>
+<span class="fc" id="L153">              });</span>
+
+<span class="nc" id="L155">    } catch (Exception e) {</span>
+<span class="nc" id="L156">      e.printStackTrace();</span>
+<span class="nc" id="L157">      return false;</span>
+<span class="fc" id="L158">    }</span>
+<span class="fc" id="L159">    System.out.println(&quot;Attempt to save file: &quot; + filename + &quot;; At resources/saves&quot;);</span>
+<span class="fc" id="L160">    return true;</span>
+  }
+
+  /**
+   * Loads a previously saved Player CSV file in a designated save folder. Usually invoke on {@link
+   * SaveManager}
+   *
+   * &lt;p&gt;Data is split into paragraphs: First LINE will be the players metadata:
+   * Name,startingMoney,currentMoney,difficulty,{challengeType}First paragraph will contain shares:
+   * 1,company,symbol,{prices},quantity,purchasePrice; Second paragraph will contain Purchases:
+   * 2,company,symbol,quantity,{prices},purchasePrice,week Thrid paragraph will contain Sales:
+   * 3,company,symbol,stock,quantity,{prices},purchasePrice,week
+   *
+   * &lt;p&gt;The first price is used as the initial price when creating the {@link Stock}, and the
+   * remaining prices are added to reconstruct the full price history.
+   *
+   * &lt;p&gt;Lines starting with '#' and empty lines are ignored.
+   *
+   * @param folderPath Full path, provided by {@link SaveManager}
+   * @return a reconstructed {@link Exchange} object based on the saved data
+   */
+  public static Player getPlayerSavedData(String folderPath) {
+<span class="fc" id="L182">    String csvfile = folderPath + &quot;/player.csv&quot;;</span>
+<span class="fc" id="L183">    String line = &quot;&quot;;</span>
+
+<span class="fc" id="L185">    Player player = null;</span>
+<span class="fc" id="L186">    Portfolio portfolio = new Portfolio();</span>
+<span class="fc" id="L187">    TransactionArchive transactionArchive = new TransactionArchive();</span>
+<span class="fc" id="L188">    String playerName = null;</span>
+<span class="fc" id="L189">    BigDecimal startingMoney = null;</span>
+<span class="fc" id="L190">    BigDecimal currentMoney = null;</span>
+<span class="fc" id="L191">    Difficulty difficulty = null;</span>
+<span class="fc" id="L192">    Map&lt;ChallengeType, Integer&gt; challengeMetadataMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L193">    boolean metadataLinePassed = false;</span>
+    try {
+<span class="fc" id="L195">      BufferedReader br = new BufferedReader(new FileReader(csvfile));</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">      while ((line = br.readLine()) != null) {</span>
+<span class="fc" id="L197">        String trimmedLine = line.trim();</span>
+
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        if (trimmedLine.isEmpty()) {</span>
+<span class="fc" id="L200">          continue;</span>
+        }
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (trimmedLine.startsWith(&quot;#&quot;)) {</span>
+<span class="fc" id="L203">          continue;</span>
+        }
+
+<span class="fc" id="L206">        String[] values = trimmedLine.split(&quot;,&quot;);</span>
+
+        // Just a normal print out
+<span class="fc" id="L209">        System.out.println(&quot;Length of line: &quot; + values.length);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        for (String value : values) {</span>
+<span class="fc" id="L211">          System.out.print(value.trim() + &quot; &quot;);</span>
+        }
+<span class="fc" id="L213">        System.out.print(&quot;\n&quot;);</span>
+
+<span class="pc bpc" id="L215" title="1 of 4 branches missed.">        if (values.length == 5 &amp;&amp; !metadataLinePassed) {</span>
+<span class="fc" id="L216">          metadataLinePassed = true;</span>
+<span class="fc" id="L217">          playerName = values[0];</span>
+<span class="fc" id="L218">          startingMoney = BigDecimal.valueOf(Double.parseDouble(values[1]));</span>
+<span class="fc" id="L219">          currentMoney = BigDecimal.valueOf(Double.parseDouble(values[2]));</span>
+<span class="fc" id="L220">          difficulty = Difficulty.valueOf(values[3]);</span>
+
+<span class="fc" id="L222">          String[] challengeString = values[4].split(&quot;\\|&quot;);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">          for (String s : challengeString) {</span>
+<span class="fc" id="L224">            String[] challangeMetadata = s.split(&quot;;&quot;);</span>
+<span class="fc" id="L225">            ChallengeType challengeType = ChallengeType.valueOf(challangeMetadata[0]);</span>
+<span class="fc" id="L226">            Integer timeCompleted = Integer.valueOf(challangeMetadata[1]);</span>
+
+<span class="fc" id="L228">            challengeMetadataMap.put(challengeType, timeCompleted);</span>
+          }
+<span class="fc" id="L230">          continue;</span>
+        }
+
+<span class="fc" id="L233">        System.out.println(&quot;Checkpoint 1&quot;);</span>
+<span class="fc" id="L234">        String[] stockPricesString = values[3].split(&quot;;&quot;);</span>
+<span class="fc" id="L235">        List&lt;BigDecimal&gt; stockPrices =</span>
+<span class="fc" id="L236">            Arrays.stream(stockPricesString).map(BigDecimal::new).toList();</span>
+<span class="fc" id="L237">        Stock savedStock = new Stock(values[0], values[1], stockPrices.getFirst());</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        for (int i = 1; i &lt; stockPrices.size(); i++) {</span>
+<span class="nc" id="L239">          savedStock.addNewSalesPrice(stockPrices.get(i));</span>
+        }
+<span class="fc" id="L241">        BigDecimal quantity = BigDecimal.valueOf(Double.parseDouble(values[4]));</span>
+<span class="fc" id="L242">        BigDecimal purchasePrice = BigDecimal.valueOf(Double.parseDouble(values[5]));</span>
+<span class="fc" id="L243">        Share savedShare = new Share(savedStock, quantity, purchasePrice);</span>
+<span class="pc bpc" id="L244" title="1 of 4 branches missed.">        switch (values[0]) {</span>
+<span class="fc" id="L245">          case &quot;1&quot; -&gt; portfolio.addShare(savedShare);</span>
+          case &quot;2&quot; -&gt; {
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">            if (values.length != 7) {</span>
+<span class="nc" id="L248">              throw new RuntimeException(&quot;Corrupted line&quot;);</span>
+            }
+<span class="fc" id="L250">            int savedWeek = Integer.valueOf(values[6]);</span>
+<span class="fc" id="L251">            Purchase savedPurchase = new Purchase(savedShare, savedWeek);</span>
+<span class="fc" id="L252">            transactionArchive.add(savedPurchase);</span>
+<span class="fc" id="L253">          }</span>
+          case &quot;3&quot; -&gt; {
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">            if (values.length != 7) {</span>
+<span class="nc" id="L256">              throw new RuntimeException(&quot;Corrupted line&quot;);</span>
+            }
+<span class="fc" id="L258">            int savedWeek = Integer.valueOf(values[6]);</span>
+<span class="fc" id="L259">            Sale savedSale = new Sale(savedShare, savedWeek);</span>
+<span class="fc" id="L260">            transactionArchive.add(savedSale);</span>
+<span class="fc" id="L261">          }</span>
+<span class="nc" id="L262">          default -&gt; throw new RuntimeException(&quot;Unexpected Line occurred&quot;);</span>
+        }
+<span class="fc" id="L264">      }</span>
+<span class="fc" id="L265">      player =</span>
+          new Player.Builder(playerName, startingMoney, difficulty)
+<span class="fc" id="L267">              .difficulty(difficulty)</span>
+<span class="fc" id="L268">              .currentMoney(currentMoney)</span>
+<span class="fc" id="L269">              .portfolio(portfolio)</span>
+<span class="fc" id="L270">              .transactionArchive(transactionArchive)</span>
+<span class="fc" id="L271">              .build();</span>
+<span class="fc" id="L272">      player.getChallengeManager().parseChallenges(challengeMetadataMap, player);</span>
+<span class="fc" id="L273">    } catch (Exception e) {</span>
+<span class="fc" id="L274">      System.out.println(&quot;Error when saving. Remember to add challanges after player creation&quot;);</span>
+<span class="fc" id="L275">      e.printStackTrace();</span>
+<span class="fc" id="L276">      throw new RuntimeException();</span>
+<span class="fc" id="L277">    }</span>
+<span class="fc" id="L278">    return player;</span>
+  }
+
+  /**
+   * Returns string of names of saves in saves folder
+   *
+   * @return list of names for folder in resoucres/saves
+   */
+  public static List&lt;String&gt; getPlayerSaveOptions() {
+<span class="fc" id="L287">    Path pathToDataset = Path.of(&quot;src/main/resources/saves&quot;);</span>
+<span class="fc" id="L288">    List&lt;String&gt; namesOfSaves = null;</span>
+<span class="fc" id="L289">    try (Stream&lt;Path&gt; stream = Files.list(pathToDataset)) {</span>
+<span class="fc" id="L290">      namesOfSaves =</span>
+<span class="fc" id="L291">          stream.filter(Files::isDirectory).map(p -&gt; p.getFileName().toString()).toList();</span>
+<span class="nc" id="L292">    } catch (IOException e) {</span>
+<span class="nc" id="L293">      throw new RuntimeException(&quot;Getting options failed: &quot; + e);</span>
+<span class="fc" id="L294">    }</span>
+<span class="fc" id="L295">    return namesOfSaves;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

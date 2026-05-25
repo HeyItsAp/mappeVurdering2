@@ -1,8 +1,8 @@
 # SaveFile for: TestPlayer
 
 # Player metadata:
-# name,startingMoney,currentMoney
-TestPlayer,5000,3000,EASY
+# name,startingMoney,currentMoney,{challenges}
+TestPlayer,5000,3000,EASY,UNIQUE_SHARE_REQUIREMENT;0
 
 
 # First dataset, Portofolio/Shares:

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Difficulty.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.gameEngine</a> &gt; <span class="el_source">Difficulty.java</span></div><h1>Difficulty.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.gameEngine;
+
+import java.math.BigDecimal;
+import ntnu.gruppe21.filehandler.HighScoreManager;
+import ntnu.gruppe21.gameEngine.challanges.Challenge;
+
+/**
+ * The enum dictates the difficulty and has allocated attributes that effect gameplay and final
+ * score. Follows a classic enum structure with a constructor.
+ */
+<span class="fc" id="L11">public enum Difficulty {</span>
+  /** EASY: Default value. 1 */
+<span class="fc" id="L13">  EASY(BigDecimal.ONE),</span>
+  /** Medium: Little harder means better scores/harder challenges. Integer value: 2 */
+<span class="fc" id="L15">  MEDIUM(BigDecimal.TWO),</span>
+
+  /** Hard: Harder means better scores/harder challenges. Integer value: 4 */
+<span class="fc" id="L18">  HARD(BigDecimal.TWO.multiply(BigDecimal.TWO)),</span>
+
+  /** Realistic: Harder means better scores/harder challenges. Integer value: 4 */
+<span class="fc" id="L21">  REALISTIC(BigDecimal.TEN);</span>
+
+  /**
+   * DifficultyMultiplier, Higher difficulty yields a better finalScore and little more difficult
+   * challanges This attribute reflects that by giving a better multiplier, used in {@link
+   * HighScoreManager} and effects challanges in {@link Challenge}
+   */
+  private final BigDecimal DifficultyMultiplier;
+
+  /**
+   * Attributes that effect gameplay:'
+   *
+   * @param DifficultyMultiplier Higher difficulty yields a better finalScore.
+   */
+<span class="fc" id="L35">  Difficulty(BigDecimal DifficultyMultiplier) {</span>
+<span class="fc" id="L36">    this.DifficultyMultiplier = DifficultyMultiplier;</span>
+<span class="fc" id="L37">  }</span>
+
+  /**
+   * Get-method for the DifficultyMultiplier
+   *
+   * @return DifficultMultiplier used in finalScore Calculations and challenges.
+   */
+  public BigDecimal getDifficultyMultiplier() {
+<span class="fc" id="L45">    return DifficultyMultiplier;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

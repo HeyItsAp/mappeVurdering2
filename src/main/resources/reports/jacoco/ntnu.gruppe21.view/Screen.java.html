@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Screen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.view</a> &gt; <span class="el_source">Screen.java</span></div><h1>Screen.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.view;
+
+import java.util.function.Supplier;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
+
+public class Screen extends HBox {
+  private Pane currentView;
+  private Button currentButton;
+
+<span class="nc" id="L12">  public Screen() {</span>
+<span class="nc" id="L13">    currentView = new TodayMenu();</span>
+<span class="nc" id="L14">    HBox.setHgrow(currentView, Priority.ALWAYS);</span>
+
+<span class="nc" id="L16">    getChildren().addAll(createSidebar(), currentView);</span>
+<span class="nc" id="L17">  }</span>
+
+  private void showView(Supplier&lt;Pane&gt; supplier) {
+<span class="nc" id="L20">    currentView = supplier.get();</span>
+<span class="nc" id="L21">    HBox.setHgrow(currentView, Priority.ALWAYS);</span>
+<span class="nc" id="L22">    getChildren().set(1, currentView);</span>
+<span class="nc" id="L23">  }</span>
+
+  private VBox createSidebar() {
+<span class="nc" id="L26">    VBox sidebar = new VBox();</span>
+
+<span class="nc" id="L28">    sidebar.setStyle(&quot;-fx-background-color: GRAY; -fx-padding: 20;&quot;);</span>
+<span class="nc" id="L29">    sidebar.prefWidthProperty().bind(this.widthProperty().multiply(0.2));</span>
+
+<span class="nc" id="L31">    sidebar.setStyle(&quot;-fx-background-color: #e8e6e1; -fx-padding: 24;&quot;);</span>
+<span class="nc" id="L32">    sidebar.setSpacing(4);</span>
+
+<span class="nc" id="L34">    Label title = new Label(&quot;Name&quot;);</span>
+<span class="nc" id="L35">    title.setStyle(&quot;-fx-font-size: 22px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L37">    Label subtitle = new Label(&quot;Level: Investor&quot;);</span>
+<span class="nc" id="L38">    subtitle.setStyle(&quot;-fx-font-size: 12px; -fx-text-fill: #888;&quot;);</span>
+
+<span class="nc" id="L40">    VBox money = new VBox(6);</span>
+<span class="nc" id="L41">    money.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-background-color: white;
+        -fx-background-radius: 8;
+        -fx-border-color: #c8c6c1;
+        -fx-border-radius: 8;
+        -fx-padding: 12;
+        &quot;&quot;&quot;);
+
+<span class="nc" id="L50">    Label moneyLabel = new Label(&quot;PORTFOLIO SUMMARY&quot;);</span>
+<span class="nc" id="L51">    moneyLabel.setStyle(&quot;-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L53">    Label balance = new Label(&quot;Net Worth:  78 476&quot;);</span>
+<span class="nc" id="L54">    balance.setStyle(&quot;-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;&quot;);</span>
+
+<span class="nc" id="L56">    Label netWorth = new Label(&quot;Balance:  643 634&quot;);</span>
+<span class="nc" id="L57">    netWorth.setStyle(&quot;-fx-font-size: 13px; -fx-text-fill: #555;&quot;);</span>
+
+<span class="nc" id="L59">    money.getChildren().addAll(moneyLabel, balance, netWorth);</span>
+
+<span class="nc" id="L61">    Button todayBtn = navBtn(&quot;Today&quot;, TodayMenu::new);</span>
+<span class="nc" id="L62">    currentButton = todayBtn;</span>
+<span class="nc" id="L63">    setSelectedStyle(currentButton);</span>
+
+<span class="nc" id="L65">    Region spacer = new Region();</span>
+<span class="nc" id="L66">    VBox.setVgrow(spacer, Priority.ALWAYS);</span>
+
+<span class="nc" id="L68">    Label week = new Label(&quot;Week N&quot;);</span>
+
+<span class="nc" id="L70">    Button advanceWeek = createAdvanceWeekBtn();</span>
+
+<span class="nc" id="L72">    sidebar</span>
+<span class="nc" id="L73">        .getChildren()</span>
+<span class="nc" id="L74">        .addAll(</span>
+            title,
+            subtitle,
+            money,
+<span class="nc" id="L78">            sectionLabel(&quot;PLAY&quot;),</span>
+            todayBtn,
+<span class="nc" id="L80">            navBtn(&quot;Market&quot;, ExchangeMenu::new),</span>
+<span class="nc" id="L81">            navBtn(&quot;My portfolio&quot;, PortfolioMenu::new),</span>
+<span class="nc" id="L82">            navBtn(&quot;History&quot;, ExchangeMenu::new),</span>
+<span class="nc" id="L83">            sectionLabel(&quot;LEVEL&quot;),</span>
+<span class="nc" id="L84">            navBtn(&quot;Progress&quot;, ExchangeMenu::new),</span>
+            spacer,
+            week,
+            advanceWeek);
+
+<span class="nc" id="L89">    return sidebar;</span>
+  }
+
+  private Label sectionLabel(String text) {
+<span class="nc" id="L93">    Label l = new Label(text);</span>
+<span class="nc" id="L94">    l.setStyle(&quot;-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-padding: 16 0 4 0;&quot;);</span>
+<span class="nc" id="L95">    return l;</span>
+  }
+
+  private Button navBtn(String text, Supplier&lt;Pane&gt; supplier) {
+<span class="nc" id="L99">    Button btn = new Button(&quot;  •  &quot; + text);</span>
+<span class="nc" id="L100">    btn.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L101">    btn.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        &quot;&quot;&quot;);
+<span class="nc" id="L111">    btn.setOnMouseEntered(</span>
+        ignored -&gt; {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">          if (btn != currentButton) setHoverStyle(btn);</span>
+<span class="nc" id="L114">        });</span>
+<span class="nc" id="L115">    btn.setOnMouseExited(</span>
+        ignored -&gt; {
+<span class="nc bnc" id="L117" title="All 2 branches missed.">          if (btn != currentButton) setUnselectedStyle(btn);</span>
+<span class="nc" id="L118">        });</span>
+<span class="nc" id="L119">    btn.setOnAction(</span>
+        ignored -&gt; {
+<span class="nc" id="L121">          showView(supplier);</span>
+<span class="nc" id="L122">          setUnselectedStyle(currentButton);</span>
+<span class="nc" id="L123">          currentButton = btn;</span>
+<span class="nc" id="L124">          setSelectedStyle(currentButton);</span>
+<span class="nc" id="L125">        });</span>
+<span class="nc" id="L126">    return btn;</span>
+  }
+
+  private void setHoverStyle(Button btn) {
+<span class="nc" id="L130">    btn.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: #d0ceca;
+        -fx-background-radius: 8;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        &quot;&quot;&quot;);
+<span class="nc" id="L141">  }</span>
+
+  private void setSelectedStyle(Button btn) {
+<span class="nc" id="L144">    btn.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-font-size: 14px;
+        -fx-text-fill: white;
+        -fx-background-color: #1a1a1a;
+        -fx-background-radius: 8;
+        -fx-padding: 6 10 6 10;
+        -fx-font-weight: bold;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        &quot;&quot;&quot;);
+<span class="nc" id="L156">  }</span>
+
+  private void setUnselectedStyle(Button btn) {
+<span class="nc" id="L159">    btn.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        &quot;&quot;&quot;);
+<span class="nc" id="L169">  }</span>
+
+  private Button createAdvanceWeekBtn() {
+<span class="nc" id="L172">    Button advanceWeek = new Button(&quot;Advance to week N+1&quot;);</span>
+<span class="nc" id="L173">    advanceWeek.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L174">    advanceWeek.setStyle(</span>
+        &quot;&quot;&quot;
+            -fx-background-color: #1a1a1a;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 12 0 12 0;
+            -fx-background-radius: 10;
+            -fx-cursor: hand;
+        &quot;&quot;&quot;);
+<span class="nc" id="L184">    advanceWeek.setOnMouseEntered(</span>
+        ignored -&gt;
+<span class="nc" id="L186">            advanceWeek.setStyle(</span>
+                &quot;&quot;&quot;
+            -fx-background-color: #333;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 12 0 12 0;
+            -fx-background-radius: 10;
+            -fx-cursor: hand;
+        &quot;&quot;&quot;));
+<span class="nc" id="L196">    advanceWeek.setOnMouseExited(</span>
+        ignored -&gt;
+<span class="nc" id="L198">            advanceWeek.setStyle(</span>
+                &quot;&quot;&quot;
+            -fx-background-color: #1a1a1a;
+            -fx-text-fill: white;
+            -fx-font-size: 14px;
+            -fx-font-weight: bold;
+            -fx-padding: 12 0 12 0;
+            -fx-background-radius: 10;
+            -fx-cursor: hand;
+        &quot;&quot;&quot;));
+<span class="nc" id="L208">    return advanceWeek;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

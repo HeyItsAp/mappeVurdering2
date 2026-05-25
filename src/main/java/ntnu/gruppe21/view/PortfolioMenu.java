@@ -3,10 +3,7 @@ package ntnu.gruppe21.view;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -14,8 +11,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class PortfolioMenu extends VBox {
-  public PortfolioMenu() {
+  private final Screen screen;
+
+  public PortfolioMenu(Screen screen) {
     super(20);
+    this.screen = screen;
     setStyle("-fx-padding: 20 20 30 20");
 
     Label title = new Label("Portfolio");
@@ -125,6 +125,18 @@ public class PortfolioMenu extends VBox {
     sharesCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().shares()));
     valueCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().value()));
     changeCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().change()));
+
+    table.setRowFactory(
+        tv -> {
+          TableRow<PortfolioMenu.HoldingRow> row = new TableRow<>();
+          row.setOnMouseClicked(
+              e -> {
+                if (!row.isEmpty()) {
+                  screen.showView(() -> new StockMenu());
+                }
+              });
+          return row;
+        });
 
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 12);
     companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 14);

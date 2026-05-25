@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
+
+/**
+ * Player object that contains all relevant data to play the game. Name, current money, {@link
+ * Portfolio}, {@link TransactionArchive}, {@link ChallengeManager} to get challenges, and {@link
+ * Difficulty}.
+ */
+public class Player {
+  /** Players name */
+  private final String name;
+
+  /** Starting money for the player */
+  private final BigDecimal startingMoney;
+
+  /** Current money for the player */
+  private BigDecimal currentMoney;
+
+  /** Players purchase portfolio */
+  private final Portfolio portfolio;
+
+  /** Players transaction archive */
+  private final TransactionArchive transactionArchive;
+
+  /** Players chosen difficulty, used for GUI */
+  private final Difficulty difficulty;
+
+  /**
+   * ChallengeManager, track challanges {@link ChallengeManager} Challenges need to be created after
+   * player creation, as challanges and player have necessarily tight coupling.
+   */
+  private final ChallengeManager challengeManager;
+
+  /**
+   * Creates a new Player with through a builder. Builder is at the bottom
+   *
+   * @param builder Builder, follows Builder Creational Pattern.
+   */
+<span class="fc" id="L44">  public Player(Builder builder) {</span>
+<span class="fc" id="L45">    this.name = builder.name;</span>
+<span class="fc" id="L46">    this.startingMoney = builder.startingMoney;</span>
+<span class="fc" id="L47">    this.currentMoney = builder.currentMoney;</span>
+<span class="fc" id="L48">    this.portfolio = builder.portfolio;</span>
+<span class="fc" id="L49">    this.transactionArchive = builder.transactionArchive;</span>
+<span class="fc" id="L50">    this.difficulty = builder.difficulty;</span>
+<span class="fc" id="L51">    this.challengeManager = builder.challengeManager;</span>
+<span class="fc" id="L52">  }</span>
+
+  /**
+   * Returns the name of the player.
+   *
+   * @return the name in question.
+   */
+  public String getName() {
+<span class="fc" id="L60">    return name;</span>
+  }
+
+  /**
+   * Returns the current money of the player.
+   *
+   * @return the current money in question.
+   */
+  public BigDecimal getCurrentMoney() {
+<span class="fc" id="L69">    return currentMoney;</span>
+  }
+
+  /**
+   * Returns the starting money of the player.
+   *
+   * @return the starting money in question.
+   */
+  public BigDecimal getStartingMoney() {
+<span class="fc" id="L78">    return startingMoney;</span>
+  }
+
+  /**
+   * Adds money to the player's current money.
+   *
+   * @param amount The amount of money in question.
+   */
+  public void addMoney(BigDecimal amount) {
+<span class="fc" id="L87">    this.currentMoney =</span>
+<span class="fc" id="L88">        this.currentMoney.add(Objects.requireNonNull(amount, &quot;Amount cannot be null&quot;));</span>
+<span class="fc" id="L89">  }</span>
+
+  /**
+   * Subtracts/Withdraws money from the player's current money.
+   *
+   * @param amount The amount of money in question.
+   */
+  public void withdrawMoney(BigDecimal amount) {
+<span class="fc" id="L97">    this.currentMoney =</span>
+<span class="fc" id="L98">        this.currentMoney.subtract(Objects.requireNonNull(amount, &quot;Amount cannot be null&quot;));</span>
+<span class="fc" id="L99">  }</span>
+
+  /**
+   * Returns the portfolio of the player.
+   *
+   * @return portfolio of the player.
+   */
+  public Portfolio getPortfolio() {
+<span class="fc" id="L107">    return portfolio;</span>
+  }
+
+  /**
+   * Returns the transaction archive of the player.
+   *
+   * @return Transaction archive/history of the player.
+   */
+  public TransactionArchive getTransactionArchive() {
+<span class="fc" id="L116">    return transactionArchive;</span>
+  }
+
+  /**
+   * Returns chosen difficulty
+   *
+   * @return Difficulty of player
+   */
+  public Difficulty getDifficulty() {
+<span class="fc" id="L125">    return difficulty;</span>
+  }
+
+  /**
+   * Returns challengeManager
+   *
+   * @return Manager class contain challanges
+   */
+  public ChallengeManager getChallengeManager() {
+<span class="fc" id="L134">    return challengeManager;</span>
+  }
+
+  /**
+   * Calculates and returns the net worth of the player.
+   *
+   * @return Net worth of the player.
+   */
+  public BigDecimal getNetWorth() {
+<span class="fc" id="L143">    return currentMoney.add(portfolio.getNetWorth());</span>
+  }
+
+  /**
+   * Calculates and returns the experience level of the player. Higher difficulties get a little
+   * bonus.
+   *
+   * @return A number representing the experience level. 1 = Novice, 2 = Investor, 3 = Speculator.
+   */
+  public int getStatus() {
+<span class="fc" id="L153">    int weeks = transactionArchive.countDistinctWeeks();</span>
+<span class="fc" id="L154">    BigDecimal bonusGrowthFactor =</span>
+        difficulty
+<span class="fc" id="L156">            .getDifficultyMultiplier()</span>
+<span class="fc" id="L157">            .divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L158">            .add(BigDecimal.ONE);</span>
+<span class="fc" id="L159">    BigDecimal gain =</span>
+<span class="fc" id="L160">        getNetWorth()</span>
+<span class="fc" id="L161">            .subtract(startingMoney)</span>
+<span class="fc" id="L162">            .divide(startingMoney, 8, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L163">            .multiply(bonusGrowthFactor);</span>
+
+<span class="pc bpc" id="L165" title="1 of 4 branches missed.">    if (weeks &gt;= 20 &amp;&amp; gain.compareTo(BigDecimal.ONE) &gt;= 0) {</span>
+<span class="fc" id="L166">      return 3;</span>
+<span class="fc bfc" id="L167" title="All 4 branches covered.">    } else if (weeks &gt;= 10 &amp;&amp; gain.compareTo(BigDecimal.valueOf(0.2)) &gt;= 0) {</span>
+<span class="fc" id="L168">      return 2;</span>
+    } else {
+<span class="fc" id="L170">      return 1;</span>
+    }
+  }
+
+  /**
+   * Standard builder that have base values that are necessary to make a new player. If necessary
+   * attributes can be changed. Challenges need to be created after player creation, as challanges
+   * and player have necessarily tight coupling.
+   */
+  public static class Builder {
+    private final String name;
+    private final BigDecimal startingMoney;
+    private BigDecimal currentMoney;
+    private Portfolio portfolio;
+    private TransactionArchive transactionArchive;
+    private Difficulty difficulty;
+    private ChallengeManager challengeManager;
+
+    /**
+     * Starts a builder object with the minimum attributes for a Player.
+     *
+     * @param name Name of the Player
+     * @param startingMoney Player chosen starting amount
+     * @param difficulty Difficulty.enum
+     */
+<span class="fc" id="L195">    public Builder(String name, BigDecimal startingMoney, Difficulty difficulty) {</span>
+<span class="fc" id="L196">      this.name = name;</span>
+<span class="fc" id="L197">      this.startingMoney = startingMoney;</span>
+<span class="fc" id="L198">      this.currentMoney = startingMoney;</span>
+<span class="fc" id="L199">      this.portfolio = new Portfolio();</span>
+<span class="fc" id="L200">      this.transactionArchive = new TransactionArchive();</span>
+<span class="fc" id="L201">      this.difficulty = difficulty;</span>
+<span class="fc" id="L202">      this.challengeManager = new ChallengeManager();</span>
+<span class="fc" id="L203">    }</span>
+
+    /**
+     * Set-method through builder.
+     *
+     * @param currentMoney currentMoney to be changed
+     * @return Builder with updated currentMoney
+     */
+    public Builder currentMoney(BigDecimal currentMoney) {
+<span class="fc" id="L212">      this.currentMoney = currentMoney;</span>
+<span class="fc" id="L213">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder.
+     *
+     * @param portfolio portfolio to be changed
+     * @return Builder with updated portfolio
+     */
+    public Builder portfolio(Portfolio portfolio) {
+<span class="fc" id="L223">      this.portfolio = portfolio;</span>
+<span class="fc" id="L224">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder.
+     *
+     * @param transactionArchive transactionArchive to be changed
+     * @return Builder with updated transactionArchive
+     */
+    public Builder transactionArchive(TransactionArchive transactionArchive) {
+<span class="fc" id="L234">      this.transactionArchive = transactionArchive;</span>
+<span class="fc" id="L235">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder.
+     *
+     * @param difficulty difficulty to be changed
+     * @return Builder with updated difficulty
+     */
+    public Builder difficulty(Difficulty difficulty) {
+<span class="fc" id="L245">      this.difficulty = difficulty;</span>
+<span class="fc" id="L246">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder.
+     *
+     * @param challengeManager challengeManager to be changed
+     * @return Builder with updated challengeManager
+     */
+    public Builder challengeManager(ChallengeManager challengeManager) {
+<span class="nc" id="L256">      this.challengeManager = challengeManager;</span>
+<span class="nc" id="L257">      return this;</span>
+    }
+
+    /**
+     * Build-method, finalizes all changes and returns a complete Player Object
+     *
+     * @return complete Player Object
+     */
+    public Player build() {
+<span class="fc" id="L266">      return new Player(this);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

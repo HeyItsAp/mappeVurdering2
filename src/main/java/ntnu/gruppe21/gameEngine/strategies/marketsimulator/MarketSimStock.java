@@ -1,6 +1,7 @@
 package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import ntnu.gruppe21.Stock;
 
 public class MarketSimStock extends Stock {
@@ -9,9 +10,9 @@ public class MarketSimStock extends Stock {
   private int dur;
   private int restingVal;
 
-  public MarketSimStock(String symbol, String company, BigDecimal salesPrice) {
-    super(symbol, company, salesPrice);
-    this.restingVal = (int) Math.round(salesPrice.doubleValue());
+  public MarketSimStock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
+    super(symbol, company, priceHistory);
+    this.restingVal = (int) Math.round(priceHistory.getLast().doubleValue());
     this.d = 0.0;
     this.mode = 0;
     this.dur = 5;

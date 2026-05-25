@@ -24,7 +24,7 @@ public class PlayerTest {
   /* Method to set up a Player instance before each test case is executed, ensuring a consistent test environment. */
   @BeforeEach
   public void setup() {
-    player1 = new Player("Player One", new BigDecimal(10000), Difficulty.EASY);
+    player1 = new Player.Builder("Player One", new BigDecimal(10000), Difficulty.EASY).build();
   }
 
   /* Method to verify that the getName() method returns the correct name of the player. */

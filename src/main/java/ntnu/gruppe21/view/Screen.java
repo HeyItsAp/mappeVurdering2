@@ -12,15 +12,14 @@ public class Screen extends StackPane {
 
   public Screen() {
     mainPane = new HBox();
-
-    currentView = new TodayMenu();
+    currentView = new TodayMenu(this);
     HBox.setHgrow(currentView, Priority.ALWAYS);
 
     mainPane.getChildren().addAll(createSidebar(), currentView);
     getChildren().add(mainPane);
   }
 
-  private void showView(Supplier<Pane> supplier) {
+  public void showView(Supplier<Pane> supplier) {
     currentView = supplier.get();
     HBox.setHgrow(currentView, Priority.ALWAYS);
     mainPane.getChildren().set(1, currentView);
@@ -62,7 +61,7 @@ public class Screen extends StackPane {
 
     money.getChildren().addAll(moneyLabel, balance, netWorth);
 
-    Button todayBtn = navBtn("Today", TodayMenu::new);
+    Button todayBtn = navBtn("Today", () -> new TodayMenu(this));
     currentButton = todayBtn;
     setSelectedStyle(currentButton);
 
@@ -81,11 +80,11 @@ public class Screen extends StackPane {
             money,
             sectionLabel("PLAY"),
             todayBtn,
-            navBtn("Market", ExchangeMenu::new),
-            navBtn("My portfolio", PortfolioMenu::new),
-            navBtn("History", ExchangeMenu::new),
+            navBtn("Market", () -> new ExchangeMenu(this)),
+            navBtn("My portfolio", () -> new PortfolioMenu(this)),
+            navBtn("History", () -> new ExchangeMenu(this)),
             sectionLabel("LEVEL"),
-            navBtn("Progress", ExchangeMenu::new),
+            navBtn("Progress", () -> new ExchangeMenu(this)),
             spacer,
             week,
             advanceWeek);

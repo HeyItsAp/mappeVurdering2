@@ -13,15 +13,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.gameEngine.strategies.StrategyRegister;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 
 /**
- * TODO: Implement handling of different strategies to FilehandlerExchange.java Utility class
- * responsible for handling file input and output operations related to {@link Exchange} and {@link
+ * Responsible for handling file input and output operations related to {@link Exchange} and {@link
  * Stock} objects.
  *
  * <p>This class provides functionality for: Saving exchange data to CSV files Loading initial
@@ -39,20 +42,29 @@ public class FilehandlerExchange {
    *
    * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes
    * exchange name, difficulty during playtime and current week (as comments) All stocks with their
-   * symbol, company name, and price history
+   * symbol, company name, and price history AND Extras stock attributes if the strategy implemented
    *
    * <p>Uses comma as the seperator
    *
    * @param exchange the {@link Exchange} object to be saved
-   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
+   * @param folderPath THE FULL PATH, provided by {@link SaveManager}
    * @return the filename (without path) of the saved file
    */
   public static boolean saveExchangeData(Exchange exchange, String folderPath) {
     String filename = folderPath + "/exchangeData.csv";
-    try (PrintWriter pw = new PrintWriter(filename)) {
+    PriceStrategy strategy = exchange.getStrategy();
+    try (PrintWriter pw =
+        new PrintWriter(new java.io.BufferedWriter(new java.io.FileWriter(filename)))) {
       pw.println("# Save on Exchange: " + exchange.getName() + ", Week: " + exchange.getWeek());
       pw.println("# Ticker,Name,{Prices}");
-      pw.println(exchange.getName() + "," + exchange.getDifficulty().toString());
+      pw.println(
+          exchange.getName()
+              + ","
+              + exchange.getWeek()
+              + ","
+              + exchange.getDifficulty().toString()
+              + ","
+              + strategy.getStrategyId());
       pw.println(" ");
 
       exchange
@@ -64,7 +76,10 @@ public class FilehandlerExchange {
                         .map(BigDecimal::toString)
                         .collect(Collectors.joining(";"));
 
-                pw.println(value.getSymbol() + "," + value.getCompany() + "," + prices);
+                String extras = strategy.saveStockExtras(value); // If any extras within stock.
+
+                pw.println(
+                    value.getSymbol() + "," + value.getCompany() + "," + prices + "," + extras);
               });
 
     } catch (Exception e) {
@@ -76,8 +91,7 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Loads initial exchange data from a predefined CSV file REQUIRED method in del 2 Probably
-   * uploaded on BlackBoard on some point
+   * Loads initial exchange data from a predefined
    *
    * <p>The file is expected to be located at: {@code resources/Exchanges/exchangeDataSet1.csv}
    *
@@ -86,10 +100,16 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
+   * @param filename filename to a csv file in resources/datasets
    * @return a new {@link Exchange} object populated with stocks from the file
    */
-  public static Exchange getExchangeData() {
-    String csvfile = "src/main/resources/datasets/exchangeDataSet1.csv";
+  public static Exchange getExchangeDataset(String filename) {
+    String csvfile = DATASETS_ROOT + filename + ".csv";
+    Path fullPath = Path.of(csvfile);
+    if (!validFormat(fullPath)) {
+      throw new RuntimeException("Attempted getting dataset " + filename + ".csv, is invalid");
+    }
+
     String line = "";
     List<Stock> listOfStocks = new ArrayList<>();
     try {
@@ -125,21 +145,23 @@ public class FilehandlerExchange {
    * Loads a previously saved exchange state from a CSV file in a designated folder Usually invoke
    * on {@link SaveManager}
    *
-   * <p>Each data (expect the first) row must follow the format:
-   * Ticker,CompanyName,price1;price2;price3;...
+   * <p>First row contains the Metadata: Name,week,difficulty,Strategy THIS ONLY APPLIES TO SAVES,
+   * not regular/imported exchange data
    *
-   * <p>First row contains the Metadata: Name,difficulty. THIS ONLY APPLIES TO SAVES, not
-   * regular/imported exchange data
+   * <p>Each data (expect the first) row must follow the format:
+   * Ticker,CompanyName,price1;price2;price3;... Strategies might implement extra stock data, for
+   * example {@link MarketSimulator}. Extras will then be inserted into a fourth row.
+   * Ticker,CompanyName,price1;price2;price3,0|21|9|0
    *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
    * remaining prices are added to reconstruct the full price history.
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderPath The full path which INCLUDES THE SLOT FOLDER.
+   * @param folderPath THE FULL PATH, provided by {@link SaveManager}
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
-  public static Exchange getSaveData(String folderPath) {
+  public static Exchange getExchangeSaveData(String folderPath) {
     String csvfile = folderPath + "/exchangeData.csv";
     String line = "";
 
@@ -147,6 +169,9 @@ public class FilehandlerExchange {
     List<Stock> listOfStocks = new ArrayList<>();
     String exchangeName = "";
     Difficulty difficulty = null;
+    PriceStrategy strategy = null;
+    boolean basedMetaDataline = false;
+    int week = 1;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
       while ((line = br.readLine()) != null) {
@@ -167,23 +192,35 @@ public class FilehandlerExchange {
         }
         System.out.print("\n");
 
-        if (values.length == 2) {
+        if (values.length == 4 && !basedMetaDataline) {
+          basedMetaDataline = true;
           exchangeName = values[0];
-          difficulty = Difficulty.valueOf(values[1]);
+          week = Integer.parseInt(values[1]);
+          difficulty = Difficulty.valueOf(values[2]);
+          System.out.println(values[3]);
+          strategy = StrategyRegister.fromId(values[3]);
           continue;
         }
 
         String[] savedPricesString = values[2].split(";");
-        List<BigDecimal> savedPrices =
-            Arrays.stream(savedPricesString).map(BigDecimal::new).toList();
-        Stock stock = new Stock(values[0], values[1], savedPrices.getFirst());
-        for (int i = 1; i < savedPrices.size(); i++) {
-          stock.addNewSalesPrice(savedPrices.get(i));
-        }
+        ArrayList<BigDecimal> savedPrices = new ArrayList<>();
+        Arrays.stream(savedPricesString).map(BigDecimal::new).forEach(savedPrices::add);
+
+        Stock stock = strategy.createStock(values[0], values[1], savedPrices);
         listOfStocks.add(stock);
+
+        // if there are extra stuff, add it to stock.
+        if (values.length == 4 && !values[3].isBlank()) {
+          strategy.deserializeStockExtras(stock, values[3]);
+        }
       }
-      exchange = new Exchange.Builder(exchangeName).stockMap(listOfStocks).build();
-      exchange.setDifficulty(difficulty);
+      exchange =
+          new Exchange.Builder(exchangeName)
+              .strategy(strategy)
+              .difficulty(difficulty)
+              .week(week)
+              .stockMap(listOfStocks)
+              .build();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -194,8 +231,8 @@ public class FilehandlerExchange {
    * Method to import your own Exchange Data in a valid csv format that resembles ours.
    *
    * <p>Should be able to access the systems file explorer, search for a csv file, add it and be
-   * sent into the {@link resources/datasets} folder. This method cannot be Unit tested as it
-   * incorporates GUI dialogs which cannot be tested.
+   * sent into the resources/datasets folder. This method cannot be Unit tested as it incorporates
+   * GUI dialogs which cannot be tested.
    *
    * @return true/false based on if it worked or not.
    */
@@ -239,6 +276,7 @@ public class FilehandlerExchange {
    *   <li>Third column is parsable to BigDecimal
    * </ul>
    *
+   * @param filePath The file path to the dataset
    * @return true/false based on if the selected is valid format or not
    */
   public static boolean validFormat(Path filePath) {
@@ -255,7 +293,10 @@ public class FilehandlerExchange {
         if (values.length != 3) return false;
 
         try {
-          new BigDecimal(values[2].trim()); // price must be a number
+          BigDecimal importedNumber = new BigDecimal(values[2].trim()); // price must be a number
+          if (importedNumber.compareTo(BigDecimal.ZERO) < 0) {
+            throw new NumberFormatException();
+          }
         } catch (NumberFormatException e) {
           return false;
         }
@@ -270,17 +311,34 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Helper function for {@link #importExternalData()} method that copies the selected csv file to
-   * the {@link resources/datasets} folder to be selected later.
+   * Helper function for #importExternalData() method that copies the selected csv file to the
+   * resources/datasets folder to be selected later.
    *
    * @param source Selected file during ui file selecting
    * @return Destination
-   * @throws IOException, if something wrong. Catched in {@link #importExternalData()} method
+   * @throws IOException if something wrong. Caught in #importExternalData() method
    */
   public static Path copyToDatasets(Path source) throws IOException {
     Path destination = Paths.get(DATASETS_ROOT + source.getFileName());
     Files.createDirectories(Paths.get(DATASETS_ROOT));
     Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     return destination;
+  }
+
+  /**
+   * Returns all (should be) valid datasets in datasets folder
+   *
+   * @return list of names to valid datasets
+   */
+  public static List<String> getExchangeDatasetOptions() {
+    Path pathToDataset = Path.of(DATASETS_ROOT);
+    List<String> namesOfDatasets = null;
+    try (Stream<Path> stream = Files.list(pathToDataset)) {
+      namesOfDatasets =
+          stream.filter(Files::isRegularFile).map(p -> p.getFileName().toString()).toList();
+    } catch (IOException e) {
+      throw new RuntimeException("Getting options failed: " + e);
+    }
+    return namesOfDatasets;
   }
 }

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Challenge.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.gameEngine.challanges</a> &gt; <span class="el_source">Challenge.java</span></div><h1>Challenge.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.gameEngine.challanges;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import ntnu.gruppe21.Player;
+import ntnu.gruppe21.gameEngine.Difficulty;
+
+/**
+ * Wraps the {@link ChallengeType}, gives it a visual description and has functions to check if
+ * player has completed the challange, and get advance into a new challange.
+ *
+ * &lt;p&gt;Challenges needs to be created after player creation, as players chosen starting money effects
+ * certain challanges. Difficulty effects challenges by making it more difficult or not.
+ */
+public class Challenge {
+  /** {@link ChallengeType} */
+  private final ChallengeType challengeType;
+
+  // Difficulty effects challenges by making it more difficult or not.
+  private final Difficulty difficulty;
+
+  /**
+   * Description, more or less a progressbar. Displays your progress and challange description from
+   * {@link ChallengeType} *
+   */
+  private String description;
+
+  /**
+   * Depends on the {@link ChallengeType} - {@code UNIQUE_SHARE_REQUIREMENT}. Will be low integer
+   * that keeps rising - {@code BALANCE_REQUIREMENT}. Based on starting money
+   */
+  private int targetValue;
+
+  // Standard boolean to mark if challenge is completed or not
+  private boolean completed;
+
+  // Standard counter for how many times it has been completed.
+  private int timesCompleted;
+
+  /**
+   * Creates a uncompleted challenge of {@link ChallengeType} and {@link Difficulty}.
+   *
+   * @param challengeType Right now, can be of two types.
+   * @param difficulty effect how difficult the challenge will be by updating targetValue
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   */
+<span class="fc" id="L47">  public Challenge(ChallengeType challengeType, Difficulty difficulty, Player player) {</span>
+<span class="fc" id="L48">    this.challengeType = challengeType;</span>
+<span class="fc" id="L49">    this.difficulty = difficulty;</span>
+<span class="fc" id="L50">    this.completed = false;</span>
+<span class="fc" id="L51">    this.targetValue = setInitialValue(challengeType, difficulty, player);</span>
+<span class="fc" id="L52">    this.description = challengeType.getChallengeTitle() + &quot;: 0 / &quot; + targetValue;</span>
+<span class="fc" id="L53">    this.timesCompleted = 0;</span>
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * Creates previously completed challenge of {@link ChallengeType} and {@link Difficulty}. Evoked
+   * when getting a saved challenge. For getting the right values, advances the challanges by how
+   * many times it has been completed. Forces the challenge to be completed before advancing. Then
+   * sets it back to right values
+   *
+   * @param challengeType Right now, can be of two types.
+   * @param difficulty effect how difficult the challenge will be by updating targetValue
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   * @param timesCompleted number of times this has previously been completed
+   */
+  public Challenge(
+<span class="fc" id="L68">      ChallengeType challengeType, Difficulty difficulty, Player player, int timesCompleted) {</span>
+<span class="fc" id="L69">    this.challengeType = challengeType;</span>
+<span class="fc" id="L70">    this.difficulty = difficulty;</span>
+
+<span class="fc" id="L72">    this.completed = true;</span>
+<span class="fc" id="L73">    this.targetValue = setInitialValue(challengeType, difficulty, player);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    for (int i = 0; i &lt; timesCompleted; i++) {</span>
+<span class="fc" id="L75">      advanceChallenge(1, player);</span>
+<span class="fc" id="L76">      this.completed = true;</span>
+    }
+<span class="fc" id="L78">    this.completed = false;</span>
+<span class="fc" id="L79">    this.timesCompleted = timesCompleted;</span>
+<span class="fc" id="L80">  }</span>
+
+  /**
+   * Updates the visual/progress/description of the challenge.
+   *
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its
+   *     requires.
+   * @param challengeType Can be of two different type and have different functions.
+   */
+  public void refreshDescription(Player player, ChallengeType challengeType) {
+<span class="fc" id="L90">    description =</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        switch (challengeType) {</span>
+          case UNIQUE_SHARE_REQUIREMENT -&gt;
+<span class="fc" id="L93">              challengeType.getChallengeTitle()</span>
+                  + &quot;: &quot;
+<span class="fc" id="L95">                  + player.getPortfolio().countDistinctStock()</span>
+                  + &quot; / &quot;
+                  + targetValue;
+          case BALANCE_REQUIREMENT -&gt;
+<span class="fc" id="L99">              challengeType.getChallengeTitle()</span>
+                  + &quot;: &quot;
+<span class="fc" id="L101">                  + player.getCurrentMoney()</span>
+                  + &quot; / &quot;
+                  + targetValue;
+        };
+<span class="fc" id="L105">  }</span>
+
+  /**
+   * Calculates the INITIAL goal requirements based on difficulty and challenge. Method contains
+   * base values for each type that is then modified by {@link Difficulty} to produce the final
+   * requirement to complete the challenge.
+   *
+   * @param challengeType Right now, can be of two types. Different types use different base values
+   *     and multipliers
+   * @param difficulty effects base values to create more demanding challenges
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   * @return new Initial requirement
+   */
+  private int setInitialValue(ChallengeType challengeType, Difficulty difficulty, Player player) {
+<span class="fc" id="L119">    int baseBalanceRequirement = 0;</span>
+<span class="fc" id="L120">    int baseUniqueStock = 2;</span>
+    try {
+<span class="fc" id="L122">      baseBalanceRequirement =</span>
+<span class="fc" id="L123">          player.getCurrentMoney().divide(BigDecimal.TWO, RoundingMode.HALF_UP).intValue();</span>
+<span class="nc" id="L124">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L125">      throw new RuntimeException(&quot;Starting ammount is invalid for challenge: &quot; + e);</span>
+<span class="fc" id="L126">    }</span>
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">    return switch (challengeType) {</span>
+      case UNIQUE_SHARE_REQUIREMENT -&gt;
+<span class="pc bpc" id="L130" title="2 of 4 branches missed.">          switch (difficulty) {</span>
+<span class="fc" id="L131">            case EASY -&gt; baseUniqueStock;</span>
+<span class="nc" id="L132">            case MEDIUM -&gt; baseUniqueStock + 2;</span>
+<span class="fc" id="L133">            case HARD -&gt; baseUniqueStock + 4;</span>
+<span class="nc" id="L134">            case REALISTIC -&gt; baseUniqueStock + 8;</span>
+          };
+      case BALANCE_REQUIREMENT -&gt;
+<span class="fc bfc" id="L137" title="All 3 branches covered.">          switch (difficulty) {</span>
+<span class="fc" id="L138">            case EASY -&gt; baseBalanceRequirement;</span>
+<span class="fc" id="L139">            case MEDIUM -&gt; baseBalanceRequirement + (baseBalanceRequirement / 100 * 15); //</span>
+<span class="fc" id="L140">            case HARD, REALISTIC -&gt; baseBalanceRequirement + (baseBalanceRequirement / 100 * 25);</span>
+              // Hard Enough as it is because of change rate among stocks
+          };
+    };
+  }
+
+  /**
+   * Checks if challenge is completed by player by going through values according to {@link
+   * ChallengeType}
+   *
+   * @param player Player object to check stats
+   * @return {@code True} or {@code False} based on if it fills the requirement
+   */
+  public boolean checkCompletion(Player player) {
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">    if (completed) return true;</span>
+
+<span class="fc" id="L156">    System.out.println(player.getCurrentMoney());</span>
+<span class="fc" id="L157">    System.out.println(targetValue);</span>
+
+<span class="fc" id="L159">    boolean done =</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        switch (challengeType) {</span>
+          case BALANCE_REQUIREMENT -&gt;
+<span class="fc bfc" id="L162" title="All 2 branches covered.">              player.getCurrentMoney().compareTo(BigDecimal.valueOf(targetValue)) &gt;= 0;</span>
+          case UNIQUE_SHARE_REQUIREMENT -&gt;
+<span class="fc bfc" id="L164" title="All 2 branches covered.">              player.getPortfolio().countDistinctStock() &gt;= targetValue;</span>
+        };
+<span class="fc bfc" id="L166" title="All 2 branches covered.">    if (done) completed = true;</span>
+<span class="fc" id="L167">    return done;</span>
+  }
+
+  /**
+   * Calculates the A NEW goal requirements based on initial goal. Right now does a simple
+   * arithmetic addition to calculate new goal. One of params is {@code newWeek} (which this method
+   * doesn't use) but opens for interesting ways to calculate new goals.
+   *
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   * @param newWeek Unnecessary parameter, but opens for development.
+   */
+  public void advanceChallenge(int newWeek, Player player) {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">    if (!completed) throw new IllegalStateException(&quot;Challenge is not completed&quot;);</span>
+<span class="fc" id="L180">    targetValue =</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        switch (challengeType) {</span>
+          case UNIQUE_SHARE_REQUIREMENT -&gt;
+<span class="fc" id="L183">              switch (difficulty) {</span>
+<span class="fc" id="L184">                case EASY, MEDIUM, HARD, REALISTIC -&gt; targetValue + 1;</span>
+              };
+          case BALANCE_REQUIREMENT -&gt;
+<span class="fc" id="L187">              switch (difficulty) {</span>
+<span class="fc" id="L188">                case EASY, MEDIUM, HARD, REALISTIC -&gt; targetValue + (targetValue * 2 / 100);</span>
+              };
+        };
+<span class="fc" id="L191">    completed = false;</span>
+<span class="fc" id="L192">    refreshDescription(player, challengeType);</span>
+<span class="fc" id="L193">  }</span>
+
+  /**
+   * Get-method for completed
+   *
+   * @return True/false
+   */
+  public boolean isCompleted() {
+<span class="fc" id="L201">    return completed;</span>
+  }
+
+  /**
+   * Get-method for attribute description
+   *
+   * @return description
+   */
+  public String getDescription() {
+<span class="fc" id="L210">    return description;</span>
+  }
+
+  /**
+   * Get-method for enum challengeType
+   *
+   * @return enum challengeType
+   */
+  public ChallengeType getChallengeType() {
+<span class="fc" id="L219">    return challengeType;</span>
+  }
+
+  /**
+   * Get-method for int timesCompleted
+   *
+   * @return number of times the challenge completed
+   */
+  public int getTimesCompleted() {
+<span class="fc" id="L228">    return timesCompleted;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
