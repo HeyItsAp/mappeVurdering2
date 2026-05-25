@@ -2,8 +2,10 @@
     # testGETsaveslot means these files ARE NOT subject to change when testing
 # Save on Exchange: HistoryTest, Week: 1
 # Ticker,Name,{Prices}
-HistoryTest,EASY
+HistoryTest,1,EASY,STANDARD
 
-NVDA,Nvidia,191.27
+NVDA,Nvidia,191.27;192.21
 HST,HistoryCo,100;110
 MSFT,Microsoft,404.68;312.12
+CHAT,chatDIH,414.68;3122.12
+DIH,Dihsoft,412.68;32.12

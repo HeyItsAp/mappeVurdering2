@@ -9,6 +9,10 @@ package ntnu.gruppe21;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+/**
+ * Represents a realistic Share of an stock containing the {@link Stock}, amount of the stock and
+ * purchase price.
+ */
 public class Share {
   /* The stock that this share represents */
   private final Stock stock;

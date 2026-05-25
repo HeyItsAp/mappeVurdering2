@@ -5,6 +5,7 @@ package ntnu.gruppe21;
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,11 @@ import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
-/** TODO: Should add another constructor to handle saved exchanges. */
+/**
+ * Represents a realistic exchange with list of stock and the ability to make a transaction.
+ * Incorporates specific game mechanic, advancing. Advancing updates the week counter and updates
+ * prices of each stock.
+ */
 public class Exchange {
   /* Name of exchange */
   private final String name;
@@ -97,6 +102,15 @@ public class Exchange {
    */
   public TransactionFactory getTransactionFactory() {
     return transactionFactory;
+  }
+
+  /**
+   * Getter for a {@link PriceStrategy} object
+   *
+   * @return {@link PriceStrategy} object
+   */
+  public PriceStrategy getStrategy() {
+    return strategy;
   }
 
   /**
@@ -257,40 +271,82 @@ public class Exchange {
     private int week = 1;
     private Map<String, Stock> stockMap = Map.of();
 
+    /**
+     * Starts a builder object with the minimum for an Exchange, the name
+     *
+     * @param name Name for the Exchange
+     */
     public Builder(String name) {
       this.name = name;
       this.transactionFactory = new TransactionFactory();
     }
 
+    /**
+     * Set-method through builder.
+     *
+     * @param strategy Strategy to be changed
+     * @return Builder with updated strategy
+     */
     public Builder strategy(PriceStrategy strategy) {
       this.strategy = strategy;
       return this;
     }
 
+    /**
+     * Set-method through builder. Stock go through strategy stock creation factory
+     *
+     * @param stocks Strategy to be changed
+     * @return Builder with updated strategy
+     */
     public Builder stockMap(List<Stock> stocks) {
+
       List<Stock> strategySpecificStock =
           stocks.stream()
               .map(
-                  stock ->
-                      strategy.createStock(
-                          stock.getSymbol(), stock.getCompany(), stock.getSalesPrice()))
+                  stock -> {
+                    Stock created =
+                        strategy.createStock(
+                            stock.getSymbol(),
+                            stock.getCompany(),
+                            new ArrayList<>((stock.getPriceHistory())));
+                    strategy.copyStockState(stock, created); // delegates to strategy
+                    return created;
+                  })
               .toList();
+
       this.stockMap =
           strategySpecificStock.stream()
               .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));
       return this;
     }
 
+    /**
+     * Set-method through builder. Stock go through strategy stock creation factory
+     *
+     * @param difficulty difficulty to be changed
+     * @return Builder with updated difficulty
+     */
     public Builder difficulty(Difficulty difficulty) {
       this.difficulty = difficulty;
       return this;
     }
 
+    /**
+     * Set-method through builder.
+     *
+     * @param week week to be changed
+     * @return Builder with updated week
+     */
     public Builder week(int week) {
       this.week = week;
       return this;
     }
 
+    /**
+     * Build-method, finalizes all changes and returns a complete Exchange Object
+     *
+     * @return complete Exchange Object
+     */
     public Exchange build() {
       return new Exchange(this);
     }

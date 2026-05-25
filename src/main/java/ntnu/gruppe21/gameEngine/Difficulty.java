@@ -9,9 +9,15 @@ import ntnu.gruppe21.gameEngine.challanges.Challenge;
  * score. Follows a classic enum structure with a constructor.
  */
 public enum Difficulty {
+  /** EASY: Default value. 1 */
   EASY(BigDecimal.ONE),
+  /** Medium: Little harder means better scores/harder challenges. Integer value: 2 */
   MEDIUM(BigDecimal.TWO),
+
+  /** Hard: Harder means better scores/harder challenges. Integer value: 4 */
   HARD(BigDecimal.TWO.multiply(BigDecimal.TWO)),
+
+  /** Realistic: Harder means better scores/harder challenges. Integer value: 4 */
   REALISTIC(BigDecimal.TEN);
 
   /**
@@ -30,7 +36,11 @@ public enum Difficulty {
     this.DifficultyMultiplier = DifficultyMultiplier;
   }
 
-  /* Getters */
+  /**
+   * Get-method for the DifficultyMultiplier
+   *
+   * @return DifficultMultiplier used in finalScore Calculations and challenges.
+   */
   public BigDecimal getDifficultyMultiplier() {
     return DifficultyMultiplier;
   }

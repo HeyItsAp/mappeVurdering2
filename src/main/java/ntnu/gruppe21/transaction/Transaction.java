@@ -42,5 +42,11 @@ public abstract class Transaction {
     committed = true;
   }
 
+  /**
+   * When making a Transaction, commit is the final check before money is withdrawn/added.
+   *
+   * @param player Player object contain current money and etc.
+   * @throws TransactionException Unique Exception
+   */
   public abstract void commit(Player player) throws TransactionException;
 }

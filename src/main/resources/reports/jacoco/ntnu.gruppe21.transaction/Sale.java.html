@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sale.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.transaction</a> &gt; <span class="el_source">Sale.java</span></div><h1>Sale.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.transaction;
+
+import ntnu.gruppe21.Player;
+import ntnu.gruppe21.Share;
+import ntnu.gruppe21.transaction.calculators.SaleCalculator;
+
+/** Class representing a sale. */
+public class Sale extends Transaction {
+  /**
+   * Creates a new sale.
+   *
+   * @param share share to be sold.
+   * @param week week of sale.
+   */
+  public Sale(Share share, int week) {
+<span class="fc" id="L16">    var calculator = new SaleCalculator(share);</span>
+
+<span class="fc" id="L18">    super(share, week, calculator);</span>
+<span class="fc" id="L19">  }</span>
+
+  public void commit(Player player) throws TransactionException {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">    if (isCommitted()) {</span>
+<span class="fc" id="L23">      throw new TransactionException(&quot;Transaction is already committed.&quot;);</span>
+    }
+
+<span class="fc" id="L26">    player.getPortfolio().removeShare(getShare());</span>
+
+<span class="fc" id="L28">    player.addMoney(getCalculator().calculateTotal());</span>
+
+<span class="fc" id="L30">    player.getTransactionArchive().add(this);</span>
+
+<span class="fc" id="L32">    markCommitted();</span>
+<span class="fc" id="L33">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

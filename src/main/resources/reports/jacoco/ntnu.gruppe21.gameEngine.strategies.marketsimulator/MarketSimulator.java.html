@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MarketSimulator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.gameEngine.strategies.marketsimulator</a> &gt; <span class="el_source">MarketSimulator.java</span></div><h1>MarketSimulator.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+
+/**
+ * Java translation of the Cookie Clicker bank minigame's stock price advancement logic
+ * (M.calculateNewPrice).
+ */
+<span class="fc" id="L16">public class MarketSimulator implements PriceStrategy {</span>
+
+  // Market modes — each biases momentum in a different direction.
+  public static final int MODE_STABLE = 0; // slow random walk around resting value
+  public static final int MODE_SLOW_RISE = 1; // gradual upward bias
+  public static final int MODE_SLOW_FALL = 2; // gradual downward bias
+  public static final int MODE_FAST_RISE = 3; // rapid price gains
+  public static final int MODE_FAST_FALL = 4; // rapid price drops
+  public static final int MODE_CHAOTIC = 5; // high volatility, unpredictable swings
+
+<span class="fc" id="L26">  private final Random random = new Random();</span>
+
+  // Feature: Chaos modifier
+  // A 0.0–1.0 multiplier that amplifies chaos and volatility across all stocks.
+  // Set to 0.0 (default) to leave it inert.
+<span class="fc" id="L31">  private double chaosModifier = 0.0;</span>
+
+  @Override
+  public Stock createStock(String symbol, String company, ArrayList&lt;BigDecimal&gt; priceHistory) {
+<span class="fc" id="L35">    return new MarketSimStock(symbol, company, priceHistory); // own type</span>
+  }
+
+  @Override
+  public String getStrategyId() {
+<span class="fc" id="L40">    return &quot;MARKET_SIMULATOR&quot;;</span>
+  }
+
+  /**
+   * When saving returns a extra line with the extra attributes for {@link MarketSimStock}
+   *
+   * @param stock stock
+   * @return line with the extra attributes
+   */
+  @Override
+  public String saveStockExtras(Stock stock) {
+<span class="fc" id="L51">    MarketSimStock stockExtra = (MarketSimStock) stock;</span>
+<span class="fc" id="L52">    return stockExtra.getD()</span>
+        + &quot;|&quot;
+<span class="fc" id="L54">        + stockExtra.getMode()</span>
+        + &quot;|&quot;
+<span class="fc" id="L56">        + stockExtra.getDur()</span>
+        + &quot;|&quot;
+<span class="fc" id="L58">        + stockExtra.getRestingVal();</span>
+  }
+
+  /**
+   * Parses extras to add to strategy specific stock
+   *
+   * @param stock
+   * @param extras
+   */
+  @Override
+  public void deserializeStockExtras(Stock stock, String extras) {
+<span class="fc" id="L69">    MarketSimStock s = (MarketSimStock) stock;</span>
+<span class="fc" id="L70">    String[] parts = extras.split(&quot;\\|&quot;);</span>
+<span class="fc" id="L71">    s.setD(Double.parseDouble(parts[0]));</span>
+<span class="fc" id="L72">    s.setMode(Integer.parseInt(parts[1]));</span>
+<span class="fc" id="L73">    s.setDur(Integer.parseInt(parts[2]));</span>
+<span class="fc" id="L74">    s.setRestingVal(Integer.parseInt(parts[3]));</span>
+<span class="fc" id="L75">  }</span>
+
+  @Override
+  public void copyStockState(Stock source, Stock target) {
+<span class="pc bpc" id="L79" title="1 of 4 branches missed.">    if (source instanceof MarketSimStock src &amp;&amp; target instanceof MarketSimStock tgt) {</span>
+<span class="fc" id="L80">      tgt.setD(src.getD());</span>
+<span class="fc" id="L81">      tgt.setMode(src.getMode());</span>
+<span class="fc" id="L82">      tgt.setDur(src.getDur());</span>
+<span class="fc" id="L83">      tgt.setRestingVal(src.getRestingVal());</span>
+    }
+<span class="fc" id="L85">  }</span>
+
+  /**
+   * Advances all stocks by one calculateNewPrice. Equivalent to M.calculateNewPrice() in
+   * minigameMarket.js.
+   */
+  @Override
+  public void calculateNewPrice(List&lt;Stock&gt; stocks) {
+    // Feature: Global Market Event
+    // Roughly 1 calculateNewPrice in 20 triggers a correlated shock across the market (crash or
+    // boom).
+    // globP is the per-stock probability of being hit when a shock occurs.
+<span class="fc" id="L97">    double globD = 0.0;</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">    if (random.nextDouble() &lt; 0.05 + 0.08 * chaosModifier) {</span>
+<span class="nc" id="L99">      globD = (random.nextDouble() - 0.5) * 2.0;</span>
+<span class="nc" id="L100">      System.out.println(&quot;oop&quot;);</span>
+    }
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    for (Stock stock : stocks) {</span>
+      // Check if stock is the extended.
+<span class="fc" id="L105">      MarketSimStock me = (MarketSimStock) stock;</span>
+      // Extract simulation state as locals so the arithmetic stays readable.
+<span class="fc" id="L107">      double val = me.getSalesPrice().doubleValue();</span>
+<span class="fc" id="L108">      double d = me.getD();</span>
+<span class="fc" id="L109">      int mode = me.getMode();</span>
+<span class="fc" id="L110">      int dur = me.getDur();</span>
+<span class="fc" id="L111">      int restingVal = me.getRestingVal();</span>
+
+      // 2% chance that the price halts for a week.
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">      if (random.nextDouble() &lt; 0.02 + 0.03 * chaosModifier) {</span>
+<span class="nc" id="L115">        val += (random.nextDouble() - 0.5) * 20;</span>
+<span class="nc" id="L116">        System.out.println(&quot;pause&quot;);</span>
+<span class="nc" id="L117">        me.addNewSalesPrice(</span>
+<span class="nc" id="L118">            BigDecimal.valueOf(Math.max(val, 1.0)).setScale(2, RoundingMode.HALF_UP));</span>
+<span class="nc" id="L119">        continue;</span>
+      }
+
+      // Feature: Momentum Decay
+      // Reduces momentum slightly every calculateNewPrice so it doesn't compound indefinitely.
+<span class="fc" id="L124">      d *= 0.97 + 0.01 * chaosModifier;</span>
+
+      // Feature: Mode-Based Momentum
+      // Each mode biases d (and sometimes val directly) in a characteristic direction.
+<span class="pc bpc" id="L128" title="4 of 7 branches missed.">      switch (mode) {</span>
+        case MODE_STABLE -&gt; {
+<span class="fc" id="L130">          d *= 0.75;</span>
+<span class="fc" id="L131">          d += 0.04 * (random.nextDouble() - 0.5);</span>
+<span class="fc" id="L132">        }</span>
+        case MODE_SLOW_RISE -&gt; {
+<span class="fc" id="L134">          d *= 0.80;</span>
+<span class="fc" id="L135">          d += 0.07 * (random.nextDouble() - 0.1);</span>
+<span class="fc" id="L136">        }</span>
+        case MODE_SLOW_FALL -&gt; {
+<span class="nc" id="L138">          d *= 0.80;</span>
+<span class="nc" id="L139">          d -= 0.07 * (random.nextDouble() - 0.1);</span>
+<span class="nc" id="L140">        }</span>
+        case MODE_FAST_RISE -&gt; {
+<span class="nc" id="L142">          d += 0.15 * (random.nextDouble() - 0.1);</span>
+<span class="nc" id="L143">          val += random.nextDouble() * 30;</span>
+<span class="nc" id="L144">        }</span>
+        case MODE_FAST_FALL -&gt; {
+<span class="nc" id="L146">          d -= 0.15 * (random.nextDouble() - 0.1);</span>
+<span class="nc" id="L147">          val -= random.nextDouble() * 30;</span>
+<span class="nc" id="L148">        }</span>
+<span class="fc" id="L149">        case MODE_CHAOTIC -&gt; d += 0.50 * (random.nextDouble() - 0.5);</span>
+      }
+
+      // Feature: Mean Reversion
+      // Nudges val 1% of the way toward restingVal each calculateNewPrice.
+<span class="fc" id="L154">      val += (restingVal - val) * 0.01;</span>
+
+      // Feature: Global Shock Impact
+      // Applies the market-wide shock (computed above) to this individual stock.
+<span class="pc bpc" id="L158" title="3 of 4 branches missed.">      if (globD != 0.0 &amp;&amp; random.nextDouble() &lt; 0.4) {</span>
+<span class="nc" id="L159">        System.out.println(&quot;IMPACT!&quot;);</span>
+<span class="nc" id="L160">        val -= (1 + d * Math.pow(random.nextDouble(), 3) * 10) * globD;</span>
+<span class="nc" id="L161">        val -= globD * (1 + Math.pow(random.nextDouble(), 3) * 20);</span>
+<span class="nc" id="L162">        d += globD * (1 + random.nextDouble() * (3 + chaosModifier));</span>
+<span class="nc" id="L163">        dur = 0; // forces an immediate mode re-roll this calculateNewPrice</span>
+      }
+
+      // Feature: Rare Large Spike
+      // The 11th-power distribution produces very small noise almost always,
+      // but occasionally a large jump.
+<span class="fc" id="L169">      val += Math.pow((random.nextDouble() - 0.5) * 2, 11) * 20;</span>
+
+      // Feature: Constant Small Noise
+<span class="fc" id="L172">      d += 0.1 * (random.nextDouble() - 0.5) + 0.1 * (random.nextDouble() - 0.5) * chaosModifier;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">      if (random.nextDouble() &lt; 0.15) val += (random.nextDouble() - 0.5) * 30;</span>
+
+      // Feature: Rare Large Jump
+      // 3% chance of a significant price move each calculateNewPrice.
+<span class="fc bfc" id="L177" title="All 2 branches covered.">      if (random.nextDouble() &lt; 0.03) {</span>
+<span class="fc" id="L178">        System.out.println(&quot;kabomba&quot;);</span>
+<span class="fc" id="L179">        val += (random.nextDouble() - 0.5) * (50 + 50 * chaosModifier);</span>
+      }
+
+      // Feature: Random Momentum Kick
+      // 10% chance of a sudden shift in momentum.
+<span class="fc bfc" id="L184" title="All 2 branches covered.">      if (random.nextDouble() &lt; 0.1) {</span>
+<span class="fc" id="L185">        d += (random.nextDouble() - 0.5) * (0.3 + 0.2 * chaosModifier);</span>
+      }
+
+      // Feature: Chaotic Mode Extra Noise
+<span class="fc bfc" id="L189" title="All 2 branches covered.">      if (mode == MODE_CHAOTIC) {</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (random.nextDouble() &lt; 0.5) val += (random.nextDouble() - 0.5) * 30;</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (random.nextDouble() &lt; 0.05) d = (random.nextDouble() - 0.5) * (2 + chaosModifier);</span>
+      }
+
+      // Feature: Extra Noise in fast-rise and fast-fall modes.
+<span class="pc bpc" id="L195" title="3 of 4 branches missed.">      if (mode == MODE_FAST_RISE &amp;&amp; random.nextDouble() &lt; 0.3) {</span>
+<span class="nc" id="L196">        d += (random.nextDouble() - 0.5) * 0.1;</span>
+<span class="nc" id="L197">        val += (random.nextDouble() - 0.7) * 30;</span>
+      }
+<span class="pc bpc" id="L199" title="3 of 4 branches missed.">      if (mode == MODE_FAST_FALL &amp;&amp; random.nextDouble() &lt; 0.3) {</span>
+<span class="nc" id="L200">        d += (random.nextDouble() - 0.5) * 0.1;</span>
+<span class="nc" id="L201">        val += (random.nextDouble() - 0.3) * 30;</span>
+      }
+
+      // Feature: Fast rise-to-fall Transition
+      // A 3% per-calculateNewPrice chance that a fast rise market tips into a fast fall market.
+<span class="pc bpc" id="L206" title="3 of 4 branches missed.">      if (mode == MODE_FAST_RISE &amp;&amp; random.nextDouble() &lt; 0.04 * d) {</span>
+<span class="nc" id="L207">        System.out.println(&quot;sike&quot;);</span>
+<span class="nc" id="L208">        mode = MODE_FAST_FALL;</span>
+<span class="nc" id="L209">        d *= 0.4;</span>
+<span class="nc" id="L210">        dur = 6;</span>
+      }
+
+      // Feature: High-Price Momentum Cap
+<span class="pc bpc" id="L214" title="1 of 4 branches missed.">      if (val &gt; 1000 &amp;&amp; d &gt; 0) d *= 0.9;</span>
+
+      // Apply accumulated momentum to price.
+<span class="fc" id="L217">      val += d * val * 0.1;</span>
+
+      // Feature: Low-Price Soft Floor
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">      if (val &lt; 5) val += (5 - val) * 0.5;</span>
+<span class="pc bpc" id="L221" title="3 of 4 branches missed.">      if (val &lt; 5 &amp;&amp; d &lt; 0) d *= 0.95;</span>
+
+      // Feature: Hard Price Floor
+<span class="fc" id="L224">      val = Math.max(val, 1.0);</span>
+
+      // Feature: Mode Duration + Re-roll
+<span class="fc" id="L227">      dur--;</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">      if (dur &lt;= 0) {</span>
+<span class="fc" id="L229">        dur = 4 + random.nextInt(6); // 4–10 ticks</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (mode != MODE_CHAOTIC</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">            &amp;&amp; random.nextDouble() &lt; chaosModifier</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">            &amp;&amp; random.nextDouble() &lt; 0.15) {</span>
+<span class="nc" id="L233">          mode = MODE_CHAOTIC;</span>
+<span class="nc" id="L234">          System.out.println(5);</span>
+        } else {
+<span class="fc" id="L236">          int newMode = mode;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">          while (newMode == mode) {</span>
+<span class="fc" id="L238">            newMode = randomMode();</span>
+          }
+<span class="fc" id="L240">          mode = newMode;</span>
+<span class="fc" id="L241">          d *= 0.5;</span>
+<span class="fc" id="L242">          System.out.println(mode);</span>
+        }
+      }
+
+      // Commit the new price and write simulation state back to the stock.
+<span class="fc" id="L247">      me.addNewSalesPrice(BigDecimal.valueOf(val).setScale(2, RoundingMode.HALF_UP));</span>
+<span class="fc" id="L248">      me.setMode(mode);</span>
+<span class="fc" id="L249">      me.setDur(dur);</span>
+<span class="fc" id="L250">      me.setD(d);</span>
+<span class="fc" id="L251">    }</span>
+<span class="fc" id="L252">  }</span>
+
+  // Weighted random mode: stable, slow_rise, slow_fall, fast_rise, fast_fall, chaotic
+  private int randomMode() {
+<span class="fc" id="L256">    int[] pool = {</span>
+      MODE_STABLE, MODE_SLOW_RISE, MODE_SLOW_FALL, MODE_FAST_RISE, MODE_FAST_FALL, MODE_CHAOTIC
+    };
+<span class="fc" id="L259">    return pool[random.nextInt(pool.length)];</span>
+  }
+
+  @Override
+  public void setDifficulty(Difficulty difficulty) {
+<span class="fc" id="L264">    double boost =</span>
+<span class="pc bpc" id="L265" title="3 of 4 branches missed.">        switch (difficulty) {</span>
+<span class="nc" id="L266">          case EASY -&gt; 0.0;</span>
+<span class="nc" id="L267">          case MEDIUM -&gt; 0.3;</span>
+<span class="fc" id="L268">          case HARD -&gt; 0.7;</span>
+<span class="nc" id="L269">          case REALISTIC -&gt; 1.0;</span>
+        };
+<span class="fc" id="L271">    this.chaosModifier = Math.max(0.0, Math.min(1.0, boost));</span>
+<span class="fc" id="L272">  }</span>
+
+  public double getChaosModifier() {
+<span class="nc" id="L275">    return chaosModifier;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

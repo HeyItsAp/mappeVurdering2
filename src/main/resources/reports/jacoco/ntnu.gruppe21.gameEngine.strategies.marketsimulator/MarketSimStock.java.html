@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MarketSimStock.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.gameEngine.strategies.marketsimulator</a> &gt; <span class="el_source">MarketSimStock.java</span></div><h1>MarketSimStock.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import ntnu.gruppe21.Stock;
+
+public class MarketSimStock extends Stock {
+  private double d;
+  private int mode;
+  private int dur;
+  private int restingVal;
+
+  public MarketSimStock(String symbol, String company, ArrayList&lt;BigDecimal&gt; priceHistory) {
+<span class="fc" id="L14">    super(symbol, company, priceHistory);</span>
+<span class="fc" id="L15">    this.restingVal = (int) Math.round(priceHistory.getLast().doubleValue());</span>
+<span class="fc" id="L16">    this.d = 0.0;</span>
+<span class="fc" id="L17">    this.mode = 0;</span>
+<span class="fc" id="L18">    this.dur = 5;</span>
+<span class="fc" id="L19">  }</span>
+
+  // ---- Simulation state accessors ----
+
+  public double getD() {
+<span class="fc" id="L24">    return d;</span>
+  }
+
+  public void setD(double d) {
+<span class="fc" id="L28">    this.d = d;</span>
+<span class="fc" id="L29">  }</span>
+
+  public int getMode() {
+<span class="fc" id="L32">    return mode;</span>
+  }
+
+  public void setMode(int mode) {
+<span class="fc" id="L36">    this.mode = mode;</span>
+<span class="fc" id="L37">  }</span>
+
+  public int getDur() {
+<span class="fc" id="L40">    return dur;</span>
+  }
+
+  public void setDur(int dur) {
+<span class="fc" id="L44">    this.dur = dur;</span>
+<span class="fc" id="L45">  }</span>
+
+  public int getRestingVal() {
+<span class="fc" id="L48">    return restingVal;</span>
+  }
+
+  public void setRestingVal(int restingVal) {
+<span class="fc" id="L52">    this.restingVal = restingVal;</span>
+<span class="fc" id="L53">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

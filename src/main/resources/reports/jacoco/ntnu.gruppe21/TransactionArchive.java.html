@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionArchive.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21</a> &gt; <span class="el_source">TransactionArchive.java</span></div><h1>TransactionArchive.java</h1><pre class="source lang-java linenums">/**
+ * An archive of transactions, which can be used to store and retrieve transactions based on the
+ * week they were made.
+ *
+ * @author Adrian
+ */
+package ntnu.gruppe21;
+
+import java.util.ArrayList;
+import java.util.List;
+import ntnu.gruppe21.transaction.Purchase;
+import ntnu.gruppe21.transaction.Sale;
+import ntnu.gruppe21.transaction.Transaction;
+
+public class TransactionArchive {
+  /** A list of transactions, which can contain both purchases and sales. */
+  private final List&lt;Transaction&gt; transactions;
+
+  /** Creates a new TransactionArchive with an empty list of transactions. */
+<span class="fc" id="L20">  public TransactionArchive() {</span>
+<span class="fc" id="L21">    this.transactions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L22">  }</span>
+
+  /**
+   * Adds a transaction to the archive.
+   *
+   * @param transaction The transaction to be added to the archive.
+   * @return true if the transaction was added successfully.
+   */
+  public boolean add(Transaction transaction) {
+<span class="fc" id="L31">    transactions.add(transaction);</span>
+<span class="fc" id="L32">    return true;</span>
+  }
+
+  /**
+   * Checks if the archive is empty.
+   *
+   * @return true/false based on whether the archive is empty or not.
+   */
+  public boolean isEmpty() {
+<span class="fc" id="L41">    return transactions.isEmpty();</span>
+  }
+
+  /**
+   * Returns a list of transactions that were made in the specified week.
+   *
+   * @param week The week in question
+   * @return A list of transactions
+   */
+  public List&lt;Transaction&gt; getTransactionsInWeek(int week) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    return transactions.stream().filter(t -&gt; t.getWeek() == week).toList();</span>
+  }
+
+  /**
+   * Returns a list of all purchases
+   *
+   * @return The list of purchases
+   */
+  public List&lt;Purchase&gt; getPurchases() {
+<span class="fc" id="L60">    return transactions.stream().filter(t -&gt; t instanceof Purchase).map(t -&gt; (Purchase) t).toList();</span>
+  }
+
+  /**
+   * Returns a list of sales
+   *
+   * @return The list of sales
+   */
+  public List&lt;Sale&gt; getSales() {
+<span class="fc" id="L69">    return transactions.stream().filter(t -&gt; t instanceof Sale).map(t -&gt; (Sale) t).toList();</span>
+  }
+
+  /**
+   * Returns a list of purchases, that were made in the specified week.
+   *
+   * @param week The week in question
+   * @return The list of purchases
+   */
+  public List&lt;Purchase&gt; getPurchases(int week) {
+<span class="fc" id="L79">    return transactions.stream()</span>
+<span class="fc" id="L80">        .filter(t -&gt; t instanceof Purchase)</span>
+<span class="fc" id="L81">        .map(t -&gt; (Purchase) t)</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        .filter(t -&gt; t.getWeek() == week)</span>
+<span class="fc" id="L83">        .toList();</span>
+  }
+
+  /**
+   * Returns a list of sales, that were made in the specified week.
+   *
+   * @param week The week in question
+   * @return The list of sales
+   */
+  public List&lt;Sale&gt; getSales(int week) {
+<span class="fc" id="L93">    return transactions.stream()</span>
+<span class="fc" id="L94">        .filter(t -&gt; t instanceof Sale)</span>
+<span class="fc" id="L95">        .map(t -&gt; (Sale) t)</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        .filter(t -&gt; t.getWeek() == week)</span>
+<span class="fc" id="L97">        .toList();</span>
+  }
+
+  /**
+   * Counts the number of distinct weeks in which transactions were made.
+   *
+   * @return the length of the list of distinct list, which is the number of distinct weeks.
+   */
+  public int countDistinctWeeks() {
+<span class="fc" id="L106">    List&lt;Integer&gt; weeks = transactions.stream().map(Transaction::getWeek).distinct().toList();</span>
+<span class="fc" id="L107">    return weeks.size();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

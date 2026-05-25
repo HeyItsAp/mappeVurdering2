@@ -2,6 +2,7 @@ package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import ntnu.gruppe21.Stock;
@@ -30,8 +31,57 @@ public class MarketSimulator implements PriceStrategy {
   private double chaosModifier = 0.0;
 
   @Override
-  public Stock createStock(String symbol, String company, BigDecimal price) {
-    return new MarketSimStock(symbol, company, price); // own type
+  public Stock createStock(String symbol, String company, ArrayList<BigDecimal> priceHistory) {
+    return new MarketSimStock(symbol, company, priceHistory); // own type
+  }
+
+  @Override
+  public String getStrategyId() {
+    return "MARKET_SIMULATOR";
+  }
+
+  /**
+   * When saving returns a extra line with the extra attributes for {@link MarketSimStock}
+   *
+   * @param stock stock
+   * @return line with the extra attributes
+   */
+  @Override
+  public String saveStockExtras(Stock stock) {
+    MarketSimStock stockExtra = (MarketSimStock) stock;
+    return stockExtra.getD()
+        + "|"
+        + stockExtra.getMode()
+        + "|"
+        + stockExtra.getDur()
+        + "|"
+        + stockExtra.getRestingVal();
+  }
+
+  /**
+   * Parses extras to add to strategy specific stock
+   *
+   * @param stock
+   * @param extras
+   */
+  @Override
+  public void deserializeStockExtras(Stock stock, String extras) {
+    MarketSimStock s = (MarketSimStock) stock;
+    String[] parts = extras.split("\\|");
+    s.setD(Double.parseDouble(parts[0]));
+    s.setMode(Integer.parseInt(parts[1]));
+    s.setDur(Integer.parseInt(parts[2]));
+    s.setRestingVal(Integer.parseInt(parts[3]));
+  }
+
+  @Override
+  public void copyStockState(Stock source, Stock target) {
+    if (source instanceof MarketSimStock src && target instanceof MarketSimStock tgt) {
+      tgt.setD(src.getD());
+      tgt.setMode(src.getMode());
+      tgt.setDur(src.getDur());
+      tgt.setRestingVal(src.getRestingVal());
+    }
   }
 
   /**

@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Objects;
 import ntnu.gruppe21.transaction.calculators.SaleCalculator;
 
+/**
+ * Portfolio class contains a list shares and contain methods to interact. For example: Methods for
+ * searching, filtering, checking and of course adding {@link Share}
+ */
 public class Portfolio {
   /* A list of shares owned by the investor. */
   private final List<Share> shares;

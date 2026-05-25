@@ -40,10 +40,17 @@ public class HighScoreManager {
     BigDecimal startingMoney = player.getStartingMoney();
     BigDecimal fortune = player.getCurrentMoney().add(player.getNetWorth());
     BigDecimal profitScore = fortune.divide(startingMoney).multiply(BigDecimal.TEN);
+    System.out.println(startingMoney + " " + fortune + " " + profitScore);
 
+    BigDecimal playerDifficultyFinalMultiplier = player.getDifficulty().getDifficultyMultiplier();
     BigDecimal finalScore =
-        difficultyBigDecimalValue.multiply(weekBigDecimal).multiply(profitScore);
+        difficultyBigDecimalValue
+            .multiply(weekBigDecimal)
+            .multiply(profitScore)
+            .multiply(playerDifficultyFinalMultiplier);
+
     if (finalScore.compareTo(BigDecimal.ZERO) < 0) {
+      System.out.println(finalScore);
       throw new IllegalArgumentException("Final score became negative");
     }
     return finalScore;

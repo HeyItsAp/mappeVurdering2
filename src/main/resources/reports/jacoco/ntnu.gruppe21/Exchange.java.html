@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Exchange.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21</a> &gt; <span class="el_source">Exchange.java</span></div><h1>Exchange.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21;
+
+/* UNFINISHED */
+
+import static java.util.stream.Collectors.toList;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javafx.util.Builder;
+import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.transaction.Transaction;
+import ntnu.gruppe21.transaction.TransactionFactory;
+
+/**
+ * Represents a realistic exchange with list of stock and the ability to make a transaction.
+ * Incorporates specific game mechanic, advancing. Advancing updates the week counter and updates
+ * prices of each stock.
+ */
+public class Exchange {
+  /* Name of exchange */
+  private final String name;
+
+  /* The current week of the game */
+  private int week;
+
+  /* A map of stock symbols to Stock objects, representing the stocks available on the exchange. */
+  private final Map&lt;String, Stock&gt; stockMap;
+
+  /* Factory to produce correct Transactions, purchase or sell */
+  private final TransactionFactory transactionFactory;
+
+  /* Difficulty enum, difficulty chosen by player at start */
+  private Difficulty difficulty;
+
+  /**
+   * Drives per-week price advancement for all stocks Strategies can be interchanged in the
+   * constructor.
+   */
+  private final PriceStrategy strategy;
+
+  /**
+   * Creates a new Exchange with a builder. Builder is defined at the bottom of this file.
+   *
+   * @param builder builder, follows the principles of Builder Creational Design
+   */
+<span class="fc" id="L53">  public Exchange(Builder builder) {</span>
+<span class="fc" id="L54">    this.name = builder.name;</span>
+<span class="fc" id="L55">    this.week = builder.week;</span>
+<span class="fc" id="L56">    this.transactionFactory = builder.transactionFactory;</span>
+<span class="fc" id="L57">    this.difficulty = builder.difficulty;</span>
+<span class="fc" id="L58">    this.strategy = builder.strategy;</span>
+<span class="fc" id="L59">    this.stockMap = builder.stockMap;</span>
+<span class="fc" id="L60">  }</span>
+
+  /**
+   * Returns the name of the exchange.
+   *
+   * @return the name in question.
+   */
+  public String getName() {
+<span class="fc" id="L68">    return name;</span>
+  }
+
+  /**
+   * Returns the current week of the game.
+   *
+   * @return the week in question.
+   */
+  public int getWeek() {
+<span class="fc" id="L77">    return week;</span>
+  }
+
+  /**
+   * Returns the StockMap
+   *
+   * @return StockMap in question
+   */
+  public Map&lt;String, Stock&gt; getStockMap() {
+<span class="fc" id="L86">    return stockMap;</span>
+  }
+
+  /**
+   * Getter for the player choses difficulty
+   *
+   * @return Difficulty {@link Difficulty}
+   */
+  public Difficulty getDifficulty() {
+<span class="fc" id="L95">    return difficulty;</span>
+  }
+
+  /**
+   * TransactionFactory used for making transactions
+   *
+   * @return TransactionFactory {@link TransactionFactory}
+   */
+  public TransactionFactory getTransactionFactory() {
+<span class="nc" id="L104">    return transactionFactory;</span>
+  }
+
+  /**
+   * Getter for a {@link PriceStrategy} object
+   *
+   * @return {@link PriceStrategy} object
+   */
+  public PriceStrategy getStrategy() {
+<span class="fc" id="L113">    return strategy;</span>
+  }
+
+  /**
+   * Setting difficulty will be done after choosing exchange. This method reflects that.
+   *
+   * @param difficulty {@link Difficulty} contains the FinalScoreMultiplier.
+   */
+  public void setDifficulty(Difficulty difficulty) {
+<span class="fc" id="L122">    this.difficulty = difficulty;</span>
+<span class="fc" id="L123">    strategy.setDifficulty(difficulty);</span>
+<span class="fc" id="L124">  }</span>
+
+  /**
+   * Returns the true or false based on if desired stock is contained in the exchange.
+   *
+   * @param symbol The symbol of the desired stock.
+   * @return True, if contains the stock, false if not.
+   */
+  public boolean hasStock(String symbol) {
+<span class="fc" id="L133">    return stockMap.containsKey(symbol);</span>
+  }
+
+  /**
+   * Returns the Stock object associated with the given symbol.
+   *
+   * @param symbol the stock symbol in question.
+   * @return the Stock object associated with the given symbol.
+   * @throws IllegalArgumentException if the stock symbol is not found in the exchange.
+   */
+  public Stock getStock(String symbol) {
+<span class="fc" id="L144">    Stock stock = stockMap.get(symbol);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">    if (stock == null) {</span>
+<span class="fc" id="L146">      throw new IllegalArgumentException(&quot;Stock symbol not found: &quot; + symbol);</span>
+    }
+<span class="fc" id="L148">    return stock;</span>
+  }
+
+  /**
+   * Returns a list of searched for stocks based on the search term. Based on symbol
+   *
+   * @param searchTerm The term you wish to search for.
+   * @return A list of all stocks matching the search.
+   */
+  public List&lt;Stock&gt; findStock(String searchTerm) {
+<span class="fc" id="L158">    return stockMap.values().stream()</span>
+<span class="fc" id="L159">        .filter(</span>
+            s -&gt;
+<span class="fc bfc" id="L161" title="All 2 branches covered.">                s.getSymbol().toLowerCase().contains(searchTerm.toLowerCase())</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                    || s.getCompany().toLowerCase().contains(searchTerm.toLowerCase()))</span>
+<span class="fc" id="L163">        .toList();</span>
+  }
+
+  /**
+   * Creates a purchase for a wanted stock.
+   *
+   * @param symbol The symbol of the stock to be purchased.
+   * @param quantity Amount of stocks to be purchased.
+   * @param player The player doing the purchase.
+   * @return The transaction.
+   */
+  public Transaction buy(String symbol, BigDecimal quantity, Player player) {
+<span class="fc" id="L175">    Stock stock = getStock(symbol);</span>
+<span class="fc" id="L176">    Share share = new Share(stock, quantity, stock.getSalesPrice());</span>
+<span class="fc" id="L177">    Transaction purchase = transactionFactory.createPurchase(share, week);</span>
+
+<span class="fc bfc" id="L179" title="All 2 branches covered.">    if (player.getCurrentMoney().compareTo(purchase.getCalculator().calculateTotal()) &lt;= 0) {</span>
+<span class="fc" id="L180">      throw new IllegalArgumentException(&quot;Insufficient Funds&quot;);</span>
+    }
+<span class="fc" id="L182">    return purchase;</span>
+  }
+
+  /**
+   * Creates a sale for a wanted stock.
+   *
+   * @param symbol The symbol of the stock to be sold.
+   * @param quantity Amount of stocks to be sold.
+   * @param player The player doing the sale.
+   * @return The transaction.
+   */
+  public Transaction sell(String symbol, BigDecimal quantity, Player player) {
+<span class="fc" id="L194">    Stock stock = getStock(symbol);</span>
+<span class="fc" id="L195">    Share share = new Share(stock, quantity, stock.getSalesPrice());</span>
+<span class="fc" id="L196">    return transactionFactory.createSale(share, week);</span>
+  }
+
+  /** Advances the exchange by one week, updating all stock prices via the market simulator. */
+  public void advance() {
+<span class="fc" id="L201">    week++;</span>
+<span class="fc" id="L202">    strategy.calculateNewPrice(List.copyOf(stockMap.values()));</span>
+<span class="fc" id="L203">  }</span>
+
+  /**
+   * Returns a list of the top-performing stocks based on their most recent price change.
+   *
+   * &lt;p&gt;Stocks are sorted in descending order by their latest price change, meaning the stocks with
+   * the highest positive change appear first.
+   *
+   * &lt;p&gt;The number of stocks returned is limited by the {@code limit} parameter.
+   *
+   * @param limit the maximum number of top gainers to return
+   * @return a list of stocks with the highest recent price increases
+   * @throws IllegalArgumentException if {@code limit} is greater than the number of available
+   *     stocks
+   */
+  public List&lt;Stock&gt; getGainers(int limit) {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">    if (limit &gt; stockMap.size()) {</span>
+<span class="fc" id="L220">      throw new IllegalArgumentException(&quot;Limit can be bigger than number of stock&quot;);</span>
+    }
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">    if (limit &lt;= 0) {</span>
+<span class="nc" id="L223">      throw new IllegalArgumentException(&quot;Limit cant be below 0&quot;);</span>
+    }
+
+<span class="fc" id="L226">    List&lt;Stock&gt; winners =</span>
+<span class="fc" id="L227">        stockMap.values().stream()</span>
+<span class="fc" id="L228">            .sorted(Comparator.comparing(Stock::getLatestPriceChange).reversed())</span>
+<span class="fc" id="L229">            .toList();</span>
+<span class="fc" id="L230">    return winners.stream().limit(limit).collect(toList());</span>
+  }
+
+  /**
+   * Returns a list of the worst-performing stocks based on their most recent price change.
+   *
+   * &lt;p&gt;Stocks are sorted in ascending order by their latest price change, meaning the stocks with
+   * the largest negative change appear first.
+   *
+   * &lt;p&gt;The number of stocks returned is limited by the {@code limit} parameter.
+   *
+   * @param limit the maximum number of top losers to return
+   * @return a list of stocks with the largest recent price decreases
+   * @throws IllegalArgumentException if {@code limit} is greater than the number of available
+   *     stocks
+   */
+  public List&lt;Stock&gt; getLosers(int limit) {
+<span class="fc bfc" id="L247" title="All 2 branches covered.">    if (limit &gt; stockMap.size()) {</span>
+<span class="fc" id="L248">      throw new IllegalArgumentException(&quot;Limit can be bigger than number of stock&quot;);</span>
+    }
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">    if (limit &lt;= 0) {</span>
+<span class="nc" id="L251">      throw new IllegalArgumentException(&quot;Limit cant be below 0&quot;);</span>
+    }
+
+<span class="fc" id="L254">    List&lt;Stock&gt; losers =</span>
+<span class="fc" id="L255">        stockMap.values().stream()</span>
+<span class="fc" id="L256">            .sorted(Comparator.comparing(Stock::getLatestPriceChange))</span>
+<span class="fc" id="L257">            .toList();</span>
+<span class="fc" id="L258">    return losers.stream().limit(limit).collect(toList());</span>
+  }
+
+  /**
+   * Standard builder following the standard builder creational pattern. Name and TransactionFactory
+   * does not have a default value, everything else does but can be subject to change when building.
+   */
+  public static class Builder {
+    private final String name;
+    private final TransactionFactory transactionFactory;
+
+<span class="fc" id="L269">    private PriceStrategy strategy = new MarketSimulator();</span>
+<span class="fc" id="L270">    private Difficulty difficulty = Difficulty.EASY;</span>
+<span class="fc" id="L271">    private int week = 1;</span>
+<span class="fc" id="L272">    private Map&lt;String, Stock&gt; stockMap = Map.of();</span>
+
+    /**
+     * Starts a builder object with the minimum for an Exchange, the name
+     *
+     * @param name Name for the Exchange
+     */
+<span class="fc" id="L279">    public Builder(String name) {</span>
+<span class="fc" id="L280">      this.name = name;</span>
+<span class="fc" id="L281">      this.transactionFactory = new TransactionFactory();</span>
+<span class="fc" id="L282">    }</span>
+
+    /**
+     * Set-method through builder.
+     *
+     * @param strategy Strategy to be changed
+     * @return Builder with updated strategy
+     */
+    public Builder strategy(PriceStrategy strategy) {
+<span class="fc" id="L291">      this.strategy = strategy;</span>
+<span class="fc" id="L292">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder. Stock go through strategy stock creation factory
+     *
+     * @param stocks Strategy to be changed
+     * @return Builder with updated strategy
+     */
+    public Builder stockMap(List&lt;Stock&gt; stocks) {
+
+<span class="fc" id="L303">      List&lt;Stock&gt; strategySpecificStock =</span>
+<span class="fc" id="L304">          stocks.stream()</span>
+<span class="fc" id="L305">              .map(</span>
+                  stock -&gt; {
+<span class="fc" id="L307">                    Stock created =</span>
+<span class="fc" id="L308">                        strategy.createStock(</span>
+<span class="fc" id="L309">                            stock.getSymbol(),</span>
+<span class="fc" id="L310">                            stock.getCompany(),</span>
+<span class="fc" id="L311">                            new ArrayList&lt;&gt;((stock.getPriceHistory())));</span>
+<span class="fc" id="L312">                    strategy.copyStockState(stock, created); // delegates to strategy</span>
+<span class="fc" id="L313">                    return created;</span>
+                  })
+<span class="fc" id="L315">              .toList();</span>
+
+<span class="fc" id="L317">      this.stockMap =</span>
+<span class="fc" id="L318">          strategySpecificStock.stream()</span>
+<span class="fc" id="L319">              .collect(Collectors.toMap(Stock::getSymbol, Function.identity()));</span>
+<span class="fc" id="L320">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder. Stock go through strategy stock creation factory
+     *
+     * @param difficulty difficulty to be changed
+     * @return Builder with updated difficulty
+     */
+    public Builder difficulty(Difficulty difficulty) {
+<span class="fc" id="L330">      this.difficulty = difficulty;</span>
+<span class="fc" id="L331">      return this;</span>
+    }
+
+    /**
+     * Set-method through builder.
+     *
+     * @param week week to be changed
+     * @return Builder with updated week
+     */
+    public Builder week(int week) {
+<span class="fc" id="L341">      this.week = week;</span>
+<span class="fc" id="L342">      return this;</span>
+    }
+
+    /**
+     * Build-method, finalizes all changes and returns a complete Exchange Object
+     *
+     * @return complete Exchange Object
+     */
+    public Exchange build() {
+<span class="fc" id="L351">      return new Exchange(this);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

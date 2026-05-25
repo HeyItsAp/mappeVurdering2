@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.gameEngine.strategies</a> &gt; <span class="el_source">PriceStrategy.java</span></div><h1>PriceStrategy.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.gameEngine.strategies;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.gameEngine.Difficulty;
+
+/**
+ * TODO: Implement handling of different strategies to FilehandlerExchange. PriceStrategy interface
+ * is used to calculate a new stock price based on different algorithms and/or special effects.
+ *
+ * &lt;p&gt;Most Price Strategies will incorporate Difficulty and the Grace-mechanic in their
+ * calculations. Strategies will always return a new price PriceStrategy follow the principles of
+ * {@code Strategy Behavioral Pattern}.
+ *
+ * &lt;p&gt;Different Algorithms as separate classes but still interchangeable with some predefined
+ * structure: Each Strategy needs a way correctly parse/serialize and format changes when saving or
+ * loading. This also makes Junit testing impractical as values are everchanging.
+ */
+public interface PriceStrategy {
+  /**
+   * All Strategies need a unique identifier. So saving can be done.
+   *
+   * @return returns unique identifier for Strategy
+   */
+  String getStrategyId();
+
+  /**
+   * All strategies most calculate a new by taking a list of the stock and updating it.
+   *
+   * @param stocks Method needs to loop through list of stock to update current price
+   */
+  public void calculateNewPrice(List&lt;Stock&gt; stocks);
+
+  /**
+   * Setter for strategies difficulty. Must be implemented
+   *
+   * @param difficulty Difficulty to be set
+   */
+  public void setDifficulty(Difficulty difficulty);
+
+  /**
+   * Optional: Different strategy might need different stock attributes. Override this if this is
+   * true.
+   *
+   * @param symbol Symbol of the {@link Stock}
+   * @param company Company of the {@link Stock}
+   * @param priceHistory List of prices throughout in {@link Stock}
+   * @return normal or entirely new type of stock, depended on if it gets overwritten or not
+   */
+  default Stock createStock(String symbol, String company, ArrayList&lt;BigDecimal&gt; priceHistory) {
+<span class="fc" id="L53">    return new Stock(symbol, company, priceHistory);</span>
+  }
+
+  /**
+   * Serializes any extras, in this case Stocks @Override if necessary
+   *
+   * @param stock {@link Stock} object or a UNIQUE (for example {@link
+   *     ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock} to be saved.
+   * @return String containing extras
+   */
+  default String saveStockExtras(Stock stock) {
+<span class="fc" id="L64">    return &quot;&quot;; // default: nothing extra to save</span>
+  }
+
+  /**
+   * Reconstructs extras, in this case stocks and extras. Does nothing but @Override if to implement
+   * parsing of unique stock object
+   *
+   * @param stock usually unique stock for example {@link
+   *     ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock}
+   * @param extras extras
+   */
+  default void deserializeStockExtras(Stock stock, String extras) {
+    // default: nothing to restore
+<span class="nc" id="L77">  }</span>
+
+  /**
+   * Copy any strategy-specific state from source to target after creation
+   *
+   * @param source Usually default stock
+   * @param target Unique stock
+   */
+  default void copyStockState(Stock source, Stock target) {
+    // default: nothing to copy for plain stocks
+<span class="fc" id="L87">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

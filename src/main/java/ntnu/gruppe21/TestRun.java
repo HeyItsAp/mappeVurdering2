@@ -16,7 +16,9 @@ class TestRun {
 
     MarketSimulator sim = new MarketSimulator();
     sim.setDifficulty(Difficulty.EASY);
-    MarketSimStock stock = new MarketSimStock("SIM", "Simulator Co.", BigDecimal.valueOf(500.0));
+    ArrayList<BigDecimal> price = new ArrayList<>();
+    price.add(BigDecimal.valueOf(500.0));
+    MarketSimStock stock = new MarketSimStock("SIM", "Simulator Co.", price);
 
     List<Double> prices = new ArrayList<>();
     prices.add(stock.getSalesPrice().doubleValue());

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SaveManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.filehandler</a> &gt; <span class="el_source">SaveManager.java</span></div><h1>SaveManager.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.filehandler;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import ntnu.gruppe21.Exchange;
+import ntnu.gruppe21.Player;
+
+/**
+ * This class implements both filehandlers {@link FilehandlerExchange} and {@link FilehandlerPlayer}
+ * to manage saves by invoking static methods from both.
+ *
+ * &lt;p&gt;Mainly handles folders, creating them and places saved csv data into those folders. When
+ * loading, it uses the static methods from {@link FilehandlerPlayer} and {@link
+ * FilehandlerExchange} to return objects
+ */
+public class SaveManager {
+  private static final String saves_root = &quot;src/main/resources/saves&quot;;
+  private final String folderSlot;
+
+  /**
+   * Constructor.
+   *
+   * @param saveName points to folder name containing csv files.
+   */
+<span class="fc" id="L26">  public SaveManager(String saveName) {</span>
+<span class="fc" id="L27">    this.folderSlot = saveName;</span>
+<span class="fc" id="L28">  }</span>
+
+  /**
+   * Test constructor — accepts a full path as-is
+   *
+   * @param saveName name of the folder. SaveSlot
+   * @param fullPath boolean to add saves_root before SaveSlot
+   */
+<span class="fc" id="L36">  public SaveManager(String saveName, boolean fullPath) {</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">    this.folderSlot = fullPath ? saveName : saves_root + &quot;/&quot; + saveName;</span>
+<span class="fc" id="L38">  }</span>
+
+  /**
+   * Performs a full save of the exchange and player data. Creates folder, csv files through static
+   * methods and then prints out.
+   *
+   * @param player {@link Player} object to be saved
+   * @param exchange {@link Exchange} object to be saved
+   * @throws Exception if anything goes wrong
+   */
+  public void save(Player player, Exchange exchange) throws Exception {
+<span class="fc" id="L49">    Files.createDirectories(Paths.get(folderSlot));</span>
+<span class="fc" id="L50">    FilehandlerPlayer.savePlayerData(player, folderSlot);</span>
+<span class="fc" id="L51">    FilehandlerExchange.saveExchangeData(exchange, folderSlot);</span>
+<span class="fc" id="L52">    System.out.println(&quot;Game saved to: &quot; + folderSlot);</span>
+<span class="fc" id="L53">  }</span>
+
+  /**
+   * Getter, uses public static methods.
+   *
+   * @return List of String containing saves folderName
+   */
+  public List&lt;String&gt; getSaveOptions() {
+<span class="fc" id="L61">    return FilehandlerPlayer.getPlayerSaveOptions();</span>
+  }
+
+  /**
+   * Getter, uses public static methods.
+   *
+   * @return List of String containing names of datasets in resoucres/datasets
+   */
+  public List&lt;String&gt; getDataSetOptions() {
+<span class="fc" id="L70">    return FilehandlerExchange.getExchangeDatasetOptions();</span>
+  }
+
+  /**
+   * Reads and returns Player object through static method.
+   *
+   * @return {@link Player} object
+   */
+  public Player loadPlayer() {
+<span class="nc" id="L79">    return FilehandlerPlayer.getPlayerSavedData(folderSlot);</span>
+  }
+
+  /**
+   * Reads and returns Exchange object through static method.
+   *
+   * @return {@link Exchange} object
+   */
+  public Exchange loadExchange() {
+<span class="nc" id="L88">    return FilehandlerExchange.getExchangeSaveData(folderSlot);</span>
+  }
+
+  /**
+   * Gets new exchange based on a Dataset in resoucres/datasets
+   *
+   * @param nameOfSet name of the csv file in resoucres/datasets
+   * @return complete {@link Exchange} object
+   */
+  public Exchange loadExchangeDataset(String nameOfSet) {
+<span class="nc" id="L98">    return FilehandlerExchange.getExchangeDataset(nameOfSet);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

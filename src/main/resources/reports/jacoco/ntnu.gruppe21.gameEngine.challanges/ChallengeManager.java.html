@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChallengeManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.gameEngine.challanges</a> &gt; <span class="el_source">ChallengeManager.java</span></div><h1>ChallengeManager.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.gameEngine.challanges;
+
+import java.util.*;
+import ntnu.gruppe21.Player;
+import ntnu.gruppe21.filehandler.FilehandlerPlayer;
+
+/**
+ * Challenge Manager contains and manages challenges. Is able to check if each challange is
+ * completed and creates new challange, and handles saving and parsing of said challanges.
+ *
+ * &lt;p&gt;To keep it simple, players will JUST HAVE ONE CHALLENGE, but this class definitely opens the
+ * possibility for multiple challenges. Thigh coupling with player as certain challanges highly
+ * depend on players actions, for example starting money.
+ *
+ * &lt;p&gt;At the start, creaetes an empty set of challanges. Challenges need to be set after player
+ * creation: 1. use {@link #generateChallenges(Player)} to create new random fresh challenges 2.
+ * when loading from a save, {@link #parseChallenges(Map, Player)} is used in {@link
+ * FilehandlerPlayer}
+ */
+public class ChallengeManager {
+  /** List of {@link Challenge} */
+  private final List&lt;Challenge&gt; challenges;
+
+  // Random to produce random {@link ChallengeType}
+<span class="fc" id="L25">  private final Random random = new Random();</span>
+
+  /** Creates a new ChallengeManager with empty challenges list; */
+<span class="fc" id="L28">  public ChallengeManager() {</span>
+<span class="fc" id="L29">    this.challenges = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">  }</span>
+
+  /**
+   * Currently makes one {@link Challenge} with a random {@link ChallengeType}, but changing it to
+   * multiple is no problem.
+   */
+  public void generateChallenges(Player player) {
+<span class="fc" id="L37">    List&lt;ChallengeType&gt; challengeTypesList = List.of(ChallengeType.values());</span>
+<span class="fc" id="L38">    int size = challengeTypesList.size();</span>
+<span class="fc" id="L39">    ChallengeType randomChallengeType = challengeTypesList.get(random.nextInt(size));</span>
+
+<span class="fc" id="L41">    challenges.add(new Challenge(randomChallengeType, player.getDifficulty(), player));</span>
+<span class="fc" id="L42">  }</span>
+
+  /**
+   * Checks if all challanges are complete for {@link Player}. If it is, advance the challanges.
+   *
+   * @param player Player object to compare player stats and targetValue
+   */
+  public void evaluateChallenges(Player player) {
+<span class="fc" id="L50">    boolean completedAll = true;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    for (Challenge c : challenges) {</span>
+<span class="fc" id="L52">      c.refreshDescription(player, c.getChallengeType());</span>
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">      if (!c.isCompleted() &amp;&amp; !c.checkCompletion(player)) {</span>
+<span class="fc" id="L54">        completedAll = false;</span>
+<span class="fc" id="L55">        throw new IllegalStateException(&quot;All challenges are not completed&quot;);</span>
+      }
+<span class="fc" id="L57">    }</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    for (Challenge c : challenges) {</span>
+<span class="fc" id="L60">      c.advanceChallenge(0, player);</span>
+<span class="fc" id="L61">    }</span>
+<span class="fc" id="L62">  }</span>
+
+  /**
+   * Getter for challanges
+   *
+   * @return list of challenges
+   */
+  public List&lt;Challenge&gt; getActiveChallenges() {
+<span class="fc" id="L70">    return Collections.unmodifiableList(challenges);</span>
+  }
+
+  /**
+   * Returns a String with all challenges type with | as seperator.
+   *
+   * @return String with containing each Challenge object as ChallengeType;timesCompleted then
+   *     separated by &quot;|&quot;;
+   */
+  public String saveChallenges() {
+<span class="fc" id="L80">    StringBuilder stringBuilder = new StringBuilder(100);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    for (Challenge c : challenges) {</span>
+<span class="fc" id="L82">      stringBuilder</span>
+<span class="fc" id="L83">          .append(c.getChallengeType())</span>
+<span class="fc" id="L84">          .append(&quot;;&quot;)</span>
+<span class="fc" id="L85">          .append(c.getTimesCompleted())</span>
+<span class="fc" id="L86">          .append(&quot;|&quot;);</span>
+<span class="fc" id="L87">    }</span>
+<span class="fc" id="L88">    stringBuilder.deleteCharAt(stringBuilder.length() - 1); // Remove last |</span>
+<span class="fc" id="L89">    return stringBuilder.toString();</span>
+  }
+
+  /**
+   * Saved challanges are just challengeTypes, so when loading a save it just creates overwrites the
+   * first challenges then creates new challanges with same types.
+   *
+   * @param challengeMetaDataMap Map containing unique challengeType with how many times it has been
+   *     completed
+   * @param player contain coupled metadata.
+   */
+  public void parseChallenges(Map&lt;ChallengeType, Integer&gt; challengeMetaDataMap, Player player) {
+<span class="fc" id="L101">    challengeMetaDataMap.forEach(</span>
+        (key, value) -&gt; {
+<span class="fc" id="L103">          challenges.add(new Challenge(key, player.getDifficulty(), player, value));</span>
+<span class="fc" id="L104">        });</span>
+<span class="fc" id="L105">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
