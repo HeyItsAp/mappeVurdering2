@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ntnu.gruppe21.*;
 import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.challanges.ChallengeType;
+import ntnu.gruppe21.gameEngine.challenges.ChallengeType;
 import ntnu.gruppe21.transaction.Purchase;
 import ntnu.gruppe21.transaction.Sale;
 
@@ -30,7 +30,7 @@ import ntnu.gruppe21.transaction.Sale;
 public class FilehandlerPlayer {
 
   /**
-   * Saves the current state of an {@link Player} to a CSV file in a designated save folder unqiue
+   * Saves the current state of an {@link Player} to a CSV file in a designated save folder unique
    * to player. Create that folder if not created.
    *
    * <p>Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link SaveManager}
@@ -65,7 +65,7 @@ public class FilehandlerPlayer {
       pw.println();
 
       pw.println();
-      pw.println("# First dataset, Portofolio/Shares:");
+      pw.println("# First dataset, Portfolio/Shares:");
       pw.println("# stock,quantity,purchasePrice");
       player
           .getPortfolio()
@@ -122,7 +122,7 @@ public class FilehandlerPlayer {
               });
 
       pw.println(" ");
-      pw.println("# Thrid dataset, Sales:");
+      pw.println("# Third dataset, Sales:");
       pw.println("# stock,quantity,purchasePrice,week");
       player
           .getTransactionArchive()
@@ -167,7 +167,7 @@ public class FilehandlerPlayer {
    * <p>Data is split into paragraphs: First LINE will be the players metadata:
    * Name,startingMoney,currentMoney,difficulty,{challengeType}First paragraph will contain shares:
    * 1,company,symbol,{prices},quantity,purchasePrice; Second paragraph will contain Purchases:
-   * 2,company,symbol,quantity,{prices},purchasePrice,week Thrid paragraph will contain Sales:
+   * 2,company,symbol,quantity,{prices},purchasePrice,week Third paragraph will contain Sales:
    * 3,company,symbol,stock,quantity,{prices},purchasePrice,week
    *
    * <p>The first price is used as the initial price when creating the {@link Stock}, and the
@@ -221,9 +221,9 @@ public class FilehandlerPlayer {
 
           String[] challengeString = values[4].split("\\|");
           for (String s : challengeString) {
-            String[] challangeMetadata = s.split(";");
-            ChallengeType challengeType = ChallengeType.valueOf(challangeMetadata[0]);
-            Integer timeCompleted = Integer.valueOf(challangeMetadata[1]);
+            String[] challengeMetadata = s.split(";");
+            ChallengeType challengeType = ChallengeType.valueOf(challengeMetadata[0]);
+            Integer timeCompleted = Integer.valueOf(challengeMetadata[1]);
 
             challengeMetadataMap.put(challengeType, timeCompleted);
           }
@@ -271,7 +271,7 @@ public class FilehandlerPlayer {
               .build();
       player.getChallengeManager().parseChallenges(challengeMetadataMap, player);
     } catch (Exception e) {
-      System.out.println("Error when saving. Remember to add challanges after player creation");
+      System.out.println("Error when saving. Remember to add challenges after player creation");
       e.printStackTrace();
       throw new RuntimeException();
     }

@@ -44,7 +44,7 @@ public class FilehandlerExchange {
    * exchange name, difficulty during playtime and current week (as comments) All stocks with their
    * symbol, company name, and price history AND Extras stock attributes if the strategy implemented
    *
-   * <p>Uses comma as the seperator
+   * <p>Uses comma as the separator
    *
    * @param exchange the {@link Exchange} object to be saved
    * @param folderPath THE FULL PATH, provided by {@link SaveManager}
@@ -303,7 +303,7 @@ public class FilehandlerExchange {
 
         lineCount += 1;
       }
-      return lineCount >= 5; // should be atleast 5 valid lines
+      return lineCount >= 5; // should be at least 5 valid lines
 
     } catch (IOException e) {
       return false;

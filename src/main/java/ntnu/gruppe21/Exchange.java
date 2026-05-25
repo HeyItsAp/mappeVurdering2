@@ -220,7 +220,7 @@ public class Exchange {
       throw new IllegalArgumentException("Limit can be bigger than number of stock");
     }
     if (limit <= 0) {
-      throw new IllegalArgumentException("Limit cant be below 0");
+      throw new IllegalArgumentException("Limit cannot be below 0");
     }
 
     List<Stock> winners =
@@ -248,7 +248,7 @@ public class Exchange {
       throw new IllegalArgumentException("Limit can be bigger than number of stock");
     }
     if (limit <= 0) {
-      throw new IllegalArgumentException("Limit cant be below 0");
+      throw new IllegalArgumentException("Limit cannot be below 0");
     }
 
     List<Stock> losers =

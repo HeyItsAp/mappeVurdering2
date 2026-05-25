@@ -2,7 +2,7 @@ package ntnu.gruppe21.gameEngine;
 
 import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.HighScoreManager;
-import ntnu.gruppe21.gameEngine.challanges.Challenge;
+import ntnu.gruppe21.gameEngine.challenges.Challenge;
 
 /**
  * The enum dictates the difficulty and has allocated attributes that effect gameplay and final
@@ -22,8 +22,8 @@ public enum Difficulty {
 
   /**
    * DifficultyMultiplier, Higher difficulty yields a better finalScore and little more difficult
-   * challanges This attribute reflects that by giving a better multiplier, used in {@link
-   * HighScoreManager} and effects challanges in {@link Challenge}
+   * challenges This attribute reflects that by giving a better multiplier, used in {@link
+   * HighScoreManager} and effects challenges in {@link Challenge}
    */
   private final BigDecimal DifficultyMultiplier;
 

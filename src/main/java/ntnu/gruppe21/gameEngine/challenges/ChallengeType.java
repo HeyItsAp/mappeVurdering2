@@ -1,7 +1,7 @@
-package ntnu.gruppe21.gameEngine.challanges;
+package ntnu.gruppe21.gameEngine.challenges;
 
 /**
- * So far we have two different challanges: - {@code UNIQUE_SHARE_REQUIREMENT}, You need to have a
+ * So far we have two different challenges: - {@code UNIQUE_SHARE_REQUIREMENT}, You need to have a
  * set amount of different stock in your portfolio - {@code BALANCE_REQUIREMENT}, You need to have a
  * certain amount of CURRENT MONEY (not Net Worth).
  *
@@ -14,7 +14,7 @@ public enum ChallengeType {
    */
   UNIQUE_SHARE_REQUIREMENT("Own different stocks:"),
   /**
-   * Balance_requirement: Players must have a certain ammount of current money {@link
+   * Balance_requirement: Players must have a certain amount of current money {@link
    * ntnu.gruppe21.Player}
    */
   BALANCE_REQUIREMENT("Must have amount of balance:");

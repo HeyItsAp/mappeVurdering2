@@ -1,18 +1,18 @@
-package ntnu.gruppe21.gameEngine.challanges;
+package ntnu.gruppe21.gameEngine.challenges;
 
 import java.util.*;
 import ntnu.gruppe21.Player;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 
 /**
- * Challenge Manager contains and manages challenges. Is able to check if each challange is
- * completed and creates new challange, and handles saving and parsing of said challanges.
+ * Challenge Manager contains and manages challenges. Is able to check if each challenge is
+ * completed and creates new challenge, and handles saving and parsing of said challenges.
  *
  * <p>To keep it simple, players will JUST HAVE ONE CHALLENGE, but this class definitely opens the
- * possibility for multiple challenges. Thigh coupling with player as certain challanges highly
+ * possibility for multiple challenges. Tight coupling with player as certain challenges highly
  * depend on players actions, for example starting money.
  *
- * <p>At the start, creaetes an empty set of challanges. Challenges need to be set after player
+ * <p>At the start, creates an empty set of challenges. Challenges need to be set after player
  * creation: 1. use {@link #generateChallenges(Player)} to create new random fresh challenges 2.
  * when loading from a save, {@link #parseChallenges(Map, Player)} is used in {@link
  * FilehandlerPlayer}
@@ -42,7 +42,7 @@ public class ChallengeManager {
   }
 
   /**
-   * Checks if all challanges are complete for {@link Player}. If it is, advance the challanges.
+   * Checks if all challenges are complete for {@link Player}. If it is, advance the challenges.
    *
    * @param player Player object to compare player stats and targetValue
    */
@@ -62,7 +62,7 @@ public class ChallengeManager {
   }
 
   /**
-   * Getter for challanges
+   * Getter for challenges
    *
    * @return list of challenges
    */
@@ -71,7 +71,7 @@ public class ChallengeManager {
   }
 
   /**
-   * Returns a String with all challenges type with | as seperator.
+   * Returns a String with all challenges type with | as separator.
    *
    * @return String with containing each Challenge object as ChallengeType;timesCompleted then
    *     separated by "|";
@@ -85,13 +85,15 @@ public class ChallengeManager {
           .append(c.getTimesCompleted())
           .append("|");
     }
-    stringBuilder.deleteCharAt(stringBuilder.length() - 1); // Remove last |
+    if (!stringBuilder.isEmpty()) {
+      stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
     return stringBuilder.toString();
   }
 
   /**
-   * Saved challanges are just challengeTypes, so when loading a save it just creates overwrites the
-   * first challenges then creates new challanges with same types.
+   * Saved challenges are just challengeTypes, so when loading a save it just creates overwrites the
+   * first challenges then creates new challenges with same types.
    *
    * @param challengeMetaDataMap Map containing unique challengeType with how many times it has been
    *     completed
