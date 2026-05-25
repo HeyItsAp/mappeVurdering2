@@ -3,10 +3,7 @@ package ntnu.gruppe21.view;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -14,8 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class ExchangeMenu extends VBox {
-  public ExchangeMenu() {
+  private final Screen screen;
+
+  public ExchangeMenu(Screen screen) {
     super(20);
+    this.screen = screen;
+
     Label title = new Label("Oslo Stock Market");
     title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
@@ -88,6 +89,18 @@ public class ExchangeMenu extends VBox {
     companyCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().company()));
     priceCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().price()));
     changeCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().week()));
+
+    table.setRowFactory(
+        tv -> {
+          TableRow<MarketRow> row = new TableRow<>();
+          row.setOnMouseClicked(
+              e -> {
+                if (!row.isEmpty()) {
+                  screen.showView(() -> new StockMenu());
+                }
+              });
+          return row;
+        });
 
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);
     companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 45);
