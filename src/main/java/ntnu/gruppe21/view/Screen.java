@@ -1,18 +1,25 @@
 package ntnu.gruppe21.view;
 
+import java.util.function.Supplier;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class Screen extends HBox {
-  public Screen() {
-    VBox mainContent = new PortfolioMenu();
-    HBox.setHgrow(mainContent, Priority.ALWAYS);
+  private Pane currentView;
+  private Button currentButton;
 
-    getChildren().addAll(createSidebar(), mainContent);
+  public Screen() {
+    currentView = new TodayMenu();
+    HBox.setHgrow(currentView, Priority.ALWAYS);
+
+    getChildren().addAll(createSidebar(), currentView);
+  }
+
+  private void showView(Supplier<Pane> supplier) {
+    currentView = supplier.get();
+    HBox.setHgrow(currentView, Priority.ALWAYS);
+    getChildren().set(1, currentView);
   }
 
   private VBox createSidebar() {
@@ -51,36 +58,9 @@ public class Screen extends HBox {
 
     money.getChildren().addAll(moneyLabel, balance, netWorth);
 
-    java.util.function.Function<String, Label> sectionLabel =
-        text -> {
-          Label l = new Label(text);
-          l.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-padding: 16 0 4 0;");
-          return l;
-        };
-
-    java.util.function.Function<String, Label> menuItem =
-        text -> {
-          Label l = new Label("  •  " + text);
-          l.setStyle("-fx-font-size: 14px; -fx-text-fill: #333; -fx-padding: 4 0 4 0;");
-          l.setMaxWidth(Double.MAX_VALUE);
-          return l;
-        };
-
-    java.util.function.Function<String, Label> activeItem =
-        text -> {
-          Label l = new Label("  •  " + text);
-          l.setStyle(
-              """
-        -fx-font-size: 14px;
-        -fx-text-fill: white;
-        -fx-background-color: #1a1a1a;
-        -fx-background-radius: 8;
-        -fx-padding: 6 10 6 10;
-        -fx-font-weight: bold;
-    """);
-          l.setMaxWidth(Double.MAX_VALUE);
-          return l;
-        };
+    Button todayBtn = navBtn("Today", TodayMenu::new);
+    currentButton = todayBtn;
+    setSelectedStyle(currentButton);
 
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -95,18 +75,97 @@ public class Screen extends HBox {
             title,
             subtitle,
             money,
-            sectionLabel.apply("PLAY"),
-            activeItem.apply("Today"),
-            menuItem.apply("Market"),
-            menuItem.apply("My portfolio"),
-            menuItem.apply("History"),
-            sectionLabel.apply("LEVEL"),
-            menuItem.apply("Progress"),
+            sectionLabel("PLAY"),
+            todayBtn,
+            navBtn("Market", ExchangeMenu::new),
+            navBtn("My portfolio", PortfolioMenu::new),
+            navBtn("History", ExchangeMenu::new),
+            sectionLabel("LEVEL"),
+            navBtn("Progress", ExchangeMenu::new),
             spacer,
             week,
             advanceWeek);
 
     return sidebar;
+  }
+
+  private Label sectionLabel(String text) {
+    Label l = new Label(text);
+    l.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-padding: 16 0 4 0;");
+    return l;
+  }
+
+  private Button navBtn(String text, Supplier<Pane> supplier) {
+    Button btn = new Button("  •  " + text);
+    btn.setMaxWidth(Double.MAX_VALUE);
+    btn.setStyle(
+        """
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        """);
+    btn.setOnMouseEntered(
+        ignored -> {
+          if (btn != currentButton) setHoverStyle(btn);
+        });
+    btn.setOnMouseExited(
+        ignored -> {
+          if (btn != currentButton) setUnselectedStyle(btn);
+        });
+    btn.setOnAction(
+        ignored -> {
+          showView(supplier);
+          setUnselectedStyle(currentButton);
+          currentButton = btn;
+          setSelectedStyle(currentButton);
+        });
+    return btn;
+  }
+
+  private void setHoverStyle(Button btn) {
+    btn.setStyle(
+        """
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: #d0ceca;
+        -fx-background-radius: 8;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        """);
+  }
+
+  private void setSelectedStyle(Button btn) {
+    btn.setStyle(
+        """
+        -fx-font-size: 14px;
+        -fx-text-fill: white;
+        -fx-background-color: #1a1a1a;
+        -fx-background-radius: 8;
+        -fx-padding: 6 10 6 10;
+        -fx-font-weight: bold;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        """);
+  }
+
+  private void setUnselectedStyle(Button btn) {
+    btn.setStyle(
+        """
+        -fx-font-size: 14px;
+        -fx-text-fill: #333;
+        -fx-padding: 4 0 4 0;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER-LEFT;
+        -fx-cursor: hand;
+        """);
   }
 
   private Button createAdvanceWeekBtn() {

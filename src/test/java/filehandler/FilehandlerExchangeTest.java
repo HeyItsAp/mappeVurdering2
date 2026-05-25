@@ -134,7 +134,7 @@ public class FilehandlerExchangeTest {
     @Test
     public void saveExchangeDataSavesToCorrect() throws IOException {
 
-      Exchange exchange = new Exchange.Builder("SaveTest").stockMap(List.of()).build();
+    Exchange exchange = new Exchange.Builder("SaveTest").stockMap(List.of()).build();
 
       Boolean success = FilehandlerExchange.saveExchangeData(exchange, "src/main/resources/saves/testsetsaveslot");
       Exchange exchange1 = FilehandlerExchange.getExchangeSaveData("src/main/resources/saves/testsetsaveslot");
