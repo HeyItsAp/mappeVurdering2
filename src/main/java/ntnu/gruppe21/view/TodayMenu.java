@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -14,8 +15,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class TodayMenu extends VBox {
-  public TodayMenu() {
+  private final Screen screen;
+
+  public TodayMenu(Screen screen) {
     super(20);
+    this.screen = screen;
     setStyle("-fx-padding: 20 20 30 20");
 
     Label title = new Label("Week 7");
@@ -174,6 +178,18 @@ public class TodayMenu extends VBox {
     symbolCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().symbol()));
     priceCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().price()));
     changeCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().change()));
+
+    table.setRowFactory(
+        tv -> {
+          TableRow<TodayMenu.WatchRow> row = new TableRow<>();
+          row.setOnMouseClicked(
+              e -> {
+                if (!row.isEmpty()) {
+                  screen.showView(() -> new StockMenu());
+                }
+              });
+          return row;
+        });
 
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 30);
     priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);
