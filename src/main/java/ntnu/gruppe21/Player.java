@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
+import ntnu.gruppe21.gameEngine.challenges.ChallengeManager;
 
 /**
  * Player object that contains all relevant data to play the game. Name, current money, {@link
@@ -31,8 +31,8 @@ public class Player {
   private final Difficulty difficulty;
 
   /**
-   * ChallengeManager, track challanges {@link ChallengeManager} Challenges need to be created after
-   * player creation, as challanges and player have necessarily tight coupling.
+   * ChallengeManager, track challenges {@link ChallengeManager} Challenges need to be created after
+   * player creation, as challenges and player have necessarily tight coupling.
    */
   private final ChallengeManager challengeManager;
 
@@ -128,7 +128,7 @@ public class Player {
   /**
    * Returns challengeManager
    *
-   * @return Manager class contain challanges
+   * @return Manager class contain challenges
    */
   public ChallengeManager getChallengeManager() {
     return challengeManager;
@@ -173,7 +173,7 @@ public class Player {
 
   /**
    * Standard builder that have base values that are necessary to make a new player. If necessary
-   * attributes can be changed. Challenges need to be created after player creation, as challanges
+   * attributes can be changed. Challenges need to be created after player creation, as challenges
    * and player have necessarily tight coupling.
    */
   public static class Builder {

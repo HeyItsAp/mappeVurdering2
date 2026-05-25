@@ -1,4 +1,4 @@
-package ntnu.gruppe21.gameEngine.challanges;
+package ntnu.gruppe21.gameEngine.challenges;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -7,10 +7,10 @@ import ntnu.gruppe21.gameEngine.Difficulty;
 
 /**
  * Wraps the {@link ChallengeType}, gives it a visual description and has functions to check if
- * player has completed the challange, and get advance into a new challange.
+ * player has completed the challenge, and get advance into a new challenge.
  *
  * <p>Challenges needs to be created after player creation, as players chosen starting money effects
- * certain challanges. Difficulty effects challenges by making it more difficult or not.
+ * certain challenges. Difficulty effects challenges by making it more difficult or not.
  */
 public class Challenge {
   /** {@link ChallengeType} */
@@ -20,7 +20,7 @@ public class Challenge {
   private final Difficulty difficulty;
 
   /**
-   * Description, more or less a progressbar. Displays your progress and challange description from
+   * Description, more or less a progressbar. Displays your progress and challenge description from
    * {@link ChallengeType} *
    */
   private String description;
@@ -55,7 +55,7 @@ public class Challenge {
 
   /**
    * Creates previously completed challenge of {@link ChallengeType} and {@link Difficulty}. Evoked
-   * when getting a saved challenge. For getting the right values, advances the challanges by how
+   * when getting a saved challenge. For getting the right values, advances the challenges by how
    * many times it has been completed. Forces the challenge to be completed before advancing. Then
    * sets it back to right values
    *
@@ -122,7 +122,7 @@ public class Challenge {
       baseBalanceRequirement =
           player.getCurrentMoney().divide(BigDecimal.TWO, RoundingMode.HALF_UP).intValue();
     } catch (NumberFormatException e) {
-      throw new RuntimeException("Starting ammount is invalid for challenge: " + e);
+      throw new RuntimeException("Starting amount is invalid for challenge: " + e);
     }
 
     return switch (challengeType) {
