@@ -3,6 +3,7 @@ package ntnu.gruppe21.view;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -120,6 +121,7 @@ public class StockMenu extends VBox {
     Button buyBtn = new Button("Buy");
     buyBtn.setMaxWidth(Double.MAX_VALUE);
     buyBtn.setStyle(btnBase + "-fx-background-color: #1a1a1a; -fx-text-fill: white;");
+    buyBtn.setOnAction(ignored -> new BuyPopup().show((Pane) getScene().getRoot()));
 
     Button sellBtn = new Button("Sell");
     sellBtn.setMaxWidth(Double.MAX_VALUE);
@@ -127,6 +129,7 @@ public class StockMenu extends VBox {
         btnBase
             + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
             + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
+    sellBtn.setOnAction(ignored -> new SellPopup().show((Pane) getScene().getRoot()));
 
     Button watchlistBtn = new Button("Add to Watchlist");
     watchlistBtn.setMaxWidth(Double.MAX_VALUE);
