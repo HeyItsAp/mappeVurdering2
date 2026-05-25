@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Portfolio.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21</a> &gt; <span class="el_source">Portfolio.java</span></div><h1>Portfolio.java</h1><pre class="source lang-java linenums">/**
+ * Represents a portfolio of shares owned by an investor. The portfolio allows for adding and
+ * removing shares, as well as checking if a specific share is contained within the portfolio.
+ *
+ * @author Adrian
+ */
+package ntnu.gruppe21;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import ntnu.gruppe21.transaction.calculators.SaleCalculator;
+
+/**
+ * Portfolio class contains a list shares and contain methods to interact. For example: Methods for
+ * searching, filtering, checking and of course adding {@link Share}
+ */
+public class Portfolio {
+  /* A list of shares owned by the investor. */
+  private final List&lt;Share&gt; shares;
+
+  /** Creates a new Portfolio with an empty list of shares. */
+<span class="fc" id="L24">  public Portfolio() {</span>
+<span class="fc" id="L25">    this.shares = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L26">  }</span>
+
+  /**
+   * Adds a share to the portfolio.
+   *
+   * @param share the share in question.
+   */
+  public void addShare(Share share) {
+<span class="fc" id="L34">    shares.add(Objects.requireNonNull(share, &quot;Share cannot be null&quot;));</span>
+<span class="fc" id="L35">  }</span>
+
+  /**
+   * Removes a share from the portfolio.
+   *
+   * @param share the share in question.
+   */
+  public void removeShare(Share share) {
+<span class="fc" id="L43">    shares.remove(Objects.requireNonNull(share, &quot;Share cannot be null&quot;));</span>
+<span class="fc" id="L44">  }</span>
+
+  /**
+   * Returns a list of shares owned by the investor.
+   *
+   * @return the shares in question.
+   */
+  public List&lt;Share&gt; getShares() {
+<span class="fc" id="L52">    return shares;</span>
+  }
+
+  /**
+   * Checks if the portfolio contains a specific share.
+   *
+   * @param share the share in question.
+   * @return true/false based on whether the share is contained.
+   */
+  public boolean containsShare(Share share) {
+<span class="fc" id="L62">    return shares.contains(share);</span>
+  }
+
+  /**
+   * Calculates and returns the total sales price of all shares in the portfolio.
+   *
+   * @return The net worth of the shares in the portfolio.
+   */
+  public BigDecimal getNetWorth() {
+<span class="fc" id="L71">    BigDecimal netWorth = BigDecimal.ZERO;</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    for (Share share : shares) {</span>
+<span class="fc" id="L74">      SaleCalculator s = new SaleCalculator(share);</span>
+<span class="fc" id="L75">      netWorth = netWorth.add(s.calculateTotal()); // Maybe use calculateGross()??? Unsure.</span>
+<span class="fc" id="L76">    }</span>
+
+<span class="fc" id="L78">    return netWorth;</span>
+  }
+
+  /**
+   * Returns distinct stocks in portfolio.
+   *
+   * @return the length of the list of distinct list, which is the number of distinct weeks.
+   */
+  public int countDistinctStock() {
+<span class="fc" id="L87">    List&lt;String&gt; distinctStockSymobolList =</span>
+<span class="fc" id="L88">        shares.stream().map(s -&gt; s.getStock().getSymbol()).distinct().toList();</span>
+<span class="fc" id="L89">    return distinctStockSymobolList.size();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

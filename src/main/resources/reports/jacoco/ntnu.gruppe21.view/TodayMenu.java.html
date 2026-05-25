@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TodayMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.view</a> &gt; <span class="el_source">TodayMenu.java</span></div><h1>TodayMenu.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.view;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+
+public class TodayMenu extends VBox {
+  public TodayMenu() {
+<span class="nc" id="L18">    super(20);</span>
+<span class="nc" id="L19">    setStyle(&quot;-fx-padding: 20 20 30 20&quot;);</span>
+
+<span class="nc" id="L21">    Label title = new Label(&quot;Week 7&quot;);</span>
+<span class="nc" id="L22">    title.setStyle(&quot;-fx-font-size: 24px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L24">    Line line = new Line();</span>
+<span class="nc" id="L25">    line.setStartX(0);</span>
+<span class="nc" id="L26">    line.setStartY(0);</span>
+<span class="nc" id="L27">    line.setEndX(1000);</span>
+<span class="nc" id="L28">    line.setEndY(0);</span>
+<span class="nc" id="L29">    line.setStroke(Color.BLACK);</span>
+<span class="nc" id="L30">    line.setStrokeWidth(0.5);</span>
+
+<span class="nc" id="L32">    HBox body = new HBox(16);</span>
+<span class="nc" id="L33">    VBox.setVgrow(body, Priority.ALWAYS);</span>
+
+<span class="nc" id="L35">    VBox leftPane = buildLeftPane();</span>
+<span class="nc" id="L36">    HBox.setHgrow(leftPane, Priority.ALWAYS);</span>
+
+<span class="nc" id="L38">    VBox rightPane = buildWatchlist();</span>
+<span class="nc" id="L39">    rightPane.prefWidthProperty().bind(body.widthProperty().multiply(0.25));</span>
+
+<span class="nc" id="L41">    body.getChildren().addAll(leftPane, rightPane);</span>
+<span class="nc" id="L42">    getChildren().addAll(title, line, body);</span>
+<span class="nc" id="L43">  }</span>
+
+  private VBox buildLeftPane() {
+<span class="nc" id="L46">    VBox GainLosss = buildGainLosssSection();</span>
+<span class="nc" id="L47">    VBox.setVgrow(GainLosss, Priority.ALWAYS);</span>
+
+<span class="nc" id="L49">    VBox pane = new VBox(16, buildNetWorthCard(), buildSummaryRow(), GainLosss);</span>
+<span class="nc" id="L50">    VBox.setVgrow(pane, Priority.ALWAYS);</span>
+<span class="nc" id="L51">    return pane;</span>
+  }
+
+  private VBox buildNetWorthCard() {
+<span class="nc" id="L55">    Label heading = new Label(&quot;NET WORTH CHANGE THIS WEEK&quot;);</span>
+<span class="nc" id="L56">    heading.setStyle(&quot;-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L58">    Label change = new Label(&quot;+2 340 NOK&quot;);</span>
+<span class="nc" id="L59">    change.setStyle(&quot;-fx-font-size: 36px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L61">    Label pct = new Label(&quot;+4.72% from last week  ·  Now: 51 654 NOK&quot;);</span>
+<span class="nc" id="L62">    pct.setStyle(&quot;-fx-font-size: 13px; -fx-text-fill: #888;&quot;);</span>
+
+<span class="nc" id="L64">    VBox card = new VBox(6, heading, change, pct);</span>
+<span class="nc" id="L65">    card.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-background-color: white;
+        -fx-background-radius: 8;
+        -fx-border-color: #c8c6c1;
+        -fx-border-radius: 8;
+        -fx-padding: 16;
+        &quot;&quot;&quot;);
+<span class="nc" id="L73">    return card;</span>
+  }
+
+  private HBox buildSummaryRow() {
+<span class="nc" id="L77">    HBox row = new HBox(10);</span>
+
+    for (VBox box :
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        java.util.List.of(</span>
+<span class="nc" id="L81">            createStatBox(&quot;CASH&quot;, &quot;23 420&quot;, &quot;Available to invest&quot;),</span>
+<span class="nc" id="L82">            createStatBox(&quot;INVESTED&quot;, &quot;28 234&quot;, &quot;Across 5 stocks&quot;),</span>
+<span class="nc" id="L83">            createStatBox(&quot;BEST STOCK&quot;, &quot;SYMB +8.1%&quot;, &quot;This week&quot;))) {</span>
+<span class="nc" id="L84">      HBox.setHgrow(box, Priority.ALWAYS);</span>
+<span class="nc" id="L85">      box.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L86">      row.getChildren().add(box);</span>
+<span class="nc" id="L87">    }</span>
+
+<span class="nc" id="L89">    return row;</span>
+  }
+
+  private VBox buildGainLosssSection() {
+<span class="nc" id="L93">    HBox row = new HBox(10);</span>
+<span class="nc" id="L94">    VBox.setVgrow(row, Priority.ALWAYS);</span>
+
+<span class="nc" id="L96">    VBox gainers = buildGainLossList(&quot;TOP GAINERS&quot;, true);</span>
+<span class="nc" id="L97">    VBox losers = buildGainLossList(&quot;TOP LOSERS&quot;, false);</span>
+<span class="nc" id="L98">    HBox.setHgrow(gainers, Priority.ALWAYS);</span>
+<span class="nc" id="L99">    HBox.setHgrow(losers, Priority.ALWAYS);</span>
+
+<span class="nc" id="L101">    row.getChildren().addAll(gainers, losers);</span>
+
+<span class="nc" id="L103">    VBox section = new VBox(row);</span>
+<span class="nc" id="L104">    VBox.setVgrow(section, Priority.ALWAYS);</span>
+<span class="nc" id="L105">    return section;</span>
+  }
+
+  private VBox buildGainLossList(String heading, boolean gainers) {
+<span class="nc" id="L109">    Label title = new Label(heading);</span>
+<span class="nc" id="L110">    title.setStyle(&quot;-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">    String sign = gainers ? &quot;+&quot; : &quot;-&quot;;</span>
+
+<span class="nc" id="L114">    VBox cards = new VBox(6);</span>
+    for (String[] entry :
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        new String[][] {</span>
+          {&quot;SYMB&quot;, &quot;420.00&quot;, sign + &quot;8.14%&quot;},
+          {&quot;SYMB&quot;, &quot;380.50&quot;, sign + &quot;5.32%&quot;},
+          {&quot;SYMB&quot;, &quot;210.75&quot;, sign + &quot;3.90%&quot;},
+          {&quot;SYMB&quot;, &quot;155.20&quot;, sign + &quot;2.11%&quot;}
+        }) {
+<span class="nc" id="L122">      cards.getChildren().add(buildGainLossCard(entry[0], entry[1], entry[2]));</span>
+    }
+
+<span class="nc" id="L125">    VBox pane = new VBox(8, title, cards);</span>
+<span class="nc" id="L126">    VBox.setVgrow(pane, Priority.ALWAYS);</span>
+<span class="nc" id="L127">    return pane;</span>
+  }
+
+  private HBox buildGainLossCard(String symbol, String value, String change) {
+<span class="nc" id="L131">    Label symbolLabel = new Label(symbol);</span>
+<span class="nc" id="L132">    symbolLabel.setStyle(&quot;-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;&quot;);</span>
+
+<span class="nc" id="L134">    Label valueLabel = new Label(value);</span>
+<span class="nc" id="L135">    valueLabel.setStyle(&quot;-fx-font-size: 13px; -fx-text-fill: #1a1a1a;&quot;);</span>
+
+<span class="nc" id="L137">    Label changeLabel = new Label(change);</span>
+<span class="nc" id="L138">    changeLabel.setStyle(&quot;-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;&quot;);</span>
+
+<span class="nc" id="L140">    Region spacer = new Region();</span>
+<span class="nc" id="L141">    HBox.setHgrow(spacer, Priority.ALWAYS);</span>
+
+<span class="nc" id="L143">    HBox card = new HBox(10, symbolLabel, valueLabel, spacer, changeLabel);</span>
+<span class="nc" id="L144">    card.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-padding: 10 12 10 12;
+        -fx-background-color: white;
+        -fx-background-radius: 8;
+        -fx-border-color: #d0d0d0;
+        -fx-border-radius: 8;
+        &quot;&quot;&quot;);
+<span class="nc" id="L152">    card.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L153">    return card;</span>
+  }
+
+<span class="nc" id="L156">  record WatchRow(String symbol, String price, String change) {}</span>
+
+  private VBox buildWatchlist() {
+<span class="nc" id="L159">    Label heading = new Label(&quot;WATCHLIST&quot;);</span>
+<span class="nc" id="L160">    heading.setStyle(&quot;-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L162">    TableView&lt;WatchRow&gt; table = new TableView&lt;&gt;();</span>
+<span class="nc" id="L163">    table.getStylesheets().add(getClass().getResource(&quot;/styles/table.css&quot;).toExternalForm());</span>
+<span class="nc" id="L164">    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);</span>
+<span class="nc" id="L165">    table.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L166">    VBox.setVgrow(table, Priority.ALWAYS);</span>
+
+<span class="nc" id="L168">    String headerStyle = &quot;-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;&quot;;</span>
+
+<span class="nc" id="L170">    TableColumn&lt;WatchRow, String&gt; symbolCol = new TableColumn&lt;&gt;(&quot;SYMBOL&quot;);</span>
+<span class="nc" id="L171">    TableColumn&lt;WatchRow, String&gt; priceCol = new TableColumn&lt;&gt;(&quot;PRICE&quot;);</span>
+<span class="nc" id="L172">    TableColumn&lt;WatchRow, String&gt; changeCol = new TableColumn&lt;&gt;(&quot;CHANGE&quot;);</span>
+
+<span class="nc" id="L174">    symbolCol.setCellValueFactory(d -&gt; new SimpleStringProperty(d.getValue().symbol()));</span>
+<span class="nc" id="L175">    priceCol.setCellValueFactory(d -&gt; new SimpleStringProperty(d.getValue().price()));</span>
+<span class="nc" id="L176">    changeCol.setCellValueFactory(d -&gt; new SimpleStringProperty(d.getValue().change()));</span>
+
+<span class="nc" id="L178">    symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 30);</span>
+<span class="nc" id="L179">    priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);</span>
+<span class="nc" id="L180">    changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);</span>
+
+<span class="nc bnc" id="L182" title="All 2 branches missed.">    for (TableColumn&lt;WatchRow, String&gt; col : java.util.List.of(symbolCol, priceCol, changeCol)) {</span>
+<span class="nc" id="L183">      col.setStyle(headerStyle);</span>
+<span class="nc" id="L184">    }</span>
+
+<span class="nc" id="L186">    table.getColumns().addAll(symbolCol, priceCol, changeCol);</span>
+
+<span class="nc" id="L188">    ObservableList&lt;WatchRow&gt; data = FXCollections.observableArrayList();</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">    for (int i = 0; i &lt; 8; i++) {</span>
+<span class="nc" id="L190">      data.add(new WatchRow(&quot;SYMB&quot;, &quot;420.00&quot;, &quot;+3.14%&quot;));</span>
+    }
+<span class="nc" id="L192">    table.setItems(data);</span>
+
+<span class="nc" id="L194">    Region spacer = new Region();</span>
+<span class="nc" id="L195">    spacer.setPrefHeight(4);</span>
+
+<span class="nc" id="L197">    VBox pane = new VBox(8, heading, spacer, table);</span>
+<span class="nc" id="L198">    VBox.setVgrow(table, Priority.ALWAYS);</span>
+<span class="nc" id="L199">    VBox.setVgrow(pane, Priority.ALWAYS);</span>
+<span class="nc" id="L200">    pane.setStyle(</span>
+        &quot;&quot;&quot;
+        -fx-padding: 12;
+        -fx-background-color: white;
+        -fx-background-radius: 8;
+        -fx-border-color: #c8c6c1;
+        -fx-border-radius: 8;
+        &quot;&quot;&quot;);
+<span class="nc" id="L208">    return pane;</span>
+  }
+
+  private VBox createStatBox(String label, String value, String sub) {
+<span class="nc" id="L212">    Label l1 = new Label(label);</span>
+<span class="nc" id="L213">    l1.setStyle(&quot;-fx-font-size: 12px; -fx-font-weight: lighter; -fx-text-fill: gray&quot;);</span>
+
+<span class="nc" id="L215">    Label l2 = new Label(value);</span>
+<span class="nc" id="L216">    l2.setStyle(&quot;-fx-font-size: 20px;&quot;);</span>
+
+<span class="nc" id="L218">    Label l3 = new Label(sub);</span>
+<span class="nc" id="L219">    l3.setStyle(&quot;-fx-font-size: 10px; -fx-font-weight: lighter; -fx-text-fill: gray;&quot;);</span>
+
+<span class="nc" id="L221">    VBox box = new VBox(10, l1, l2, l3);</span>
+<span class="nc" id="L222">    box.setStyle(</span>
+        &quot;&quot;&quot;
+         -fx-padding: 10px;
+        -fx-background-radius: 8;
+        -fx-border-color: #d0d0d0;
+        -fx-border-radius: 8;
+        &quot;&quot;&quot;);
+<span class="nc" id="L229">    return box;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

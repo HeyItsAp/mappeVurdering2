@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.transaction</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.transaction;
+
+import ntnu.gruppe21.Player;
+import ntnu.gruppe21.Share;
+import ntnu.gruppe21.transaction.calculators.TransactionCalculator;
+
+/** Abstract class representing a single transaction. */
+public abstract class Transaction {
+  private final Share share;
+  private final int week;
+  private final TransactionCalculator calculator;
+<span class="fc" id="L12">  private boolean committed = false;</span>
+
+<span class="fc" id="L14">  protected Transaction(Share share, int week, TransactionCalculator calculator) {</span>
+<span class="fc" id="L15">    this.share = share;</span>
+<span class="fc" id="L16">    this.week = week;</span>
+<span class="fc" id="L17">    this.calculator = calculator;</span>
+<span class="fc" id="L18">  }</span>
+
+  public Share getShare() {
+<span class="fc" id="L21">    return share;</span>
+  }
+
+  public int getWeek() {
+<span class="fc" id="L25">    return week;</span>
+  }
+
+  public TransactionCalculator getCalculator() {
+<span class="fc" id="L29">    return calculator;</span>
+  }
+
+  /**
+   * Checks if the transaction is commited.
+   *
+   * @return True if committed, false if not
+   */
+  public boolean isCommitted() {
+<span class="fc" id="L38">    return committed;</span>
+  }
+
+  protected void markCommitted() {
+<span class="fc" id="L42">    committed = true;</span>
+<span class="fc" id="L43">  }</span>
+
+  /**
+   * When making a Transaction, commit is the final check before money is withdrawn/added.
+   *
+   * @param player Player object contain current money and etc.
+   * @throws TransactionException Unique Exception
+   */
+  public abstract void commit(Player player) throws TransactionException;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

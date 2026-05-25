@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExchangeMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mappe_vurdering_2</a> &gt; <a href="index.source.html" class="el_package">ntnu.gruppe21.view</a> &gt; <span class="el_source">ExchangeMenu.java</span></div><h1>ExchangeMenu.java</h1><pre class="source lang-java linenums">package ntnu.gruppe21.view;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+
+public class ExchangeMenu extends VBox {
+  public ExchangeMenu() {
+<span class="nc" id="L18">    super(20);</span>
+<span class="nc" id="L19">    Label title = new Label(&quot;Oslo Stock Market&quot;);</span>
+<span class="nc" id="L20">    title.setStyle(&quot;-fx-font-size: 24px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L22">    Line line = new Line();</span>
+<span class="nc" id="L23">    line.setStartX(0);</span>
+<span class="nc" id="L24">    line.setStartY(0);</span>
+<span class="nc" id="L25">    line.setEndX(1000);</span>
+<span class="nc" id="L26">    line.setEndY(0);</span>
+
+<span class="nc" id="L28">    line.setStroke(Color.BLACK);</span>
+<span class="nc" id="L29">    line.setStrokeWidth(0.5);</span>
+
+<span class="nc" id="L31">    setStyle(&quot;-fx-padding: 20 20 30 20&quot;);</span>
+<span class="nc" id="L32">    getChildren().addAll(title, line, buildFilterButtons(), buildMarketTable());</span>
+<span class="nc" id="L33">  }</span>
+
+  private HBox buildFilterButtons() {
+<span class="nc" id="L36">    HBox bar = new HBox(8);</span>
+
+<span class="nc" id="L38">    String normal =</span>
+        &quot;&quot;&quot;
+        -fx-background-color: #f0efeb;
+        -fx-text-fill: #333;
+        -fx-font-size: 10px;
+        -fx-padding: 3 10 3 10;
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-border-color: #ddd;
+        -fx-cursor: hand;
+    &quot;&quot;&quot;;
+<span class="nc" id="L49">    String hover =</span>
+        &quot;&quot;&quot;
+        -fx-background-color: #1a1a1a;
+        -fx-text-fill: white;
+        -fx-font-size: 10px;
+        -fx-padding: 3 10 3 10;
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-border-color: #1a1a1a;
+        -fx-cursor: hand;
+    &quot;&quot;&quot;;
+
+<span class="nc bnc" id="L61" title="All 2 branches missed.">    for (String label : java.util.List.of(&quot;All&quot;, &quot;Owned&quot;, &quot;Watchlist&quot;)) {</span>
+<span class="nc" id="L62">      Button btn = new Button(label);</span>
+<span class="nc" id="L63">      btn.setStyle(normal);</span>
+<span class="nc" id="L64">      btn.setOnMouseEntered(ignored -&gt; btn.setStyle(hover));</span>
+<span class="nc" id="L65">      btn.setOnMouseExited(ignored -&gt; btn.setStyle(normal));</span>
+<span class="nc" id="L66">      bar.getChildren().add(btn);</span>
+<span class="nc" id="L67">    }</span>
+
+<span class="nc" id="L69">    return bar;</span>
+  }
+
+<span class="nc" id="L72">  record MarketRow(String symbol, String company, String price, String week) {}</span>
+
+  private TableView&lt;MarketRow&gt; buildMarketTable() {
+
+<span class="nc" id="L76">    TableView&lt;MarketRow&gt; table = new TableView&lt;&gt;();</span>
+<span class="nc" id="L77">    table.getStylesheets().add(getClass().getResource(&quot;/styles/table.css&quot;).toExternalForm());</span>
+<span class="nc" id="L78">    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);</span>
+<span class="nc" id="L79">    table.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="nc" id="L80">    VBox.setVgrow(table, Priority.ALWAYS);</span>
+
+<span class="nc" id="L82">    TableColumn&lt;MarketRow, String&gt; symbolCol = new TableColumn&lt;&gt;(&quot;SYMBOL&quot;);</span>
+<span class="nc" id="L83">    TableColumn&lt;MarketRow, String&gt; companyCol = new TableColumn&lt;&gt;(&quot;COMPANY&quot;);</span>
+<span class="nc" id="L84">    TableColumn&lt;MarketRow, String&gt; priceCol = new TableColumn&lt;&gt;(&quot;PRICE&quot;);</span>
+<span class="nc" id="L85">    TableColumn&lt;MarketRow, String&gt; changeCol = new TableColumn&lt;&gt;(&quot;CHANGE&quot;);</span>
+
+<span class="nc" id="L87">    symbolCol.setCellValueFactory(data -&gt; new SimpleStringProperty(data.getValue().symbol()));</span>
+<span class="nc" id="L88">    companyCol.setCellValueFactory(data -&gt; new SimpleStringProperty(data.getValue().company()));</span>
+<span class="nc" id="L89">    priceCol.setCellValueFactory(data -&gt; new SimpleStringProperty(data.getValue().price()));</span>
+<span class="nc" id="L90">    changeCol.setCellValueFactory(data -&gt; new SimpleStringProperty(data.getValue().week()));</span>
+
+<span class="nc" id="L92">    symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);</span>
+<span class="nc" id="L93">    companyCol.setMaxWidth(1f * Integer.MAX_VALUE * 45);</span>
+<span class="nc" id="L94">    priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);</span>
+<span class="nc" id="L95">    changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 15);</span>
+
+<span class="nc" id="L97">    String headerStyle = &quot;-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;&quot;;</span>
+<span class="nc" id="L98">    symbolCol.setStyle(headerStyle);</span>
+<span class="nc" id="L99">    companyCol.setStyle(headerStyle);</span>
+<span class="nc" id="L100">    priceCol.setStyle(headerStyle);</span>
+<span class="nc" id="L101">    changeCol.setStyle(headerStyle);</span>
+
+<span class="nc" id="L103">    table.getColumns().addAll(symbolCol, companyCol, priceCol, changeCol);</span>
+
+<span class="nc" id="L105">    ObservableList&lt;MarketRow&gt; data = FXCollections.observableArrayList();</span>
+
+<span class="nc bnc" id="L107" title="All 2 branches missed.">    for (int i = 0; i &lt; 20; i++) {</span>
+<span class="nc" id="L108">      data.add(new MarketRow(&quot;SYMB&quot;, &quot;Company&quot;, &quot;420&quot;, &quot;+3.14%&quot;));</span>
+    }
+
+<span class="nc" id="L111">    table.setItems(data);</span>
+<span class="nc" id="L112">    return table;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
