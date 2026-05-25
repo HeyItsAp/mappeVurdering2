@@ -29,6 +29,7 @@ public class SaveManager {
 
   /**
    * Test constructor — accepts a full path as-is
+   *
    * @param saveName name of the folder. SaveSlot
    * @param fullPath boolean to add saves_root before SaveSlot
    */
@@ -53,6 +54,7 @@ public class SaveManager {
 
   /**
    * Getter, uses public static methods.
+   *
    * @return List of String containing saves folderName
    */
   public List<String> getSaveOptions() {
@@ -61,6 +63,7 @@ public class SaveManager {
 
   /**
    * Getter, uses public static methods.
+   *
    * @return List of String containing names of datasets in resoucres/datasets
    */
   public List<String> getDataSetOptions() {
@@ -87,6 +90,7 @@ public class SaveManager {
 
   /**
    * Gets new exchange based on a Dataset in resoucres/datasets
+   *
    * @param nameOfSet name of the csv file in resoucres/datasets
    * @return complete {@link Exchange} object
    */

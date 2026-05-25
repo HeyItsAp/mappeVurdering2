@@ -48,7 +48,6 @@ class HighScoreManagerTest {
     return player;
   }
 
-
   // ── calculateFinalScore ───────────────────────────────────────────────────────────
 
   @Nested
@@ -74,9 +73,9 @@ class HighScoreManagerTest {
       BigDecimal scoreWeek10 = HighScoreManager.calculateFinalScore(exchangeAtWeek(10), player);
 
       assertEquals(
-              0,
-              scoreWeek5.multiply(new BigDecimal("2")).compareTo(scoreWeek10.stripTrailingZeros()),
-              "Score should double when week doubles");
+          0,
+          scoreWeek5.multiply(new BigDecimal("2")).compareTo(scoreWeek10.stripTrailingZeros()),
+          "Score should double when week doubles");
     }
 
     @Test
@@ -86,8 +85,8 @@ class HighScoreManagerTest {
       Player player = playerWithFortune("Carol", new BigDecimal("100000"), new BigDecimal("-1"));
 
       assertThrows(
-              IllegalArgumentException.class,
-              () -> HighScoreManager.calculateFinalScore(exchange, player));
+          IllegalArgumentException.class,
+          () -> HighScoreManager.calculateFinalScore(exchange, player));
     }
 
     @Test

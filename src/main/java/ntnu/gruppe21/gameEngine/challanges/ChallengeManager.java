@@ -5,9 +5,8 @@ import ntnu.gruppe21.Player;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 
 /**
- * TODO: Add as attribute in Player.java, get FilehandlerPlayer to handle said challanges and Junit
- * test Challenge Manager manges challenges by checking for if each challange is completed and
- * creates new challange.
+ * Challenge Manager contains and manages challenges. Is able to check if each challange is
+ * completed and creates new challange, and handles saving and parsing of said challanges.
  *
  * <p>To keep it simple, players will JUST HAVE ONE CHALLENGE, but this class definitely opens the
  * possibility for multiple challenges. Thigh coupling with player as certain challanges highly
@@ -25,9 +24,7 @@ public class ChallengeManager {
   // Random to produce random {@link ChallengeType}
   private final Random random = new Random();
 
-  /**
-   * Creates a new ChallengeManager with empty challenges list;
-   */
+  /** Creates a new ChallengeManager with empty challenges list; */
   public ChallengeManager() {
     this.challenges = new ArrayList<>();
   }
@@ -76,7 +73,8 @@ public class ChallengeManager {
   /**
    * Returns a String with all challenges type with | as seperator.
    *
-   * @return String with containing each Challenge object as ChallengeType;timesCompleted then separated by "|";
+   * @return String with containing each Challenge object as ChallengeType;timesCompleted then
+   *     separated by "|";
    */
   public String saveChallenges() {
     StringBuilder stringBuilder = new StringBuilder(100);

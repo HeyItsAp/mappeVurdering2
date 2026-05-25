@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
-import ntnu.gruppe21.gameEngine.Difficulty;
 
 /**
  * This class handles calculations, writing and reading of highscores. Usually invoked when checking
@@ -45,12 +44,14 @@ public class HighScoreManager {
 
     BigDecimal playerDifficultyFinalMultiplier = player.getDifficulty().getDifficultyMultiplier();
     BigDecimal finalScore =
-        difficultyBigDecimalValue.multiply(weekBigDecimal).multiply(profitScore).multiply(playerDifficultyFinalMultiplier);
+        difficultyBigDecimalValue
+            .multiply(weekBigDecimal)
+            .multiply(profitScore)
+            .multiply(playerDifficultyFinalMultiplier);
 
     if (finalScore.compareTo(BigDecimal.ZERO) < 0) {
       System.out.println(finalScore);
       throw new IllegalArgumentException("Final score became negative");
-
     }
     return finalScore;
   }

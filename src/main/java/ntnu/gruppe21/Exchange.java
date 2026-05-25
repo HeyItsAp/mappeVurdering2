@@ -18,7 +18,11 @@ import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
 import ntnu.gruppe21.transaction.Transaction;
 import ntnu.gruppe21.transaction.TransactionFactory;
 
-/** TODO: Should add another constructor to handle saved exchanges. */
+/**
+ * Represents a realistic exchange with list of stock and the ability to make a transaction.
+ * Incorporates specific game mechanic, advancing. Advancing updates the week counter and updates
+ * prices of each stock.
+ */
 public class Exchange {
   /* Name of exchange */
   private final String name;
@@ -269,6 +273,7 @@ public class Exchange {
 
     /**
      * Starts a builder object with the minimum for an Exchange, the name
+     *
      * @param name Name for the Exchange
      */
     public Builder(String name) {
@@ -278,6 +283,7 @@ public class Exchange {
 
     /**
      * Set-method through builder.
+     *
      * @param strategy Strategy to be changed
      * @return Builder with updated strategy
      */
@@ -288,6 +294,7 @@ public class Exchange {
 
     /**
      * Set-method through builder. Stock go through strategy stock creation factory
+     *
      * @param stocks Strategy to be changed
      * @return Builder with updated strategy
      */
@@ -315,6 +322,7 @@ public class Exchange {
 
     /**
      * Set-method through builder. Stock go through strategy stock creation factory
+     *
      * @param difficulty difficulty to be changed
      * @return Builder with updated difficulty
      */
@@ -325,6 +333,7 @@ public class Exchange {
 
     /**
      * Set-method through builder.
+     *
      * @param week week to be changed
      * @return Builder with updated week
      */
@@ -335,6 +344,7 @@ public class Exchange {
 
     /**
      * Build-method, finalizes all changes and returns a complete Exchange Object
+     *
      * @return complete Exchange Object
      */
     public Exchange build() {

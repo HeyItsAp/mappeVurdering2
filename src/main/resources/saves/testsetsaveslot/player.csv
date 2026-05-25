@@ -2,7 +2,7 @@
 
 # Player metadata:
 # name,startingMoney,currentMoney,{challenges}
-TestPlayer,5000,3000,EASY,BALANCE_REQUIREMENT;0
+TestPlayer,5000,3000,EASY,UNIQUE_SHARE_REQUIREMENT;0
 
 
 # First dataset, Portofolio/Shares:

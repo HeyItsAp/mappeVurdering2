@@ -192,34 +192,38 @@ public class Challenge {
     refreshDescription(player, challengeType);
   }
 
-/**
- * Get-method for completed
- * @return True/false
- */
+  /**
+   * Get-method for completed
+   *
+   * @return True/false
+   */
   public boolean isCompleted() {
     return completed;
   }
 
-    /**
-     * Get-method for attribute description
-     * @return description
-     */
+  /**
+   * Get-method for attribute description
+   *
+   * @return description
+   */
   public String getDescription() {
     return description;
   }
 
-    /**
-     * Get-method for enum challengeType
-     * @return enum challengeType
-     */
+  /**
+   * Get-method for enum challengeType
+   *
+   * @return enum challengeType
+   */
   public ChallengeType getChallengeType() {
     return challengeType;
   }
 
-    /**
-     * Get-method for int timesCompleted
-     * @return number of times the challenge completed
-     */
+  /**
+   * Get-method for int timesCompleted
+   *
+   * @return number of times the challenge completed
+   */
   public int getTimesCompleted() {
     return timesCompleted;
   }

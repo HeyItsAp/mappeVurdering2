@@ -231,8 +231,8 @@ public class FilehandlerExchange {
    * Method to import your own Exchange Data in a valid csv format that resembles ours.
    *
    * <p>Should be able to access the systems file explorer, search for a csv file, add it and be
-   * sent into the resources/datasets folder. This method cannot be Unit tested as it
-   * incorporates GUI dialogs which cannot be tested.
+   * sent into the resources/datasets folder. This method cannot be Unit tested as it incorporates
+   * GUI dialogs which cannot be tested.
    *
    * @return true/false based on if it worked or not.
    */
@@ -311,8 +311,8 @@ public class FilehandlerExchange {
   }
 
   /**
-   * Helper function for #importExternalData() method that copies the selected csv file to
-   * the resources/datasets folder to be selected later.
+   * Helper function for #importExternalData() method that copies the selected csv file to the
+   * resources/datasets folder to be selected later.
    *
    * @param source Selected file during ui file selecting
    * @return Destination
@@ -327,6 +327,7 @@ public class FilehandlerExchange {
 
   /**
    * Returns all (should be) valid datasets in datasets folder
+   *
    * @return list of names to valid datasets
    */
   public static List<String> getExchangeDatasetOptions() {

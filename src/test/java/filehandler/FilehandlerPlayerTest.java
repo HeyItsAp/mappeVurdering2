@@ -54,6 +54,7 @@ public class FilehandlerPlayerTest {
       assertEquals(new BigDecimal("8267.46719"), savedPlayer.getCurrentMoney());
     }
   }
+
   // ── savePlayerData ───────────────────────────────────────────────────────────
 
   @Nested
@@ -62,9 +63,9 @@ public class FilehandlerPlayerTest {
     @Test
     public void savePlayerDataReturnsTrueOnValidPath() {
       Player player =
-              new Player.Builder("TestPlayer", new BigDecimal("5000"), Difficulty.EASY)
-                      .currentMoney(new BigDecimal("3000"))
-                      .build();
+          new Player.Builder("TestPlayer", new BigDecimal("5000"), Difficulty.EASY)
+              .currentMoney(new BigDecimal("3000"))
+              .build();
       player.getChallengeManager().generateChallenges(player);
 
       boolean success = FilehandlerPlayer.savePlayerData(player, test_saves_root);
@@ -75,9 +76,9 @@ public class FilehandlerPlayerTest {
     @Test
     public void saveAndReloadPreservesMetadata() {
       Player original =
-              new Player.Builder("RoundTrip", new BigDecimal("5000"), Difficulty.EASY)
-                      .currentMoney(new BigDecimal("3000"))
-                      .build();
+          new Player.Builder("RoundTrip", new BigDecimal("5000"), Difficulty.EASY)
+              .currentMoney(new BigDecimal("3000"))
+              .build();
       original.getChallengeManager().generateChallenges(original);
 
       FilehandlerPlayer.savePlayerData(original, test_saves_root);
@@ -98,10 +99,10 @@ public class FilehandlerPlayerTest {
       portfolio.addShare(new Share(stock, new BigDecimal("5"), new BigDecimal("100")));
 
       Player original =
-              new Player.Builder("PortfolioTest", new BigDecimal("5000"), Difficulty.EASY)
-                      .currentMoney(new BigDecimal("3000"))
-                      .portfolio(portfolio)
-                      .build();
+          new Player.Builder("PortfolioTest", new BigDecimal("5000"), Difficulty.EASY)
+              .currentMoney(new BigDecimal("3000"))
+              .portfolio(portfolio)
+              .build();
       original.getChallengeManager().generateChallenges(original);
       boolean succsess = FilehandlerPlayer.savePlayerData(original, test_saves_root);
       System.out.println(succsess);
@@ -119,10 +120,10 @@ public class FilehandlerPlayerTest {
       archive.add(new Purchase(share, 1));
 
       Player original =
-              new Player.Builder("PurchaseTest", new BigDecimal("5000"), Difficulty.EASY)
-                      .currentMoney(new BigDecimal("3000"))
-                      .transactionArchive(archive)
-                      .build();
+          new Player.Builder("PurchaseTest", new BigDecimal("5000"), Difficulty.EASY)
+              .currentMoney(new BigDecimal("3000"))
+              .transactionArchive(archive)
+              .build();
       original.getChallengeManager().generateChallenges(original);
 
       FilehandlerPlayer.savePlayerData(original, test_saves_root);
@@ -141,10 +142,10 @@ public class FilehandlerPlayerTest {
       archive.add(new Sale(share, 3));
 
       Player original =
-              new Player.Builder("SaleTest", new BigDecimal("5000"), Difficulty.EASY)
-                      .currentMoney(new BigDecimal("3000"))
-                      .transactionArchive(archive)
-                      .build();
+          new Player.Builder("SaleTest", new BigDecimal("5000"), Difficulty.EASY)
+              .currentMoney(new BigDecimal("3000"))
+              .transactionArchive(archive)
+              .build();
       original.getChallengeManager().generateChallenges(original);
 
       FilehandlerPlayer.savePlayerData(original, test_saves_root);
@@ -157,10 +158,10 @@ public class FilehandlerPlayerTest {
     @Test
     public void getPlayerSavedDataReturnsNullOnInvalidPath() {
       assertThrows(
-              (RuntimeException.class),
-              () -> {
-                Player result = FilehandlerPlayer.getPlayerSavedData("");
-              });
+          (RuntimeException.class),
+          () -> {
+            Player result = FilehandlerPlayer.getPlayerSavedData("");
+          });
     }
 
     @Test

@@ -11,6 +11,7 @@ public class Stock {
 
   /**
    * Creates a stock with initial sales price
+   *
    * @param symbol Symbol, represented as shorted string of the Company
    * @param company Company name. For example 'Microsoft'
    * @param salesPrice Initial Sales price
@@ -23,8 +24,10 @@ public class Stock {
   }
 
   /**
-   * Creates a stock with premade history list. Usually used in {@link ntnu.gruppe21.filehandler.FilehandlerExchange}
-   * and {@link ntnu.gruppe21.filehandler.FilehandlerPlayer} to easily and correctly make stock with history.
+   * Creates a stock with premade history list. Usually used in {@link
+   * ntnu.gruppe21.filehandler.FilehandlerExchange} and {@link
+   * ntnu.gruppe21.filehandler.FilehandlerPlayer} to easily and correctly make stock with history.
+   *
    * @param symbol Symbol, represented as shorted string of the Company
    * @param company Company name. For example 'Microsoft'
    * @param priceHistory List of prices over time

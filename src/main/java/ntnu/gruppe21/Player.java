@@ -6,35 +6,28 @@ import java.util.Objects;
 import ntnu.gruppe21.gameEngine.Difficulty;
 import ntnu.gruppe21.gameEngine.challanges.ChallengeManager;
 
+/**
+ * Player object that contains all relevant data to play the game. Name, current money, {@link
+ * Portfolio}, {@link TransactionArchive}, {@link ChallengeManager} to get challenges, and {@link
+ * Difficulty}.
+ */
 public class Player {
-  /**
-   * Players name
-   */
+  /** Players name */
   private final String name;
 
-  /**
-   * Starting money for the player
-   */
+  /** Starting money for the player */
   private final BigDecimal startingMoney;
 
-  /**
-   * Current money for the player
-   */
+  /** Current money for the player */
   private BigDecimal currentMoney;
 
-  /**
-   * Players purchase portfolio
-   */
+  /** Players purchase portfolio */
   private final Portfolio portfolio;
 
-  /**
-   * Players transaction archive
-   */
+  /** Players transaction archive */
   private final TransactionArchive transactionArchive;
 
-  /**
-   * Players chosen difficulty, used for GUI
-   */
+  /** Players chosen difficulty, used for GUI */
   private final Difficulty difficulty;
 
   /**
@@ -194,6 +187,7 @@ public class Player {
 
     /**
      * Starts a builder object with the minimum attributes for a Player.
+     *
      * @param name Name of the Player
      * @param startingMoney Player chosen starting amount
      * @param difficulty Difficulty.enum
@@ -210,6 +204,7 @@ public class Player {
 
     /**
      * Set-method through builder.
+     *
      * @param currentMoney currentMoney to be changed
      * @return Builder with updated currentMoney
      */
@@ -220,6 +215,7 @@ public class Player {
 
     /**
      * Set-method through builder.
+     *
      * @param portfolio portfolio to be changed
      * @return Builder with updated portfolio
      */
@@ -230,6 +226,7 @@ public class Player {
 
     /**
      * Set-method through builder.
+     *
      * @param transactionArchive transactionArchive to be changed
      * @return Builder with updated transactionArchive
      */
@@ -240,6 +237,7 @@ public class Player {
 
     /**
      * Set-method through builder.
+     *
      * @param difficulty difficulty to be changed
      * @return Builder with updated difficulty
      */
@@ -250,6 +248,7 @@ public class Player {
 
     /**
      * Set-method through builder.
+     *
      * @param challengeManager challengeManager to be changed
      * @return Builder with updated challengeManager
      */
@@ -260,6 +259,7 @@ public class Player {
 
     /**
      * Build-method, finalizes all changes and returns a complete Player Object
+     *
      * @return complete Player Object
      */
     public Player build() {

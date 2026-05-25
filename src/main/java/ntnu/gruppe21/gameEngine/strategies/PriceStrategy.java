@@ -21,6 +21,7 @@ import ntnu.gruppe21.gameEngine.Difficulty;
 public interface PriceStrategy {
   /**
    * All Strategies need a unique identifier. So saving can be done.
+   *
    * @return returns unique identifier for Strategy
    */
   String getStrategyId();
@@ -42,6 +43,7 @@ public interface PriceStrategy {
   /**
    * Optional: Different strategy might need different stock attributes. Override this if this is
    * true.
+   *
    * @param symbol Symbol of the {@link Stock}
    * @param company Company of the {@link Stock}
    * @param priceHistory List of prices throughout in {@link Stock}
@@ -54,7 +56,8 @@ public interface PriceStrategy {
   /**
    * Serializes any extras, in this case Stocks @Override if necessary
    *
-   * @param stock {@link Stock} object or a UNIQUE (for example {@link ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock} to be saved.
+   * @param stock {@link Stock} object or a UNIQUE (for example {@link
+   *     ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock} to be saved.
    * @return String containing extras
    */
   default String saveStockExtras(Stock stock) {
@@ -65,7 +68,8 @@ public interface PriceStrategy {
    * Reconstructs extras, in this case stocks and extras. Does nothing but @Override if to implement
    * parsing of unique stock object
    *
-   * @param stock usually unique stock for example {@link ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock}
+   * @param stock usually unique stock for example {@link
+   *     ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock}
    * @param extras extras
    */
   default void deserializeStockExtras(Stock stock, String extras) {
