@@ -37,7 +37,7 @@ public class DifficultyTest {
 
   @Test
   void insane_shouldHaveScoreMultiplier() {
-    assertEquals(BigDecimal.TWO, Difficulty.REALISTIC.getDifficultyMultiplier());
+    assertEquals(BigDecimal.TEN, Difficulty.REALISTIC.getDifficultyMultiplier());
   }
 
   // ----------------------------------------------------------------

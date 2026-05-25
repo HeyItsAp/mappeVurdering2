@@ -2,11 +2,12 @@ package ntnu.gruppe21.filehandler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import ntnu.gruppe21.Exchange;
 import ntnu.gruppe21.Player;
 
 /**
- * This class implements both Filehandlers {@link FilehandlerExchange} and {@link FilehandlerPlayer}
+ * This class implements both filehandlers {@link FilehandlerExchange} and {@link FilehandlerPlayer}
  * to manage saves by invoking static methods from both.
  *
  * <p>Mainly handles folders, creating them and places saved csv data into those folders. When
@@ -15,7 +16,7 @@ import ntnu.gruppe21.Player;
  */
 public class SaveManager {
   private static final String saves_root = "src/main/resources/saves";
-  private final String folderPath;
+  private final String folderSlot;
 
   /**
    * Constructor.
@@ -23,44 +24,73 @@ public class SaveManager {
    * @param saveName points to folder name containing csv files.
    */
   public SaveManager(String saveName) {
-    this.folderPath = saves_root + '/' + saveName;
+    this.folderSlot = saveName;
   }
 
-  /** Test constructor — accepts a full path as-is */
+  /**
+   * Test constructor — accepts a full path as-is
+   * @param saveName name of the folder. SaveSlot
+   * @param fullPath boolean to add saves_root before SaveSlot
+   */
   public SaveManager(String saveName, boolean fullPath) {
-    this.folderPath = fullPath ? saveName : saves_root + "/" + saveName;
+    this.folderSlot = fullPath ? saveName : saves_root + "/" + saveName;
   }
 
   /**
    * Performs a full save of the exchange and player data. Creates folder, csv files through static
    * methods and then prints out.
    *
-   * @param player
-   * @param exchange
-   * @throws Exception
+   * @param player {@link Player} object to be saved
+   * @param exchange {@link Exchange} object to be saved
+   * @throws Exception if anything goes wrong
    */
   public void save(Player player, Exchange exchange) throws Exception {
-    Files.createDirectories(Paths.get(folderPath));
-    FilehandlerPlayer.savePlayerData(player, folderPath);
-    FilehandlerExchange.saveExchangeData(exchange, folderPath);
-    System.out.println("Game saved to: " + folderPath);
+    Files.createDirectories(Paths.get(folderSlot));
+    FilehandlerPlayer.savePlayerData(player, folderSlot);
+    FilehandlerExchange.saveExchangeData(exchange, folderSlot);
+    System.out.println("Game saved to: " + folderSlot);
+  }
+
+  /**
+   * Getter, uses public static methods.
+   * @return List of String containing saves folderName
+   */
+  public List<String> getSaveOptions() {
+    return FilehandlerPlayer.getPlayerSaveOptions();
+  }
+
+  /**
+   * Getter, uses public static methods.
+   * @return List of String containing names of datasets in resoucres/datasets
+   */
+  public List<String> getDataSetOptions() {
+    return FilehandlerExchange.getExchangeDatasetOptions();
   }
 
   /**
    * Reads and returns Player object through static method.
    *
-   * @return Player object
+   * @return {@link Player} object
    */
   public Player loadPlayer() {
-    return FilehandlerPlayer.getPlayerSavedData(folderPath);
+    return FilehandlerPlayer.getPlayerSavedData(folderSlot);
   }
 
   /**
    * Reads and returns Exchange object through static method.
    *
-   * @return Exchange object
+   * @return {@link Exchange} object
    */
   public Exchange loadExchange() {
-    return FilehandlerExchange.getSaveData(folderPath);
+    return FilehandlerExchange.getExchangeSaveData(folderSlot);
+  }
+
+  /**
+   * Gets new exchange based on a Dataset in resoucres/datasets
+   * @param nameOfSet name of the csv file in resoucres/datasets
+   * @return complete {@link Exchange} object
+   */
+  public Exchange loadExchangeDataset(String nameOfSet) {
+    return FilehandlerExchange.getExchangeDataset(nameOfSet);
   }
 }

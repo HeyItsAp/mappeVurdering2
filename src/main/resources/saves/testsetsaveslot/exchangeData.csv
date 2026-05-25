@@ -1,5 +1,5 @@
-# Save on Exchange: HistoryTest, Week: 1
+# Save on Exchange: SimStateTest, Week: 1
 # Ticker,Name,{Prices}
-HistoryTest,MEDIUM
+SimStateTest,1,HARD,MARKET_SIMULATOR
  
-HST,HistoryCo,120
+SIM,SimCo,100,0.42|3|7|95

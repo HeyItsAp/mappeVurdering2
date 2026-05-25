@@ -34,6 +34,9 @@ public class Challenge {
   // Standard boolean to mark if challenge is completed or not
   private boolean completed;
 
+  // Standard counter for how many times it has been completed.
+  private int timesCompleted;
+
   /**
    * Creates a uncompleted challenge of {@link ChallengeType} and {@link Difficulty}.
    *
@@ -47,6 +50,33 @@ public class Challenge {
     this.completed = false;
     this.targetValue = setInitialValue(challengeType, difficulty, player);
     this.description = challengeType.getChallengeTitle() + ": 0 / " + targetValue;
+    this.timesCompleted = 0;
+  }
+
+  /**
+   * Creates previously completed challenge of {@link ChallengeType} and {@link Difficulty}. Evoked
+   * when getting a saved challenge. For getting the right values, advances the challanges by how
+   * many times it has been completed. Forces the challenge to be completed before advancing. Then
+   * sets it back to right values
+   *
+   * @param challengeType Right now, can be of two types.
+   * @param difficulty effect how difficult the challenge will be by updating targetValue
+   * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
+   * @param timesCompleted number of times this has previously been completed
+   */
+  public Challenge(
+      ChallengeType challengeType, Difficulty difficulty, Player player, int timesCompleted) {
+    this.challengeType = challengeType;
+    this.difficulty = difficulty;
+
+    this.completed = true;
+    this.targetValue = setInitialValue(challengeType, difficulty, player);
+    for (int i = 0; i < timesCompleted; i++) {
+      advanceChallenge(1, player);
+      this.completed = true;
+    }
+    this.completed = false;
+    this.timesCompleted = timesCompleted;
   }
 
   /**
@@ -117,11 +147,14 @@ public class Challenge {
    * Checks if challenge is completed by player by going through values according to {@link
    * ChallengeType}
    *
-   * @param player
+   * @param player Player object to check stats
    * @return {@code True} or {@code False} based on if it fills the requirement
    */
   public boolean checkCompletion(Player player) {
     if (completed) return true;
+
+    System.out.println(player.getCurrentMoney());
+    System.out.println(targetValue);
 
     boolean done =
         switch (challengeType) {
@@ -141,7 +174,6 @@ public class Challenge {
    *
    * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
    * @param newWeek Unnecessary parameter, but opens for development.
-   * @return new Initial requirement
    */
   public void advanceChallenge(int newWeek, Player player) {
     if (!completed) throw new IllegalStateException("Challenge is not completed");
@@ -153,23 +185,42 @@ public class Challenge {
               };
           case BALANCE_REQUIREMENT ->
               switch (difficulty) {
-                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + targetValue / 100;
+                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + (targetValue * 2 / 100);
               };
         };
     completed = false;
     refreshDescription(player, challengeType);
   }
 
-  /** Simple getters */
+/**
+ * Get-method for completed
+ * @return True/false
+ */
   public boolean isCompleted() {
     return completed;
   }
 
+    /**
+     * Get-method for attribute description
+     * @return description
+     */
   public String getDescription() {
     return description;
   }
 
+    /**
+     * Get-method for enum challengeType
+     * @return enum challengeType
+     */
   public ChallengeType getChallengeType() {
     return challengeType;
+  }
+
+    /**
+     * Get-method for int timesCompleted
+     * @return number of times the challenge completed
+     */
+  public int getTimesCompleted() {
+    return timesCompleted;
   }
 }
