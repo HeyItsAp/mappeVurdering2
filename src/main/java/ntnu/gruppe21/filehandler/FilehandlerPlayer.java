@@ -284,7 +284,17 @@ public class FilehandlerPlayer {
    * @return list of names for folder in resoucres/saves
    */
   public static List<String> getPlayerSaveOptions() {
-    Path pathToDataset = Path.of("src/main/resources/saves");
+    return getPlayerSaveOptions("src/main/resources/saves");
+  }
+
+  /**
+   * Returns string of names of saves in the given root folder.
+   *
+   * @param rootPath path to the saves root directory
+   * @return list of folder names in that directory
+   */
+  public static List<String> getPlayerSaveOptions(String rootPath) {
+    Path pathToDataset = Path.of(rootPath);
     List<String> namesOfSaves = null;
     try (Stream<Path> stream = Files.list(pathToDataset)) {
       namesOfSaves =
