@@ -15,7 +15,7 @@ public class Main extends Application {
 
     // Fragmentry Simulation for periodic/random save after some actions:
     Player player = new Player.Builder("Adrian", new BigDecimal(200000), Difficulty.EASY).build();
-    Exchange exchange = FilehandlerExchange.getExchangeDataset("");
+    Exchange exchange = FilehandlerExchange.getExchangeDataset("exchangeDataSet1");
 
     exchange
         .getStockMap()

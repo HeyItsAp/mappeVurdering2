@@ -85,7 +85,9 @@ public class ChallengeManager {
           .append(c.getTimesCompleted())
           .append("|");
     }
-    stringBuilder.deleteCharAt(stringBuilder.length() - 1); // Remove last |
+    if (!stringBuilder.isEmpty()) {
+      stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
     return stringBuilder.toString();
   }
 
