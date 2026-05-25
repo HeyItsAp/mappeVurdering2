@@ -29,9 +29,9 @@ import org.junit.jupiter.api.io.TempDir;
  */
 public class FilehandlerExchangeTest {
   // First root is subject to change
-  private final String test_saves_name = "src/main/resources/saves/testsetsaveslot";
+  private final String test_saves_name = "src/test/resources/saves/testsetsaveslot";
   // Second root will have static data
-  private final String test_get_saves_root = "src/main/resources/saves/testgetsaveslot";
+  private final String test_get_saves_root = "src/test/resources/saves/testgetsaveslot";
   private final String defaultDatasetName = "exchangeDataSet1";
 
   // ── getExchangeData ──────────────────────────────────────────────────────
@@ -141,9 +141,9 @@ public class FilehandlerExchangeTest {
 
       Boolean success =
           FilehandlerExchange.saveExchangeData(
-              exchange, "src/main/resources/saves/testsetsaveslot");
+              exchange, "src/test/resources/saves/testsetsaveslot");
       Exchange exchange1 =
-          FilehandlerExchange.getExchangeSaveData("src/main/resources/saves/testsetsaveslot");
+          FilehandlerExchange.getExchangeSaveData("src/test/resources/saves/testsetsaveslot");
       assertEquals(exchange.getName(), exchange1.getName());
     }
 

@@ -1,0 +1,21 @@
+# SaveFile for: Adrian
+
+# Player metadata:
+# name,startingMoney,currentMoney,difficulty,challenges
+Adrian,20000.0,8267.46719,EASY,BALANCE_REQUIREMENT;0
+
+# First dataset, Portfolio/Shares:
+# type,company,symbol,prices,quantity,purchasePrice
+1,HistoryCo,HST,100,10,100
+1,Apple Inc.,AAPL,200,5,200
+1,Microsoft,MSFT,300,3,300
+
+# Second dataset, Purchases:
+# type,company,symbol,quantity,prices,purchasePrice,week
+2,HistoryCo,HST,10,100,100,1
+2,Apple Inc.,AAPL,5,200,200,1
+2,Microsoft,MSFT,3,300,300,1
+
+# Third dataset, Sales:
+# type,company,symbol,quantity,prices,purchasePrice,week
+3,Microsoft,MSFT,1,300,300,2

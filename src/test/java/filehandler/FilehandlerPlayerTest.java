@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
  */
 public class FilehandlerPlayerTest {
   // First root is subject to change
-  private final String test_saves_root = "src/main/resources/saves/testsetsaveslot";
+  private final String test_saves_root = "src/test/resources/saves/testsetsaveslot";
   // Second root will have static data
-  private final String test_get_saves_root = "src/main/resources/saves/testgetsaveslot";
+  private final String test_get_saves_root = "src/test/resources/saves/testgetsaveslot";
 
   // ── getPlayerSavedData ──────────────────────────────────────────────────────────
 
@@ -166,7 +166,7 @@ public class FilehandlerPlayerTest {
 
     @Test
     void gettingPlayerSaveOptionsShouldBeCorrect() {
-      List<String> options = FilehandlerPlayer.getPlayerSaveOptions();
+      List<String> options = FilehandlerPlayer.getPlayerSaveOptions("src/test/resources/saves");
       assertEquals(3, options.size());
       assertTrue(options.contains("testgetsaveslot"));
       assertTrue(options.contains("testsetsaveslot"));
