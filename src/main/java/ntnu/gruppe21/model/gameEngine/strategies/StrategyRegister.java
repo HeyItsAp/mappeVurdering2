@@ -1,10 +1,10 @@
-package ntnu.gruppe21.gameEngine.strategies;
+package ntnu.gruppe21.model.gameEngine.strategies;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
-import ntnu.gruppe21.gameEngine.strategies.standard.StandardStrategy;
+import ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.model.gameEngine.strategies.standard.StandardStrategy;
 
 /**
  * Serializable class, just used to get read strategiIDs (as string) to return proper strategies.

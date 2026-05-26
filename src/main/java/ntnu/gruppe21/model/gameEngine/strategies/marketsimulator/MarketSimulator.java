@@ -1,13 +1,13 @@
-package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
+package ntnu.gruppe21.model.gameEngine.strategies.marketsimulator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.strategies.PriceStrategy;
 
 /**
  * Java translation of the Cookie Clicker bank minigame's stock price advancement logic

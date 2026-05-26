@@ -1,10 +1,10 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.challenges.ChallengeManager;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.challenges.ChallengeManager;
 
 /**
  * Player object that contains all relevant data to play the game. Name, current money, {@link

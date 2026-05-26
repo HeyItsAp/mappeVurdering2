@@ -1,9 +1,9 @@
-package ntnu.gruppe21.gameEngine.challenges;
+package ntnu.gruppe21.model.gameEngine.challenges;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import ntnu.gruppe21.Player;
-import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
 
 /**
  * Wraps the {@link ChallengeType}, gives it a visual description and has functions to check if

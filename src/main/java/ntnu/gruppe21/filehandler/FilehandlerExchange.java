@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import ntnu.gruppe21.Exchange;
-import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
-import ntnu.gruppe21.gameEngine.strategies.StrategyRegister;
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.model.gameEngine.strategies.StrategyRegister;
+import ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimulator;
 
 /**
  * Responsible for handling file input and output operations related to {@link Exchange} and {@link
@@ -38,7 +38,7 @@ public class FilehandlerExchange {
 
   /**
    * Saves the current state of an {@link Exchange} to a CSV file in a designated save folder.
-   * Usually invoke on {@link SaveManager}
+   * Usually invoke on {@link ntnu.gruppe21.filehandler.SaveManager}
    *
    * <p>The file will be stored in a folder in {@code resources/saves/} directory. File includes
    * exchange name, difficulty during playtime and current week (as comments) All stocks with their
@@ -47,7 +47,7 @@ public class FilehandlerExchange {
    * <p>Uses comma as the separator
    *
    * @param exchange the {@link Exchange} object to be saved
-   * @param folderPath THE FULL PATH, provided by {@link SaveManager}
+   * @param folderPath THE FULL PATH, provided by {@link ntnu.gruppe21.filehandler.SaveManager}
    * @return the filename (without path) of the saved file
    */
   public static boolean saveExchangeData(Exchange exchange, String folderPath) {
@@ -158,7 +158,7 @@ public class FilehandlerExchange {
    *
    * <p>Lines starting with '#' and empty lines are ignored.
    *
-   * @param folderPath THE FULL PATH, provided by {@link SaveManager}
+   * @param folderPath THE FULL PATH, provided by {@link ntnu.gruppe21.filehandler.SaveManager}
    * @return a reconstructed {@link Exchange} object based on the saved data
    */
   public static Exchange getExchangeSaveData(String folderPath) {

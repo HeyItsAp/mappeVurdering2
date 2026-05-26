@@ -1,12 +1,12 @@
-package ntnu.gruppe21.gameEngine.strategies.standard;
+package ntnu.gruppe21.model.gameEngine.strategies.standard;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
-import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.strategies.PriceStrategy;
 
 /**
  * This strategy uses the designated algorithm from the document to use random to calculate the

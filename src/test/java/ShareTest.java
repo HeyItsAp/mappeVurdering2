@@ -1,8 +1,8 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
-import ntnu.gruppe21.Share;
-import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.model.Share;
+import ntnu.gruppe21.model.Stock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,10 +1,10 @@
-package ntnu.gruppe21.gameEngine.strategies;
+package ntnu.gruppe21.model.gameEngine.strategies;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
 
 /**
  * TODO: Implement handling of different strategies to FilehandlerExchange. PriceStrategy interface
@@ -57,7 +57,7 @@ public interface PriceStrategy {
    * Serializes any extras, in this case Stocks @Override if necessary
    *
    * @param stock {@link Stock} object or a UNIQUE (for example {@link
-   *     ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock} to be saved.
+   *     ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimStock} to be saved.
    * @return String containing extras
    */
   default String saveStockExtras(Stock stock) {
@@ -69,7 +69,7 @@ public interface PriceStrategy {
    * parsing of unique stock object
    *
    * @param stock usually unique stock for example {@link
-   *     ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimStock}
+   *     ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimStock}
    * @param extras extras
    */
   default void deserializeStockExtras(Stock stock, String extras) {

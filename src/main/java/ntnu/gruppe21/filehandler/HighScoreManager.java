@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.*;
-import ntnu.gruppe21.Exchange;
-import ntnu.gruppe21.Player;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Player;
 
 /**
  * This class handles calculations, writing and reading of highscores. Usually invoked when checking

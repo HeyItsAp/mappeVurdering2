@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
-import ntnu.gruppe21.Player;
-import ntnu.gruppe21.Portfolio;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.challenges.Challenge;
-import ntnu.gruppe21.gameEngine.challenges.ChallengeType;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.Portfolio;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.challenges.Challenge;
+import ntnu.gruppe21.model.gameEngine.challenges.ChallengeType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

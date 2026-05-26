@@ -3,7 +3,7 @@ package gameEngine;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
-import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
 import org.junit.jupiter.api.Test;
 
 /**

@@ -4,7 +4,7 @@
  *
  * @author Adrian
  */
-package ntnu.gruppe21;
+package ntnu.gruppe21.model;
 
 import java.math.BigDecimal;
 import java.util.Objects;

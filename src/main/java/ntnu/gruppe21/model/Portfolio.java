@@ -4,13 +4,13 @@
  *
  * @author Adrian
  */
-package ntnu.gruppe21;
+package ntnu.gruppe21.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import ntnu.gruppe21.transaction.calculators.SaleCalculator;
+import ntnu.gruppe21.model.transaction.calculators.SaleCalculator;
 
 /**
  * Portfolio class contains a list shares and contain methods to interact. For example: Methods for

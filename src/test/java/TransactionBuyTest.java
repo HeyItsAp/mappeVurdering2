@@ -1,14 +1,14 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
-import ntnu.gruppe21.Player;
-import ntnu.gruppe21.Share;
-import ntnu.gruppe21.Stock;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.transaction.Purchase;
-import ntnu.gruppe21.transaction.Transaction;
-import ntnu.gruppe21.transaction.TransactionException;
-import ntnu.gruppe21.transaction.calculators.PurchaseCalculator;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.Share;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.transaction.Purchase;
+import ntnu.gruppe21.model.transaction.Transaction;
+import ntnu.gruppe21.model.transaction.TransactionException;
+import ntnu.gruppe21.model.transaction.calculators.PurchaseCalculator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
