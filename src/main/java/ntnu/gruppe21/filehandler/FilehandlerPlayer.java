@@ -89,7 +89,7 @@ public class FilehandlerPlayer {
                         + ","
                         + value.getQuantity()
                         + ","
-                        + value.getQuantity());
+                        + value.getPurchasePrice());
               });
       pw.println();
       pw.println("# Second dataset, Purchases:");
@@ -113,9 +113,9 @@ public class FilehandlerPlayer {
                         + ","
                         + stock.getSymbol()
                         + ","
-                        + purchasedShare.getQuantity()
-                        + ","
                         + stockPrices
+                        + ","
+                        + purchasedShare.getQuantity()
                         + ","
                         + purchasedShare.getPurchasePrice()
                         + ","
@@ -144,9 +144,9 @@ public class FilehandlerPlayer {
                         + ","
                         + stock.getSymbol()
                         + ","
-                        + purchasedShare.getQuantity()
-                        + ","
                         + stockPrices
+                        + ","
+                        + purchasedShare.getQuantity()
                         + ","
                         + purchasedShare.getPurchasePrice()
                         + ","
@@ -235,7 +235,7 @@ public class FilehandlerPlayer {
         String[] stockPricesString = values[3].split(";");
         List<BigDecimal> stockPrices =
             Arrays.stream(stockPricesString).map(BigDecimal::new).toList();
-        Stock savedStock = new Stock(values[0], values[1], stockPrices.getFirst());
+        Stock savedStock = new Stock(values[2], values[1], stockPrices.getFirst());
         for (int i = 1; i < stockPrices.size(); i++) {
           savedStock.addNewSalesPrice(stockPrices.get(i));
         }
