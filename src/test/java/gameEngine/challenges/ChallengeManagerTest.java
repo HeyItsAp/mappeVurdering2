@@ -32,6 +32,8 @@ class ChallengeManagerTest {
     Portfolio portfolio = mock(Portfolio.class);
 
     when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(money));
+    when(player.getStartingMoney()).thenReturn(BigDecimal.valueOf(money));
+    when(player.getNetWorth()).thenReturn(BigDecimal.valueOf(money));
     when(player.getPortfolio()).thenReturn(portfolio);
     when(player.getDifficulty()).thenReturn(difficulty);
     when(portfolio.countDistinctStock()).thenReturn(distinctStocks);
@@ -119,37 +121,44 @@ class ChallengeManagerTest {
   class EvaluateChallenges {
 
     @Test
-    void notCompleted_throwsIllegalStateException() {
-      // EASY BALANCE target = 1000/2 = 500; player has only 1 → not met
-      Player player = mockPlayer(1000, 0, Difficulty.EASY);
-      manager.generateChallenges(player);
+    void notCompleted_doesNotThrow() {
+      Player player = mockPlayer(1, 0, Difficulty.EASY);
+      manager.parseChallenges(Map.of(ChallengeType.BALANCE_REQUIREMENT, 0), player);
 
-      // Make the player have too little money / too few stocks to satisfy any challenge
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1));
-      when(player.getPortfolio().countDistinctStock()).thenReturn(0);
+      // EASY BALANCE target = 1/2 = 0; player has 1 → actually meets it, so use UNIQUE instead
+      // Use UNIQUE_SHARE_REQUIREMENT with 0 stocks so the challenge is definitely not met
+      // (target=2)
+      ChallengeManager freshManager = new ChallengeManager();
+      freshManager.parseChallenges(Map.of(ChallengeType.UNIQUE_SHARE_REQUIREMENT, 0), player);
 
-      // Force the challenge to be BALANCE_REQUIREMENT so we control the outcome.
-      // If it's UNIQUE, 0 stocks < 2, so it still throws.
-      assertThrows(IllegalStateException.class, () -> manager.evaluateChallenges(player));
+      assertDoesNotThrow(() -> freshManager.evaluateChallenges(player));
     }
 
     @Test
-    void completed_advancesChallenge() {
-      // Use UNIQUE_SHARE_REQUIREMENT at EASY (target = 2). Give player enough stocks.
+    void completed_replacesWithDifferentType() {
       Player player = mockPlayer(1000, 99, Difficulty.EASY);
-
-      // We want a deterministic challenge type, so use parseChallenges to set it.
       manager.parseChallenges(Map.of(ChallengeType.UNIQUE_SHARE_REQUIREMENT, 0), player);
 
-      // Pre-mark as completed by checking
-      Challenge c = manager.getActiveChallenges().get(0);
-      c.checkCompletion(player); // 99 >= 2 → true
-
-      assertTrue(c.isCompleted());
+      Challenge old = manager.getActiveChallenges().get(0);
+      old.checkCompletion(player); // 99 >= 4 → true
+      assertTrue(old.isCompleted());
 
       manager.evaluateChallenges(player);
 
-      assertFalse(c.isCompleted());
+      Challenge replacement = manager.getActiveChallenges().get(0);
+      assertFalse(replacement.isCompleted());
+      assertNotEquals(ChallengeType.UNIQUE_SHARE_REQUIREMENT, replacement.getChallengeType());
+    }
+
+    @Test
+    void completed_incrementsTotalCompletions() {
+      Player player = mockPlayer(1000, 99, Difficulty.EASY);
+      manager.parseChallenges(Map.of(ChallengeType.UNIQUE_SHARE_REQUIREMENT, 0), player);
+      manager.getActiveChallenges().get(0).checkCompletion(player);
+
+      manager.evaluateChallenges(player);
+
+      assertEquals(1, manager.getTotalCompletions());
     }
   }
 
@@ -252,18 +261,24 @@ class ChallengeManagerTest {
       String saved = manager.saveChallenges();
 
       // Parse the saved string back into a new manager.
-      // Format: "BALANCE_REQUIREMENT;2|"  (note the trailing '|' due to the bug — we parse up to
-      // it)
-      // Split on | to get each challenge entry, then ; to get type and count.
+      // Format: "total|TYPE;timesCompleted" — skip the first segment (it's the integer total).
       ChallengeManager restored = new ChallengeManager();
       String[] entries = saved.split("\\|");
       Map<ChallengeType, Integer> parsed = new java.util.HashMap<>();
-      for (String entry : entries) {
-        if (entry.isBlank()) continue;
-        String[] parts = entry.split(";");
+      int savedTotal = 0;
+      int startIdx = 0;
+      try {
+        savedTotal = Integer.parseInt(entries[0].trim());
+        startIdx = 1;
+      } catch (NumberFormatException ignored) {
+      }
+      for (int i = startIdx; i < entries.length; i++) {
+        if (entries[i].isBlank()) continue;
+        String[] parts = entries[i].split(";");
         parsed.put(ChallengeType.valueOf(parts[0]), Integer.parseInt(parts[1]));
       }
       restored.parseChallenges(parsed, player);
+      restored.setTotalCompletions(savedTotal);
 
       assertEquals(1, restored.getActiveChallenges().size());
       assertEquals(

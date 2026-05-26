@@ -1,7 +1,6 @@
 package ntnu.gruppe21.model.gameEngine.challenges;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.model.gameEngine.Difficulty;
 
@@ -38,7 +37,7 @@ public class Challenge {
   private int timesCompleted;
 
   /**
-   * Creates a uncompleted challenge of {@link ChallengeType} and {@link Difficulty}.
+   * Creates an uncompleted challenge of {@link ChallengeType} and {@link Difficulty}.
    *
    * @param challengeType Right now, can be of two types.
    * @param difficulty effect how difficult the challenge will be by updating targetValue
@@ -98,9 +97,24 @@ public class Challenge {
           case BALANCE_REQUIREMENT ->
               challengeType.getChallengeTitle()
                   + ": "
-                  + player.getCurrentMoney()
+                  + player
+                      .getCurrentMoney()
+                      .setScale(0, java.math.RoundingMode.DOWN)
+                      .toPlainString()
                   + " / "
                   + targetValue;
+          case PROFIT_TARGET -> {
+            java.math.BigDecimal profit =
+                player
+                    .getNetWorth()
+                    .subtract(player.getStartingMoney())
+                    .setScale(0, java.math.RoundingMode.DOWN);
+            yield challengeType.getChallengeTitle()
+                + ": "
+                + profit.toPlainString()
+                + " / "
+                + targetValue;
+          }
         };
   }
 
@@ -116,30 +130,32 @@ public class Challenge {
    * @return new Initial requirement
    */
   private int setInitialValue(ChallengeType challengeType, Difficulty difficulty, Player player) {
-    int baseBalanceRequirement = 0;
-    int baseUniqueStock = 2;
-    try {
-      baseBalanceRequirement =
-          player.getCurrentMoney().divide(BigDecimal.TWO, RoundingMode.HALF_UP).intValue();
-    } catch (NumberFormatException e) {
-      throw new RuntimeException("Starting amount is invalid for challenge: " + e);
-    }
-
     return switch (challengeType) {
-      case UNIQUE_SHARE_REQUIREMENT ->
-          switch (difficulty) {
-            case EASY -> baseUniqueStock;
-            case MEDIUM -> baseUniqueStock + 2;
-            case HARD -> baseUniqueStock + 4;
-            case REALISTIC -> baseUniqueStock + 8;
-          };
-      case BALANCE_REQUIREMENT ->
-          switch (difficulty) {
-            case EASY -> baseBalanceRequirement;
-            case MEDIUM -> baseBalanceRequirement + (baseBalanceRequirement / 100 * 15); //
-            case HARD, REALISTIC -> baseBalanceRequirement + (baseBalanceRequirement / 100 * 25);
-              // Hard Enough as it is because of change rate among stocks
-          };
+      case UNIQUE_SHARE_REQUIREMENT -> {
+        int baseUniqueStock = 4;
+        yield switch (difficulty) {
+          case EASY -> baseUniqueStock;
+          case MEDIUM -> baseUniqueStock + 4;
+          case HARD -> baseUniqueStock + 6;
+          case REALISTIC -> baseUniqueStock + 10;
+        };
+      }
+      case BALANCE_REQUIREMENT -> {
+        int base = player.getCurrentMoney().multiply(BigDecimal.valueOf(1.5)).intValue();
+        yield switch (difficulty) {
+          case EASY -> base;
+          case MEDIUM -> base + (base / 100 * 15);
+          case HARD, REALISTIC -> base + (base / 100 * 25);
+        };
+      }
+      case PROFIT_TARGET -> {
+        int base = player.getStartingMoney().multiply(BigDecimal.valueOf(0.25)).intValue();
+        yield switch (difficulty) {
+          case EASY -> base;
+          case MEDIUM -> base + (base / 100 * 25);
+          case HARD, REALISTIC -> base + (base / 100 * 50);
+        };
+      }
     };
   }
 
@@ -153,15 +169,18 @@ public class Challenge {
   public boolean checkCompletion(Player player) {
     if (completed) return true;
 
-    System.out.println(player.getCurrentMoney());
-    System.out.println(targetValue);
-
     boolean done =
         switch (challengeType) {
           case BALANCE_REQUIREMENT ->
               player.getCurrentMoney().compareTo(BigDecimal.valueOf(targetValue)) >= 0;
           case UNIQUE_SHARE_REQUIREMENT ->
               player.getPortfolio().countDistinctStock() >= targetValue;
+          case PROFIT_TARGET ->
+              player
+                      .getNetWorth()
+                      .subtract(player.getStartingMoney())
+                      .compareTo(BigDecimal.valueOf(targetValue))
+                  >= 0;
         };
     if (done) completed = true;
     return done;
@@ -177,6 +196,7 @@ public class Challenge {
    */
   public void advanceChallenge(int newWeek, Player player) {
     if (!completed) throw new IllegalStateException("Challenge is not completed");
+    timesCompleted++;
     targetValue =
         switch (challengeType) {
           case UNIQUE_SHARE_REQUIREMENT ->
@@ -185,11 +205,23 @@ public class Challenge {
               };
           case BALANCE_REQUIREMENT ->
               switch (difficulty) {
-                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + (targetValue * 2 / 100);
+                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + (targetValue * 10 / 100);
+              };
+          case PROFIT_TARGET ->
+              switch (difficulty) {
+                case EASY, MEDIUM, HARD, REALISTIC -> targetValue + (targetValue * 25 / 100);
               };
         };
     completed = false;
     refreshDescription(player, challengeType);
+  }
+
+  public BigDecimal calculateReward(Player player) {
+    return switch (challengeType) {
+      case BALANCE_REQUIREMENT, PROFIT_TARGET ->
+          BigDecimal.valueOf(targetValue).multiply(BigDecimal.valueOf(0.10));
+      case UNIQUE_SHARE_REQUIREMENT -> player.getCurrentMoney().multiply(BigDecimal.valueOf(0.05));
+    };
   }
 
   /**

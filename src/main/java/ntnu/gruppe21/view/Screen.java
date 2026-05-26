@@ -11,6 +11,7 @@ import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.view.menus.ExchangeMenu;
 import ntnu.gruppe21.view.menus.PortfolioMenu;
+import ntnu.gruppe21.view.menus.ProgressMenu;
 import ntnu.gruppe21.view.menus.StartMenu;
 import ntnu.gruppe21.view.menus.TodayMenu;
 import ntnu.gruppe21.view.popups.AdvanceWeekPopup;
@@ -126,7 +127,7 @@ public class Screen extends StackPane {
             navBtn("Market", () -> new ExchangeMenu(this)),
             navBtn("My portfolio", () -> new PortfolioMenu(this)),
             sectionLabel("LEVEL"),
-            navBtn("Progress", () -> new ExchangeMenu(this)),
+            navBtn("Progress", () -> new ProgressMenu(this)),
             spacer,
             weekLabel,
             advanceWeekBtn,

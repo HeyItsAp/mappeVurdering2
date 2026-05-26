@@ -192,6 +192,7 @@ public class FilehandlerPlayer {
     BigDecimal currentMoney = null;
     Difficulty difficulty = null;
     Map<ChallengeType, Integer> challengeMetadataMap = new HashMap<>();
+    int savedTotalCompletions = 0;
     boolean metadataLinePassed = false;
     try {
       BufferedReader br = new BufferedReader(new FileReader(csvfile));
@@ -222,12 +223,19 @@ public class FilehandlerPlayer {
           difficulty = Difficulty.valueOf(values[3]);
 
           String[] challengeString = values[4].split("\\|");
-          for (String s : challengeString) {
-            String[] challengeMetadata = s.split(";");
+          int startIdx = 0;
+          try {
+            savedTotalCompletions = Integer.parseInt(challengeString[0].trim());
+            startIdx = 1;
+          } catch (NumberFormatException ignored) {
+            // old format without total prefix — derive total from per-challenge counts below
+          }
+          for (int i = startIdx; i < challengeString.length; i++) {
+            String[] challengeMetadata = challengeString[i].split(";");
             ChallengeType challengeType = ChallengeType.valueOf(challengeMetadata[0]);
             Integer timeCompleted = Integer.valueOf(challengeMetadata[1]);
-
             challengeMetadataMap.put(challengeType, timeCompleted);
+            if (startIdx == 0) savedTotalCompletions += timeCompleted;
           }
           continue;
         }
@@ -272,6 +280,7 @@ public class FilehandlerPlayer {
               .transactionArchive(transactionArchive)
               .build();
       player.getChallengeManager().parseChallenges(challengeMetadataMap, player);
+      player.getChallengeManager().setTotalCompletions(savedTotalCompletions);
     } catch (Exception e) {
       System.out.println("Error when saving. Remember to add challenges after player creation");
       e.printStackTrace();
