@@ -43,42 +43,13 @@ public class PortfolioMenu extends VBox {
     VBox chartPlaceholder = new VBox();
     chartPlaceholder.setStyle(
         "-fx-background-color: #e0e0e0; -fx-background-radius: 8; -fx-alignment: center;");
-    VBox.setVgrow(chartPlaceholder, Priority.ALWAYS);
-    Label chartLabel = new Label("Stock chart coming soon");
+    chartPlaceholder.setPrefHeight(300);
+    chartPlaceholder.setMaxHeight(300);
+    Label chartLabel = new Label("Net worth chart coming soon");
     chartLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 13px;");
     chartPlaceholder.getChildren().add(chartLabel);
 
-    String btnBase =
-        """
-        -fx-font-size: 13px;
-        -fx-font-weight: bold;
-        -fx-background-radius: 8;
-        -fx-padding: 10 0 10 0;
-        -fx-cursor: hand;
-        -fx-max-width: Infinity;
-        """;
-    Button buyBtn = new Button("Buy");
-    buyBtn.setMaxWidth(Double.MAX_VALUE);
-    buyBtn.setStyle(btnBase + "-fx-background-color: #1a1a1a; -fx-text-fill: white;");
-
-    Button sellBtn = new Button("Sell");
-    sellBtn.setMaxWidth(Double.MAX_VALUE);
-    sellBtn.setStyle(
-        btnBase
-            + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
-            + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
-
-    Button watchlistBtn = new Button("Add to Watchlist");
-    watchlistBtn.setMaxWidth(Double.MAX_VALUE);
-    watchlistBtn.setStyle(
-        btnBase
-            + "-fx-background-color: white; -fx-text-fill: #555;"
-            + "-fx-border-color: #ccc; -fx-border-radius: 8;");
-
-    VBox buttonPane = new VBox(8, buyBtn, sellBtn, watchlistBtn);
-    VBox.setVgrow(buttonPane, Priority.ALWAYS);
-
-    rightPane.getChildren().addAll(chartPlaceholder, buttonPane);
+    rightPane.getChildren().addAll(chartPlaceholder);
     bottom.getChildren().addAll(leftPane, rightPane);
 
     getChildren().addAll(title, line, createMoneyDisplay(), bottom);
