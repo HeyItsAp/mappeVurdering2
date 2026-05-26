@@ -239,6 +239,7 @@ public class Screen extends StackPane {
             btn.setStyle(
                 base
                     + "-fx-background-color: white; -fx-text-fill: #888; -fx-border-color: #ccc; -fx-border-width: 1;"));
+    btn.setOnAction(ignored -> new SellAllQuitPopup().show(this));
     return btn;
   }
 }
