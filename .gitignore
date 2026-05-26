@@ -37,3 +37,7 @@ formatting.txt
 .vscode
 
 mappe_vurdering_2.iml
+
+# Save files
+src/main/resources/saves/**
+!src/main/resources/saves/.gitkeep
