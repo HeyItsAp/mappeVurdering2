@@ -208,6 +208,7 @@ public class Screen extends StackPane {
             -fx-background-radius: 10;
             -fx-cursor: hand;
         """));
+    advanceWeek.setOnAction(ignored -> new AdvanceWeekPopup().show(this));
     return advanceWeek;
   }
 }
