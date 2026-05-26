@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.popups;
 
 import java.math.BigDecimal;
 import java.util.List;

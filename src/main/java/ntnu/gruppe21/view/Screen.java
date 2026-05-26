@@ -9,6 +9,12 @@ import javafx.stage.Stage;
 import ntnu.gruppe21.controller.GameController;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.view.menus.ExchangeMenu;
+import ntnu.gruppe21.view.menus.PortfolioMenu;
+import ntnu.gruppe21.view.menus.StartMenu;
+import ntnu.gruppe21.view.menus.TodayMenu;
+import ntnu.gruppe21.view.popups.AdvanceWeekPopup;
+import ntnu.gruppe21.view.popups.SellAllQuitPopup;
 
 public class Screen extends StackPane {
   private final GameController controller;
