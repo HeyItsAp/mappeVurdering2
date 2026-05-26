@@ -7,7 +7,7 @@ import ntnu.gruppe21.model.Share;
 /** Calculator class for purchases. */
 public class PurchaseCalculator implements TransactionCalculator {
   private final BigDecimal purchasePrice;
-  private final BigDecimal quantity;
+  private final int quantity;
 
   /**
    * Creates a new purchase calculator.
@@ -20,7 +20,7 @@ public class PurchaseCalculator implements TransactionCalculator {
   }
 
   public BigDecimal calculateGross() {
-    return purchasePrice.multiply(quantity);
+    return purchasePrice.multiply(BigDecimal.valueOf(quantity));
   }
 
   public BigDecimal calculateCommission() {

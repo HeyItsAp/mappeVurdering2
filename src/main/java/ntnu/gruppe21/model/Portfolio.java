@@ -50,23 +50,22 @@ public class Portfolio {
    * @param symbol the stock symbol to remove shares for
    * @param quantityToRemove the total quantity to remove
    */
-  public void removeShares(String symbol, BigDecimal quantityToRemove) {
-    BigDecimal remaining = quantityToRemove;
+  public void removeShares(String symbol, int quantityToRemove) {
+    int remaining = quantityToRemove;
     java.util.Iterator<Share> it = shares.iterator();
     List<Share> toAdd = new ArrayList<>();
 
-    while (it.hasNext() && remaining.compareTo(BigDecimal.ZERO) > 0) {
+    while (it.hasNext() && remaining > 0) {
       Share s = it.next();
       if (!s.getStock().getSymbol().equals(symbol)) continue;
 
-      int cmp = s.getQuantity().compareTo(remaining);
-      if (cmp <= 0) {
+      if (s.getQuantity() <= remaining) {
         it.remove();
-        remaining = remaining.subtract(s.getQuantity());
+        remaining -= s.getQuantity();
       } else {
         it.remove();
-        toAdd.add(new Share(s.getStock(), s.getQuantity().subtract(remaining), s.getPurchasePrice()));
-        remaining = BigDecimal.ZERO;
+        toAdd.add(new Share(s.getStock(), s.getQuantity() - remaining, s.getPurchasePrice()));
+        remaining = 0;
       }
     }
     shares.addAll(toAdd);

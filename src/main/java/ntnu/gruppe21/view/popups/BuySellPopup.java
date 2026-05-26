@@ -228,11 +228,11 @@ public abstract class BuySellPopup extends Popup {
     this.quantityChangeCallback = callback;
   }
 
-  public java.math.BigDecimal getQuantity() {
+  public int getQuantity() {
     try {
-      return new java.math.BigDecimal(quantityField.getText().trim());
+      return Integer.parseInt(quantityField.getText().trim());
     } catch (NumberFormatException e) {
-      return java.math.BigDecimal.ONE;
+      return 1;
     }
   }
 }

@@ -53,7 +53,7 @@ public class GameController {
    * @throws IllegalArgumentException if the symbol is unknown or funds are insufficient
    * @throws TransactionException if the transaction cannot be committed
    */
-  public void buyStock(String symbol, BigDecimal quantity) throws TransactionException {
+  public void buyStock(String symbol, int quantity) throws TransactionException {
     Transaction purchase = exchange.buy(symbol, quantity, player);
     purchase.commit(player);
   }
@@ -66,7 +66,7 @@ public class GameController {
    * @throws IllegalArgumentException if the symbol is unknown
    * @throws TransactionException if the transaction cannot be committed
    */
-  public void sellStock(String symbol, BigDecimal quantity) throws TransactionException {
+  public void sellStock(String symbol, int quantity) throws TransactionException {
     Transaction sale = exchange.sell(symbol, quantity, player);
     sale.commit(player);
   }

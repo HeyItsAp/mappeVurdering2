@@ -170,7 +170,7 @@ public class Exchange {
    * @param player The player doing the purchase.
    * @return The transaction.
    */
-  public Transaction buy(String symbol, BigDecimal quantity, Player player) {
+  public Transaction buy(String symbol, int quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
     Transaction purchase = transactionFactory.createPurchase(share, week);
@@ -189,7 +189,7 @@ public class Exchange {
    * @param player The player doing the sale.
    * @return The transaction.
    */
-  public Transaction sell(String symbol, BigDecimal quantity, Player player) {
+  public Transaction sell(String symbol, int quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
     return transactionFactory.createSale(share, week);

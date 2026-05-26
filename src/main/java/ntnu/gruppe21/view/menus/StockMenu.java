@@ -197,14 +197,14 @@ public class StockMenu extends VBox {
 
     Button sellBtn = new Button("Sell");
     sellBtn.setMaxWidth(Double.MAX_VALUE);
-    sellBtn.setDisable(ownedShares().compareTo(BigDecimal.ZERO) == 0);
+    sellBtn.setDisable(ownedShares() == 0);
     sellBtn.setStyle(
         btnBase
             + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
             + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
     sellBtn.setOnAction(
         ignored -> {
-          int owned = ownedShares().intValue();
+          int owned = ownedShares();
           SellPopup popup = new SellPopup(stock, owned);
           popup.setOnConfirm(
               () -> {
@@ -213,7 +213,7 @@ public class StockMenu extends VBox {
                   popup.close();
                   screen.refreshSidebar();
                   refreshPositionCard();
-                  sellBtn.setDisable(ownedShares().compareTo(BigDecimal.ZERO) == 0);
+                  sellBtn.setDisable(ownedShares() == 0);
                 } catch (IllegalArgumentException | TransactionException e) {
                   e.printStackTrace();
                 }
@@ -246,11 +246,11 @@ public class StockMenu extends VBox {
     Label heading = new Label("YOUR POSITION");
     heading.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    BigDecimal totalShares = ownedShares();
+    int totalShares = ownedShares();
     BigDecimal avgCost = avgCost();
-    BigDecimal currentValue = totalShares.multiply(stock.getSalesPrice());
+    BigDecimal currentValue = BigDecimal.valueOf(totalShares).multiply(stock.getSalesPrice());
 
-    sharesOwnedLabel = new Label(totalShares.toPlainString());
+    sharesOwnedLabel = new Label(String.valueOf(totalShares));
     avgCostLabel = new Label(fmt(avgCost));
     currentValueLabel = new Label(fmt(currentValue));
 
@@ -273,17 +273,17 @@ public class StockMenu extends VBox {
   }
 
   private void refreshPositionCard() {
-    BigDecimal totalShares = ownedShares();
-    sharesOwnedLabel.setText(totalShares.toPlainString());
+    int totalShares = ownedShares();
+    sharesOwnedLabel.setText(String.valueOf(totalShares));
     avgCostLabel.setText(fmt(avgCost()));
-    currentValueLabel.setText(fmt(totalShares.multiply(stock.getSalesPrice())));
+    currentValueLabel.setText(fmt(BigDecimal.valueOf(totalShares).multiply(stock.getSalesPrice())));
   }
 
-  private BigDecimal ownedShares() {
+  private int ownedShares() {
     return screen.getController().getPlayer().getPortfolio().getShares().stream()
         .filter(s -> s.getStock().getSymbol().equals(stock.getSymbol()))
-        .map(Share::getQuantity)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        .mapToInt(Share::getQuantity)
+        .sum();
   }
 
   private BigDecimal avgCost() {
@@ -294,13 +294,12 @@ public class StockMenu extends VBox {
     if (matching.isEmpty()) return BigDecimal.ZERO;
     BigDecimal totalCost =
         matching.stream()
-            .map(s -> s.getPurchasePrice().multiply(s.getQuantity()))
+            .map(s -> s.getPurchasePrice().multiply(BigDecimal.valueOf(s.getQuantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal totalQty =
-        matching.stream().map(Share::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
-    return totalQty.compareTo(BigDecimal.ZERO) == 0
+    int totalQty = matching.stream().mapToInt(Share::getQuantity).sum();
+    return totalQty == 0
         ? BigDecimal.ZERO
-        : totalCost.divide(totalQty, 2, RoundingMode.HALF_UP);
+        : totalCost.divide(BigDecimal.valueOf(totalQty), 2, RoundingMode.HALF_UP);
   }
 
   private HBox buildPositionRow(String label, Label valueLabel) {
