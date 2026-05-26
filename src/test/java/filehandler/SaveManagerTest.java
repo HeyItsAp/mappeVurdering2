@@ -6,11 +6,13 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import ntnu.gruppe21.Exchange;
-import ntnu.gruppe21.Player;
-import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.filehandler.FilehandlerExchange;
+import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 import ntnu.gruppe21.filehandler.SaveManager;
-import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests for SaveManager – verifies that the wrapper correctly delegates to FilehandlerPlayer and
- * FilehandlerExchange. Not that many as its just a wrapper for {@link
- * ntnu.gruppe21.filehandler.FilehandlerPlayer} and {@link
- * ntnu.gruppe21.filehandler.FilehandlerExchange}
+ * FilehandlerExchange. Not that many as its just a wrapper for {@link FilehandlerPlayer} and {@link
+ * FilehandlerExchange}
  */
 public class SaveManagerTest {
 

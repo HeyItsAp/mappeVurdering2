@@ -1,8 +1,8 @@
-package ntnu.gruppe21.gameEngine.challenges;
+package ntnu.gruppe21.model.gameEngine.challenges;
 
 import java.util.*;
-import ntnu.gruppe21.Player;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
+import ntnu.gruppe21.model.Player;
 
 /**
  * Challenge Manager contains and manages challenges. Is able to check if each challenge is

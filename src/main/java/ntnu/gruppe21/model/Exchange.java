@@ -1,4 +1,4 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.model;
 
 /* UNFINISHED */
 
@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javafx.util.Builder;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.strategies.PriceStrategy;
-import ntnu.gruppe21.gameEngine.strategies.marketsimulator.MarketSimulator;
-import ntnu.gruppe21.transaction.Transaction;
-import ntnu.gruppe21.transaction.TransactionFactory;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.strategies.PriceStrategy;
+import ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimulator;
+import ntnu.gruppe21.model.transaction.Transaction;
+import ntnu.gruppe21.model.transaction.TransactionFactory;
 
 /**
  * Represents a realistic exchange with list of stock and the ability to make a transaction.

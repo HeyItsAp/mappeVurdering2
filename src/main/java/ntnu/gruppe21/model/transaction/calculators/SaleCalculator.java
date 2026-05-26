@@ -1,8 +1,8 @@
-package ntnu.gruppe21.transaction.calculators;
+package ntnu.gruppe21.model.transaction.calculators;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import ntnu.gruppe21.Share;
+import ntnu.gruppe21.model.Share;
 
 /** Calculator class for sales. */
 public class SaleCalculator implements TransactionCalculator {

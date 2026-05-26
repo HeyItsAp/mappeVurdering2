@@ -1,8 +1,7 @@
-package ntnu.gruppe21;
+package ntnu.gruppe21.model;
 
 import java.math.BigDecimal;
 import java.util.*;
-
 /** Class representing a stock. */
 public class Stock {
   private final String symbol;
@@ -24,9 +23,8 @@ public class Stock {
   }
 
   /**
-   * Creates a stock with premade history list. Usually used in {@link
-   * ntnu.gruppe21.filehandler.FilehandlerExchange} and {@link
-   * ntnu.gruppe21.filehandler.FilehandlerPlayer} to easily and correctly make stock with history.
+   * Creates a stock with premade history list. Usually used in {@link ntnu.gruppe21.filehandler.FilehandlerExchange} and
+   * {@link ntnu.gruppe21.filehandler.FilehandlerPlayer} to easily and correctly make stock with history.
    *
    * @param symbol Symbol, represented as shorted string of the Company
    * @param company Company name. For example 'Microsoft'

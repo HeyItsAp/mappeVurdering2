@@ -1,8 +1,8 @@
-package ntnu.gruppe21.gameEngine;
+package ntnu.gruppe21.model.gameEngine;
 
 import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.HighScoreManager;
-import ntnu.gruppe21.gameEngine.challenges.Challenge;
+import ntnu.gruppe21.model.gameEngine.challenges.Challenge;
 
 /**
  * The enum dictates the difficulty and has allocated attributes that effect gameplay and final

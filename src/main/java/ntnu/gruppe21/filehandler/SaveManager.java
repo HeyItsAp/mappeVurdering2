@@ -3,8 +3,8 @@ package ntnu.gruppe21.filehandler;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import ntnu.gruppe21.Exchange;
-import ntnu.gruppe21.Player;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Player;
 
 /**
  * This class implements both filehandlers {@link FilehandlerExchange} and {@link FilehandlerPlayer}

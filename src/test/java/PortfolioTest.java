@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import ntnu.gruppe21.Portfolio;
-import ntnu.gruppe21.Share;
-import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.model.Portfolio;
+import ntnu.gruppe21.model.Share;
+import ntnu.gruppe21.model.Stock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

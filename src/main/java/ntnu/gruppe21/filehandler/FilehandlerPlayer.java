@@ -10,11 +10,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import ntnu.gruppe21.*;
-import ntnu.gruppe21.gameEngine.Difficulty;
-import ntnu.gruppe21.gameEngine.challenges.ChallengeType;
-import ntnu.gruppe21.transaction.Purchase;
-import ntnu.gruppe21.transaction.Sale;
+import ntnu.gruppe21.model.*;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.challenges.ChallengeType;
+import ntnu.gruppe21.model.transaction.Purchase;
+import ntnu.gruppe21.model.transaction.Sale;
 
 /**
  * Utility class responsible for handling file input and output operations related to {@link Player}
@@ -33,7 +33,8 @@ public class FilehandlerPlayer {
    * Saves the current state of an {@link Player} to a CSV file in a designated save folder unique
    * to player. Create that folder if not created.
    *
-   * <p>Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link SaveManager}
+   * <p>Similar Function at {@link FilehandlerExchange}. Usually invoked on {@link
+   * ntnu.gruppe21.filehandler.SaveManager}
    *
    * <p>The file will include: PlayerName, starting money, current money, difficulty, list of shares
    * {@link Portfolio} and list of transactions {@link TransactionArchive}
@@ -41,7 +42,7 @@ public class FilehandlerPlayer {
    * <p>The price history is stored as a semicolon-separated list in a single column.
    *
    * @param player {@link Player} object to be saved
-   * @param folderPath Full path to saves, provided by {@link SaveManager}
+   * @param folderPath Full path to saves, provided by {@link ntnu.gruppe21.filehandler.SaveManager}
    * @return true of false based on if succeed
    */
   public static boolean savePlayerData(Player player, String folderPath) {
@@ -162,7 +163,7 @@ public class FilehandlerPlayer {
 
   /**
    * Loads a previously saved Player CSV file in a designated save folder. Usually invoke on {@link
-   * SaveManager}
+   * ntnu.gruppe21.filehandler.SaveManager}
    *
    * <p>Data is split into paragraphs: First LINE will be the players metadata:
    * Name,startingMoney,currentMoney,difficulty,{challengeType}First paragraph will contain shares:

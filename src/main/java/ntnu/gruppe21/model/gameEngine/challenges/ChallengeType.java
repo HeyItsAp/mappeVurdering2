@@ -1,4 +1,6 @@
-package ntnu.gruppe21.gameEngine.challenges;
+package ntnu.gruppe21.model.gameEngine.challenges;
+
+import ntnu.gruppe21.model.Player;
 
 /**
  * So far we have two different challenges: - {@code UNIQUE_SHARE_REQUIREMENT}, You need to have a
@@ -10,13 +12,10 @@ package ntnu.gruppe21.gameEngine.challenges;
 public enum ChallengeType {
   /**
    * Unique_share_requirement: Players must have of certain number of distinct stock in portfolio
-   * {@link ntnu.gruppe21.Player}
+   * {@link Player}
    */
   UNIQUE_SHARE_REQUIREMENT("Own different stocks:"),
-  /**
-   * Balance_requirement: Players must have a certain amount of current money {@link
-   * ntnu.gruppe21.Player}
-   */
+  /** Balance_requirement: Players must have a certain amount of current money {@link Player} */
   BALANCE_REQUIREMENT("Must have amount of balance:");
 
   private final String challengeTitle;

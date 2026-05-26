@@ -1,8 +1,8 @@
-package ntnu.gruppe21.gameEngine.strategies.marketsimulator;
+package ntnu.gruppe21.model.gameEngine.strategies.marketsimulator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import ntnu.gruppe21.Stock;
+import ntnu.gruppe21.model.Stock;
 
 public class MarketSimStock extends Stock {
   private double d;

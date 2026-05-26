@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.List;
-import ntnu.gruppe21.Exchange;
-import ntnu.gruppe21.Player;
-import ntnu.gruppe21.Stock;
 import ntnu.gruppe21.filehandler.HighScoreManager;
-import ntnu.gruppe21.gameEngine.Difficulty;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.gameEngine.Difficulty;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
