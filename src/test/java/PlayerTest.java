@@ -79,7 +79,7 @@ public class PlayerTest {
   /* Helper to add a transaction in a given week without affecting player money/portfolio */
   private void addWeeks(Player player, int numberOfWeeks) {
     Stock stock = new Stock("TEST", "TestCo", new BigDecimal(1));
-    Share share = new Share(stock, BigDecimal.ONE, BigDecimal.ONE);
+    Share share = new Share(stock, 1, BigDecimal.ONE);
     for (int week = 1; week <= numberOfWeeks; week++) {
       player.getTransactionArchive().add(new Purchase(share, week));
     }

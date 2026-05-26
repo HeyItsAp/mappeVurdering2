@@ -97,7 +97,7 @@ public class FilehandlerPlayerTest {
     public void saveAndReloadPreservesPortfolio() {
       Portfolio portfolio = new Portfolio();
       Stock stock = new Stock("TST", "TestCo", new BigDecimal("100"));
-      portfolio.addShare(new Share(stock, new BigDecimal("5"), new BigDecimal("100")));
+      portfolio.addShare(new Share(stock, 5, new BigDecimal("100")));
 
       Player original =
           new Player.Builder("PortfolioTest", new BigDecimal("5000"), Difficulty.EASY)
@@ -117,7 +117,7 @@ public class FilehandlerPlayerTest {
     public void saveAndReloadPreservesPurchases() {
       TransactionArchive archive = new TransactionArchive();
       Stock stock = new Stock("TST", "TestCo", new BigDecimal("100"));
-      Share share = new Share(stock, new BigDecimal("2"), new BigDecimal("100"));
+      Share share = new Share(stock, 2, new BigDecimal("100"));
       archive.add(new Purchase(share, 1));
 
       Player original =
@@ -139,7 +139,7 @@ public class FilehandlerPlayerTest {
     public void saveAndReloadPreservesSales() {
       TransactionArchive archive = new TransactionArchive();
       Stock stock = new Stock("TST", "TestCo", new BigDecimal("100"));
-      Share share = new Share(stock, new BigDecimal("2"), new BigDecimal("100"));
+      Share share = new Share(stock, 2, new BigDecimal("100"));
       archive.add(new Sale(share, 3));
 
       Player original =

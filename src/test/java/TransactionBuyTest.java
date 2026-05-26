@@ -28,7 +28,7 @@ public class TransactionBuyTest {
   @BeforeEach
   public void setup() {
     Stock stock1 = new Stock("Bit", "Company1", new BigDecimal(1000));
-    share = new Share(stock1, new BigDecimal(10), stock1.getSalesPrice());
+    share = new Share(stock1, 10, stock1.getSalesPrice());
     player1 = new Player.Builder("Name", new BigDecimal(100000), Difficulty.EASY).build();
     purchase = new Purchase(share, 1);
   }

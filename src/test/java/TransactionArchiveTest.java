@@ -29,7 +29,7 @@ public class TransactionArchiveTest {
     transactionArchive = new TransactionArchive();
     FilledtransactionArchive = new TransactionArchive();
     Stock stock = new Stock("Bit", "ExampleCompany", new BigDecimal(20000));
-    Share share = new Share(stock, new BigDecimal(10), new BigDecimal(10));
+    Share share = new Share(stock, 10, new BigDecimal(10));
     purchase1 = new Purchase(share, 1);
     Transaction purchase2 = new Purchase(share, 2);
     Transaction sale1 = new Sale(share, 1);

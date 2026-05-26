@@ -37,7 +37,7 @@ public class PortfolioTest {
   /* Method to verify that the addShare() method correctly adds a share to the portfolio and that the getShares() method returns the correct list of shares. */
   @Test
   public void addingSharesShouldWork() {
-    Share shareOfStock = new Share(stock, new BigDecimal(1000), new BigDecimal(2531));
+    Share shareOfStock = new Share(stock, 1000, new BigDecimal(2531));
     portfolio.addShare(shareOfStock);
     assertEquals(new ArrayList<>(List.of(shareOfStock)), portfolio.getShares());
   }
@@ -45,8 +45,8 @@ public class PortfolioTest {
   /* Method to verify that the removeShare() method correctly removes a share from the portfolio and that the getShares() method returns the correct list of shares. */
   @Test
   public void removingSharesShouldWork() {
-    Share shareOfStock = new Share(stock, new BigDecimal(1000), new BigDecimal(2531));
-    Share share2OfStock = new Share(stock, new BigDecimal(2000), new BigDecimal(5062));
+    Share shareOfStock = new Share(stock, 1000, new BigDecimal(2531));
+    Share share2OfStock = new Share(stock, 2000, new BigDecimal(5062));
     portfolio.addShare(shareOfStock);
     portfolio.addShare(share2OfStock);
     portfolio.removeShare(shareOfStock);
@@ -56,7 +56,7 @@ public class PortfolioTest {
   /* Method to verify that the containsShare() method correctly identifies whether a share is present in the portfolio. */
   @Test
   public void containSearchShouldWork() {
-    Share shareOfStock = new Share(stock, new BigDecimal(1000), new BigDecimal(2531));
+    Share shareOfStock = new Share(stock, 1000, new BigDecimal(2531));
     portfolio.addShare(shareOfStock);
     assertTrue(portfolio.containsShare(shareOfStock));
   }
@@ -72,7 +72,7 @@ public class PortfolioTest {
   public void getNetWorthIsPositiveForProfitableShare() {
     // salesPrice=100, qty=10, purchasePrice=50
     Stock s = new Stock("A", "Co", new BigDecimal(100));
-    portfolio.addShare(new Share(s, new BigDecimal(10), new BigDecimal(50)));
+    portfolio.addShare(new Share(s, 10, new BigDecimal(50)));
     assertTrue(portfolio.getNetWorth().compareTo(BigDecimal.ZERO) > 0);
   }
 
@@ -88,7 +88,7 @@ public class PortfolioTest {
   @Test
   public void getNetWorthIsCorrectForSingleShare() {
     Stock s = new Stock("A", "Co", new BigDecimal(100));
-    portfolio.addShare(new Share(s, new BigDecimal(10), new BigDecimal(50)));
+    portfolio.addShare(new Share(s, 10, new BigDecimal(50)));
     assertEquals(0, portfolio.getNetWorth().compareTo(new BigDecimal(843)));
   }
 
@@ -97,8 +97,8 @@ public class PortfolioTest {
   public void getNetWorthSumsAcrossMultipleShares() {
     // Both shares yield 843 individually (same stock, same params), so combined = 1686
     Stock s = new Stock("A", "Co", new BigDecimal(100));
-    portfolio.addShare(new Share(s, new BigDecimal(10), new BigDecimal(50)));
-    portfolio.addShare(new Share(s, new BigDecimal(10), new BigDecimal(50)));
+    portfolio.addShare(new Share(s, 10, new BigDecimal(50)));
+    portfolio.addShare(new Share(s, 10, new BigDecimal(50)));
     assertEquals(0, portfolio.getNetWorth().compareTo(new BigDecimal(1686)));
   }
 
@@ -107,7 +107,7 @@ public class PortfolioTest {
   public void addingShareIncreasesNetWorth() {
     Stock s = new Stock("A", "Co", new BigDecimal(100));
     BigDecimal before = portfolio.getNetWorth();
-    portfolio.addShare(new Share(s, new BigDecimal(10), new BigDecimal(50)));
+    portfolio.addShare(new Share(s, 10, new BigDecimal(50)));
     assertTrue(portfolio.getNetWorth().compareTo(before) > 0);
   }
 
@@ -115,7 +115,7 @@ public class PortfolioTest {
   @Test
   public void removingShareDecreasesNetWorth() {
     Stock s = new Stock("A", "Co", new BigDecimal(100));
-    Share share = new Share(s, new BigDecimal(10), new BigDecimal(50));
+    Share share = new Share(s, 10, new BigDecimal(50));
     portfolio.addShare(share);
     BigDecimal before = portfolio.getNetWorth();
     portfolio.removeShare(share);
@@ -134,7 +134,7 @@ public class PortfolioTest {
   @Test
   public void getNetWorthReflectsCurrentStockPrice() {
     Stock s = new Stock("A", "Co", new BigDecimal(100));
-    portfolio.addShare(new Share(s, new BigDecimal(10), new BigDecimal(50)));
+    portfolio.addShare(new Share(s, 10, new BigDecimal(50)));
     s.addNewSalesPrice(new BigDecimal(200));
     assertEquals(0, portfolio.getNetWorth().compareTo(new BigDecimal(1536)));
   }

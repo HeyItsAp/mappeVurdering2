@@ -13,7 +13,7 @@ public class ShareTest {
   @BeforeEach
   public void setUp() {
     stock = new Stock("Bit", "ExampleCompany", new BigDecimal(20000));
-    shareOfStock = new Share(stock, new BigDecimal(1000), new BigDecimal(2531));
+    shareOfStock = new Share(stock, 1000, new BigDecimal(2531));
   }
 
   @Test
@@ -23,7 +23,7 @@ public class ShareTest {
 
   @Test
   public void gettingQuantityCorrect() {
-    assertEquals(new BigDecimal(1000), shareOfStock.getQuantity());
+    assertEquals(1000, shareOfStock.getQuantity());
   }
 
   @Test
@@ -36,7 +36,7 @@ public class ShareTest {
     assertThrows(
         NullPointerException.class,
         () -> {
-          Share share1OfStock = new Share(null, new BigDecimal(1000), new BigDecimal(2531));
+          Share share1OfStock = new Share(null, 1000, new BigDecimal(2531));
         });
   }
 }
