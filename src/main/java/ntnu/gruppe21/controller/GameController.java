@@ -1,6 +1,5 @@
 package ntnu.gruppe21.controller;
 
-import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.SaveManager;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;

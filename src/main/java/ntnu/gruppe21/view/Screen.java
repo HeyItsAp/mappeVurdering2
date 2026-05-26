@@ -28,6 +28,7 @@ public class Screen extends StackPane {
   private Label cashLabel;
   private Label weekLabel;
   private Button advanceWeekBtn;
+  private Button todayBtn;
 
   public Screen(GameController controller) {
     this.controller = controller;
@@ -51,6 +52,13 @@ public class Screen extends StackPane {
     cashLabel.setText("Balance:  " + fmt(player.getCurrentMoney()));
     weekLabel.setText("Week " + exchange.getWeek());
     advanceWeekBtn.setText("Advance to week " + (exchange.getWeek() + 1));
+  }
+
+  public void navigateToToday() {
+    showView(() -> new TodayMenu(this));
+    setUnselectedStyle(currentButton);
+    currentButton = todayBtn;
+    setSelectedStyle(currentButton);
   }
 
   public void showView(Supplier<Pane> supplier) {
@@ -95,7 +103,7 @@ public class Screen extends StackPane {
 
     money.getChildren().addAll(moneyLabel, netWorthLabel, cashLabel);
 
-    Button todayBtn = navBtn("Today", () -> new TodayMenu(this));
+    todayBtn = navBtn("Today", () -> new TodayMenu(this));
     currentButton = todayBtn;
     setSelectedStyle(currentButton);
 
@@ -231,6 +239,7 @@ public class Screen extends StackPane {
               () -> {
                 controller.advanceWeek();
                 refreshSidebar();
+                navigateToToday();
               });
           popup.show(this);
         });
