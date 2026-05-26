@@ -197,13 +197,15 @@ public class StockMenu extends VBox {
 
     Button sellBtn = new Button("Sell");
     sellBtn.setMaxWidth(Double.MAX_VALUE);
+    sellBtn.setDisable(ownedShares().compareTo(BigDecimal.ZERO) == 0);
     sellBtn.setStyle(
         btnBase
             + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
             + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
     sellBtn.setOnAction(
         ignored -> {
-          SellPopup popup = new SellPopup(stock);
+          int owned = ownedShares().intValue();
+          SellPopup popup = new SellPopup(stock, owned);
           popup.setOnConfirm(
               () -> {
                 try {
@@ -211,6 +213,7 @@ public class StockMenu extends VBox {
                   popup.close();
                   screen.refreshSidebar();
                   refreshPositionCard();
+                  sellBtn.setDisable(ownedShares().compareTo(BigDecimal.ZERO) == 0);
                 } catch (IllegalArgumentException | TransactionException e) {
                   e.printStackTrace();
                 }

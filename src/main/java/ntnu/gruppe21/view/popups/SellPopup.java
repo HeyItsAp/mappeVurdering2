@@ -8,10 +8,11 @@ import ntnu.gruppe21.model.transaction.calculators.SaleCalculator;
 
 public class SellPopup extends BuySellPopup {
 
-  public SellPopup(Stock stock) {
+  public SellPopup(Stock stock, int ownedShares) {
     setTitle("Sell " + stock.getSymbol() + "?");
     setValue("at " + fmt(stock.getSalesPrice()) + " per share");
     setConfirm("Sell");
+    setMaxQuantity(ownedShares);
     updateCost(stock, BigDecimal.ONE);
     setOnQuantityChange(() -> updateCost(stock, getQuantity()));
   }

@@ -24,6 +24,7 @@ public abstract class BuySellPopup extends Popup {
 
   private TextField quantityField;
   private Runnable quantityChangeCallback;
+  private int maxQuantity = 0;
 
   @Override
   protected List<Node> buildContent() {
@@ -117,7 +118,9 @@ public abstract class BuySellPopup extends Popup {
         ignored -> {
           try {
             int current = Integer.parseInt(field.getText().trim());
-            field.setText(String.valueOf(current + 1));
+            int next = current + 1;
+            if (maxQuantity > 0) next = Math.min(next, maxQuantity);
+            field.setText(String.valueOf(next));
           } catch (NumberFormatException ex) {
             field.setText("1");
           }
@@ -211,6 +214,10 @@ public abstract class BuySellPopup extends Popup {
 
   protected void setConfirm(String text) {
     confirmBtn.setText(text);
+  }
+
+  public void setMaxQuantity(int max) {
+    this.maxQuantity = max;
   }
 
   public void setOnConfirm(Runnable action) {
