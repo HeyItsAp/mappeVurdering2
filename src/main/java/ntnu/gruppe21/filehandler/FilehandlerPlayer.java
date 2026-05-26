@@ -15,6 +15,7 @@ import ntnu.gruppe21.model.gameEngine.Difficulty;
 import ntnu.gruppe21.model.gameEngine.challenges.ChallengeType;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.Sale;
+import ntnu.gruppe21.model.transaction.TransactionArchive;
 
 /**
  * Utility class responsible for handling file input and output operations related to {@link Player}

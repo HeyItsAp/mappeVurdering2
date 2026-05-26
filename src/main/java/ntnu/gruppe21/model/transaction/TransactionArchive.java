@@ -4,14 +4,11 @@
  *
  * @author Adrian
  */
-package ntnu.gruppe21.model;
+package ntnu.gruppe21.model.transaction;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import ntnu.gruppe21.model.transaction.Purchase;
-import ntnu.gruppe21.model.transaction.Sale;
-import ntnu.gruppe21.model.transaction.Transaction;
 
 public class TransactionArchive {
   /** A list of transactions, which can contain both purchases and sales. */
