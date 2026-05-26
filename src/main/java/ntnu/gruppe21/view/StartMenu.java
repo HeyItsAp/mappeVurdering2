@@ -9,6 +9,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ntnu.gruppe21.controller.GameController;
+import ntnu.gruppe21.controller.StartMenuController;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 
 public class StartMenu extends StackPane {
@@ -58,7 +60,7 @@ public class StartMenu extends StackPane {
         -fx-padding: 10 0 10 0;
         -fx-cursor: hand;
         """);
-    startBtn.setOnAction(ignored -> launchGame());
+    startBtn.setOnAction(ignored -> showNewGamePopup());
 
     VBox card = new VBox(12, heading, description, spacer, startBtn);
     styleCard(card);
@@ -127,7 +129,15 @@ public class StartMenu extends StackPane {
     btn.setStyle(normal);
     btn.setOnMouseEntered(ignored -> btn.setStyle(hover));
     btn.setOnMouseExited(ignored -> btn.setStyle(normal));
-    btn.setOnAction(ignored -> launchGame());
+    btn.setOnAction(
+        ignored -> {
+          try {
+            GameController controller = new StartMenuController().loadGame(name);
+            launchGame(controller);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
     return btn;
   }
 
@@ -144,7 +154,29 @@ public class StartMenu extends StackPane {
         """);
   }
 
-  private void launchGame() {
-    stage.getScene().setRoot(new Screen());
+  private void showNewGamePopup() {
+    NewGamePopup popup = new NewGamePopup();
+    popup.setOnConfirm(
+        () -> {
+          try {
+            GameController controller =
+                new StartMenuController()
+                    .startNewGame(
+                        popup.getPlayerName(),
+                        popup.getStartingMoney(),
+                        popup.getDifficulty(),
+                        "sp500",
+                        popup.getSaveSlot());
+            popup.close();
+            launchGame(controller);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
+    popup.show(this);
+  }
+
+  private void launchGame(GameController controller) {
+    stage.getScene().setRoot(new Screen(controller));
   }
 }

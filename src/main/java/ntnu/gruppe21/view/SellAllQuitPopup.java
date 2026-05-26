@@ -1,5 +1,6 @@
 package ntnu.gruppe21.view;
 
+import java.math.BigDecimal;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -9,9 +10,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import ntnu.gruppe21.controller.GameController;
+import ntnu.gruppe21.model.Share;
 
 public class SellAllQuitPopup extends Popup {
   private Runnable onConfirm;
+  private VBox holdingsBox;
+  private Label cashLabel;
+  private Label proceedsLabel;
+  private Label totalLabel;
 
   @Override
   protected List<Node> buildContent() {
@@ -23,12 +30,7 @@ public class SellAllQuitPopup extends Popup {
     description.setWrapText(true);
     description.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
-    VBox holdingsBox =
-        new VBox(
-            4,
-            buildHoldingRow("SYMB", "10 shares", "4 200.00"),
-            buildHoldingRow("SYMB", "5 shares", "1 750.00"),
-            buildHoldingRow("SYMB", "20 shares", "840.00"));
+    holdingsBox = new VBox(4);
     holdingsBox.setStyle(
         """
         -fx-background-color: #f9f9f9;
@@ -44,20 +46,18 @@ public class SellAllQuitPopup extends Popup {
     scroll.setStyle(
         "-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
 
-    Region dashSep1 = buildDashSeparator();
-
-    Label cashLabel = new Label("Current cash:  23 420.00");
+    cashLabel = new Label("Current cash:  —");
     cashLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
-    Label proceedsLabel = new Label("Proceeds from sale:  6 790.00");
+    proceedsLabel = new Label("Proceeds from sale:  —");
     proceedsLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
-    Region dashSep2 = buildDashSeparator();
-
-    Label totalLabel = new Label("Total after sale:  30 210.00");
+    totalLabel = new Label("Total after sale:  —");
     totalLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    VBox summaryBox = new VBox(6, dashSep1, cashLabel, proceedsLabel, dashSep2, totalLabel);
+    VBox summaryBox =
+        new VBox(
+            6, buildDashSeparator(), cashLabel, proceedsLabel, buildDashSeparator(), totalLabel);
 
     String btnBase =
         """
@@ -91,6 +91,35 @@ public class SellAllQuitPopup extends Popup {
     return List.of(title, description, scroll, summaryBox, btnBox);
   }
 
+  public void populateFromController(GameController controller) {
+    holdingsBox.getChildren().clear();
+    List<Share> shares = controller.getPlayer().getPortfolio().getShares();
+
+    BigDecimal proceeds = BigDecimal.ZERO;
+    if (shares.isEmpty()) {
+      Label empty = new Label("No shares held.");
+      empty.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaa;");
+      holdingsBox.getChildren().add(empty);
+    } else {
+      for (Share share : shares) {
+        BigDecimal value = share.getStock().getSalesPrice().multiply(share.getQuantity());
+        proceeds = proceeds.add(value);
+        holdingsBox
+            .getChildren()
+            .add(
+                buildHoldingRow(
+                    share.getStock().getSymbol(),
+                    share.getQuantity().toPlainString() + " shares",
+                    fmt(value)));
+      }
+    }
+
+    BigDecimal cash = controller.getPlayer().getCurrentMoney();
+    cashLabel.setText("Current cash:  " + fmt(cash));
+    proceedsLabel.setText("Proceeds from sale:  " + fmt(proceeds));
+    totalLabel.setText("Total after sale:  " + fmt(cash.add(proceeds)));
+  }
+
   private HBox buildHoldingRow(String symbol, String qty, String value) {
     Label symbolLabel = new Label(symbol);
     symbolLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
@@ -113,6 +142,10 @@ public class SellAllQuitPopup extends Popup {
     sep.setMaxWidth(Double.MAX_VALUE);
     sep.setStyle("-fx-border-color: #ccc; -fx-border-width: 1 0 0 0; -fx-border-style: dashed;");
     return sep;
+  }
+
+  private static String fmt(BigDecimal v) {
+    return String.format("%.2f", v);
   }
 
   public void setOnConfirm(Runnable action) {

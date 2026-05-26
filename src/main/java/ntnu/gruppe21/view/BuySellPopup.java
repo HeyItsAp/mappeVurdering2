@@ -22,6 +22,9 @@ public abstract class BuySellPopup extends Popup {
   private Label taxValue;
   private Label totalValue;
 
+  private TextField quantityField;
+  private Runnable quantityChangeCallback;
+
   @Override
   protected List<Node> buildContent() {
     title = new Label("");
@@ -77,7 +80,14 @@ public abstract class BuySellPopup extends Popup {
                 -fx-min-height: 36;
                 """;
 
-    TextField field = new TextField("1");
+    quantityField = new TextField("1");
+    TextField field = quantityField;
+    field
+        .textProperty()
+        .addListener(
+            (obs, old, newVal) -> {
+              if (quantityChangeCallback != null) quantityChangeCallback.run();
+            });
     field.setStyle(
         """
                 -fx-font-size: 24px;
@@ -205,5 +215,17 @@ public abstract class BuySellPopup extends Popup {
 
   protected void setOnConfirm(Runnable action) {
     confirmBtn.setOnAction(ignored -> action.run());
+  }
+
+  protected void setOnQuantityChange(Runnable callback) {
+    this.quantityChangeCallback = callback;
+  }
+
+  protected java.math.BigDecimal getQuantity() {
+    try {
+      return new java.math.BigDecimal(quantityField.getText().trim());
+    } catch (NumberFormatException e) {
+      return java.math.BigDecimal.ONE;
+    }
   }
 }
