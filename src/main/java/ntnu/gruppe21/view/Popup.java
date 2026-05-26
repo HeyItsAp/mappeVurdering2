@@ -10,19 +10,22 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public abstract class Popup extends StackPane {
+  private VBox container;
+
   public Popup() {
     setStyle("-fx-background-color: rgba(0, 0, 0, 0.45);");
     setAlignment(Pos.CENTER);
 
-    VBox container = new VBox(16);
+    container = new VBox(16);
     container.setMaxWidth(420);
     container.setMaxHeight(Region.USE_PREF_SIZE);
     container.setStyle(
         """
         -fx-background-color: white;
-        -fx-background-radius: 12;
-        -fx-border-color: #c8c6c1;
+        -fx-background-radius: 15;
+        -fx-border-color: #000000;
         -fx-border-radius: 12;
+        -fx-border-width: 2;
         -fx-padding: 24;
         """);
     container.getChildren().addAll(buildContent());
@@ -33,6 +36,10 @@ public abstract class Popup extends StackPane {
   }
 
   protected abstract List<Node> buildContent();
+
+  protected void setContainerAlignment(Pos pos) {
+    container.setAlignment(pos);
+  }
 
   public void show(Pane parent) {
     prefWidthProperty().bind(parent.widthProperty());

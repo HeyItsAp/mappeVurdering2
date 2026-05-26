@@ -71,6 +71,7 @@ public class Screen extends StackPane {
     Label week = new Label("Week N");
 
     Button advanceWeek = createAdvanceWeekBtn();
+    Button exit = createExitBtn();
 
     sidebar
         .getChildren()
@@ -87,7 +88,8 @@ public class Screen extends StackPane {
             navBtn("Progress", () -> new ExchangeMenu(this)),
             spacer,
             week,
-            advanceWeek);
+            advanceWeek,
+            exit);
 
     return sidebar;
   }
@@ -208,6 +210,36 @@ public class Screen extends StackPane {
             -fx-background-radius: 10;
             -fx-cursor: hand;
         """));
+    advanceWeek.setOnAction(ignored -> new AdvanceWeekPopup().show(this));
     return advanceWeek;
+  }
+
+  private Button createExitBtn() {
+    String base =
+        """
+        -fx-font-size: 13px;
+        -fx-padding: 10 0 10 0;
+        -fx-background-radius: 10;
+        -fx-border-radius: 10;
+        -fx-cursor: hand;
+        -fx-max-width: Infinity;
+        """;
+    Button btn = new Button("Sell all and quit");
+    btn.setMaxWidth(Double.MAX_VALUE);
+    btn.setStyle(
+        base
+            + "-fx-background-color: white; -fx-text-fill: #888; -fx-border-color: #ccc; -fx-border-width: 1;");
+    btn.setOnMouseEntered(
+        ignored ->
+            btn.setStyle(
+                base
+                    + "-fx-background-color: white; -fx-text-fill: #c0392b; -fx-border-color: #c0392b; -fx-border-width: 1;"));
+    btn.setOnMouseExited(
+        ignored ->
+            btn.setStyle(
+                base
+                    + "-fx-background-color: white; -fx-text-fill: #888; -fx-border-color: #ccc; -fx-border-width: 1;"));
+    btn.setOnAction(ignored -> new SellAllQuitPopup().show(this));
+    return btn;
   }
 }
