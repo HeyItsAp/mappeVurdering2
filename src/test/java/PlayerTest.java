@@ -1,11 +1,13 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.model.Portfolio;
 import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.model.gameEngine.Difficulty;
+import ntnu.gruppe21.model.gameEngine.challenges.ChallengeType;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.TransactionArchive;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,43 +111,45 @@ public class PlayerTest {
     assertEquals(1, player1.getStatus());
   }
 
-  /* Player with exactly 10 weeks and exactly 20% gain should be Investor (2) */
+  private void simulateCompletions(int n) {
+    player1
+        .getChallengeManager()
+        .parseChallenges(Map.of(ChallengeType.BALANCE_REQUIREMENT, n), player1);
+    player1.getChallengeManager().setTotalCompletions(n);
+  }
+
+  /* Player with exactly 3 challenge completions should be Investor (2) */
   @Test
   public void getStatusIsInvestorAtExactThreshold() {
-    player1.addMoney(new BigDecimal(2000)); // exactly 20% of 10000
-    addWeeks(player1, 10);
+    simulateCompletions(3);
     assertEquals(2, player1.getStatus());
   }
 
-  /* Player with more than 10 weeks and more than 20% gain should be Investor */
+  /* Player with more than 3 but fewer than 8 completions should be Investor */
   @Test
   public void getStatusIsInvestorAboveThreshold() {
-    player1.addMoney(new BigDecimal(5000)); // 50% gain
-    addWeeks(player1, 15);
+    simulateCompletions(5);
     assertEquals(2, player1.getStatus());
   }
 
-  /* Player with 19 weeks and doubled net worth but not quite speculator should not regress */
+  /* Player with 7 completions (just below Speculator threshold) should remain Investor */
   @Test
-  public void getStatusIsInvestorWith19WeeksAndDoubledNetWorth() {
-    player1.addMoney(new BigDecimal(10000)); // doubled
-    addWeeks(player1, 19);
+  public void getStatusIsInvestorBeforeSpeculatorThreshold() {
+    simulateCompletions(7);
     assertEquals(2, player1.getStatus());
   }
 
-  /* Player with exactly 20 weeks and exactly doubled net worth should be Speculator (3) */
+  /* Player with exactly 8 challenge completions should be Speculator (3) */
   @Test
   public void getStatusIsSpeculatorAtExactThreshold() {
-    player1.addMoney(new BigDecimal(10000)); // exactly doubled
-    addWeeks(player1, 20);
+    simulateCompletions(8);
     assertEquals(3, player1.getStatus());
   }
 
-  /* Player with more than 20 weeks and more than doubled net worth should be Speculator */
+  /* Player with more than 8 completions should remain Speculator */
   @Test
   public void getStatusIsSpeculatorAboveThreshold() {
-    player1.addMoney(new BigDecimal(50000)); // 6x starting
-    addWeeks(player1, 25);
+    simulateCompletions(12);
     assertEquals(3, player1.getStatus());
   }
 }
