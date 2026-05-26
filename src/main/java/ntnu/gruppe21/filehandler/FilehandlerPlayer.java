@@ -240,7 +240,7 @@ public class FilehandlerPlayer {
         for (int i = 1; i < stockPrices.size(); i++) {
           savedStock.addNewSalesPrice(stockPrices.get(i));
         }
-        BigDecimal quantity = BigDecimal.valueOf(Double.parseDouble(values[4]));
+        int quantity = (int) Double.parseDouble(values[4]);
         BigDecimal purchasePrice = BigDecimal.valueOf(Double.parseDouble(values[5]));
         Share savedShare = new Share(savedStock, quantity, purchasePrice);
         switch (values[0]) {

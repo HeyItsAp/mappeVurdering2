@@ -146,14 +146,14 @@ public class PortfolioMenu extends VBox {
         .forEach(
             (symbol, shares) -> {
               Stock stock = shares.get(0).getStock();
-              BigDecimal totalQty =
-                  shares.stream().map(Share::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
-              BigDecimal currentValue = totalQty.multiply(stock.getSalesPrice());
+              int totalQty = shares.stream().mapToInt(Share::getQuantity).sum();
+              BigDecimal currentValue =
+                  BigDecimal.valueOf(totalQty).multiply(stock.getSalesPrice());
               data.add(
                   new HoldingRow(
                       symbol,
                       stock.getCompany(),
-                      totalQty.toPlainString(),
+                      String.valueOf(totalQty),
                       fmt(currentValue),
                       fmtChange(stock),
                       stock));
@@ -232,7 +232,7 @@ public class PortfolioMenu extends VBox {
               "Wk " + tx.getWeek(),
               type,
               tx.getShare().getStock().getSymbol(),
-              tx.getShare().getQuantity().toPlainString(),
+              String.valueOf(tx.getShare().getQuantity()),
               fmt(tx.getCalculator().calculateTotal())));
     }
     table.setItems(data);
