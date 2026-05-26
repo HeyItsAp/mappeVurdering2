@@ -44,6 +44,35 @@ public class Portfolio {
   }
 
   /**
+   * Removes the given quantity of shares for a stock symbol using FIFO order. Partial lots are
+   * split: the remainder stays in the portfolio with its original purchase price.
+   *
+   * @param symbol the stock symbol to remove shares for
+   * @param quantityToRemove the total quantity to remove
+   */
+  public void removeShares(String symbol, BigDecimal quantityToRemove) {
+    BigDecimal remaining = quantityToRemove;
+    java.util.Iterator<Share> it = shares.iterator();
+    List<Share> toAdd = new ArrayList<>();
+
+    while (it.hasNext() && remaining.compareTo(BigDecimal.ZERO) > 0) {
+      Share s = it.next();
+      if (!s.getStock().getSymbol().equals(symbol)) continue;
+
+      int cmp = s.getQuantity().compareTo(remaining);
+      if (cmp <= 0) {
+        it.remove();
+        remaining = remaining.subtract(s.getQuantity());
+      } else {
+        it.remove();
+        toAdd.add(new Share(s.getStock(), s.getQuantity().subtract(remaining), s.getPurchasePrice()));
+        remaining = BigDecimal.ZERO;
+      }
+    }
+    shares.addAll(toAdd);
+  }
+
+  /**
    * Returns a list of shares owned by the investor.
    *
    * @return the shares in question.

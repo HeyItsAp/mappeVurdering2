@@ -56,7 +56,6 @@ public class GameController {
   public void buyStock(String symbol, BigDecimal quantity) throws TransactionException {
     Transaction purchase = exchange.buy(symbol, quantity, player);
     purchase.commit(player);
-    player.getTransactionArchive().add(purchase);
   }
 
   /**
@@ -70,7 +69,6 @@ public class GameController {
   public void sellStock(String symbol, BigDecimal quantity) throws TransactionException {
     Transaction sale = exchange.sell(symbol, quantity, player);
     sale.commit(player);
-    player.getTransactionArchive().add(sale);
   }
 
   /** Advances the exchange by one week, updating all stock prices. */
@@ -99,7 +97,6 @@ public class GameController {
         new java.util.ArrayList<>(player.getPortfolio().getShares())) {
       Transaction sale = exchange.sell(share.getStock().getSymbol(), share.getQuantity(), player);
       sale.commit(player);
-      player.getTransactionArchive().add(sale);
     }
   }
 }
