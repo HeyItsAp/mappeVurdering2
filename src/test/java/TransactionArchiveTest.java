@@ -3,7 +3,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
-import ntnu.gruppe21.model.TransactionArchive;
+import ntnu.gruppe21.model.transaction.TransactionArchive;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.Sale;
 import ntnu.gruppe21.model.transaction.Transaction;

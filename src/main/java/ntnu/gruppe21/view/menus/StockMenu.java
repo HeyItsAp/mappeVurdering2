@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,6 +18,9 @@ import javafx.scene.shape.Line;
 import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.model.transaction.TransactionException;
+import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.popups.BuyPopup;
+import ntnu.gruppe21.view.popups.SellPopup;
 
 public class StockMenu extends VBox {
   private final Stock stock;

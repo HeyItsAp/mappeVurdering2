@@ -9,6 +9,7 @@ import ntnu.gruppe21.model.*;
 import ntnu.gruppe21.model.gameEngine.Difficulty;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.Sale;
+import ntnu.gruppe21.model.transaction.TransactionArchive;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

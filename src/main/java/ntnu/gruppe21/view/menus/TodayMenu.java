@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,6 +20,7 @@ import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.view.Screen;
 
 public class TodayMenu extends VBox {
   private final Screen screen;

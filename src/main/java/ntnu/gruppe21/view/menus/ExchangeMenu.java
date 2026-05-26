@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.view.Screen;
 
 public class ExchangeMenu extends VBox {
   private final Screen screen;

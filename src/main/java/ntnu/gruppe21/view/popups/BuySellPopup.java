@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.popups;
 
 import java.util.List;
 import javafx.geometry.Pos;
@@ -213,7 +213,7 @@ public abstract class BuySellPopup extends Popup {
     confirmBtn.setText(text);
   }
 
-  protected void setOnConfirm(Runnable action) {
+  public void setOnConfirm(Runnable action) {
     confirmBtn.setOnAction(ignored -> action.run());
   }
 
@@ -221,7 +221,7 @@ public abstract class BuySellPopup extends Popup {
     this.quantityChangeCallback = callback;
   }
 
-  protected java.math.BigDecimal getQuantity() {
+  public java.math.BigDecimal getQuantity() {
     try {
       return new java.math.BigDecimal(quantityField.getText().trim());
     } catch (NumberFormatException e) {

@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,6 +17,7 @@ import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.Transaction;
+import ntnu.gruppe21.view.Screen;
 
 public class PortfolioMenu extends VBox {
   private final Screen screen;

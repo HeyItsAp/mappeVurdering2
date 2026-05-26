@@ -3,7 +3,7 @@ package ntnu.gruppe21;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import ntnu.gruppe21.view.StartMenu;
+import ntnu.gruppe21.view.menus.StartMenu;
 
 public class Main extends Application {
   public static void main(String[] args) {

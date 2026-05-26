@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.popups;
 
 import java.util.List;
 import javafx.event.Event;

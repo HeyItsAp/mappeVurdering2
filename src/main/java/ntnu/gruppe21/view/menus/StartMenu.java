@@ -1,4 +1,4 @@
-package ntnu.gruppe21.view;
+package ntnu.gruppe21.view.menus;
 
 import java.util.List;
 import javafx.geometry.Pos;
@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import ntnu.gruppe21.controller.GameController;
 import ntnu.gruppe21.controller.StartMenuController;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
+import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.popups.NewGamePopup;
 
 public class StartMenu extends StackPane {
   private final Stage stage;

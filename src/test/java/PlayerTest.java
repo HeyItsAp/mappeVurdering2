@@ -5,7 +5,7 @@ import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.model.Portfolio;
 import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
-import ntnu.gruppe21.model.TransactionArchive;
+import ntnu.gruppe21.model.transaction.TransactionArchive;
 import ntnu.gruppe21.model.gameEngine.Difficulty;
 import ntnu.gruppe21.model.transaction.Purchase;
 import org.junit.jupiter.api.BeforeEach;
