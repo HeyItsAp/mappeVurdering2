@@ -1,22 +1,50 @@
 package ntnu.gruppe21.view;
 
+import java.math.BigDecimal;
 import java.util.function.Supplier;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import ntnu.gruppe21.controller.GameController;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Player;
 
 public class Screen extends StackPane {
+  private final GameController controller;
   private Pane currentView;
   private Button currentButton;
   private final HBox mainPane;
 
-  public Screen() {
+  private Label nameLabel;
+  private Label subtitleLabel;
+  private Label netWorthLabel;
+  private Label cashLabel;
+  private Label weekLabel;
+  private Button advanceWeekBtn;
+
+  public Screen(GameController controller) {
+    this.controller = controller;
     mainPane = new HBox();
     currentView = new TodayMenu(this);
     HBox.setHgrow(currentView, Priority.ALWAYS);
-
     mainPane.getChildren().addAll(createSidebar(), currentView);
     getChildren().add(mainPane);
+  }
+
+  public GameController getController() {
+    return controller;
+  }
+
+  public void refreshSidebar() {
+    Player player = controller.getPlayer();
+    Exchange exchange = controller.getExchange();
+    nameLabel.setText(player.getName());
+    subtitleLabel.setText("Level: " + statusLabel(player.getStatus()));
+    netWorthLabel.setText("Net Worth:  " + fmt(player.getNetWorth()));
+    cashLabel.setText("Balance:  " + fmt(player.getCurrentMoney()));
+    weekLabel.setText("Week " + exchange.getWeek());
+    advanceWeekBtn.setText("Advance to week " + (exchange.getWeek() + 1));
   }
 
   public void showView(Supplier<Pane> supplier) {
@@ -27,18 +55,18 @@ public class Screen extends StackPane {
 
   private VBox createSidebar() {
     VBox sidebar = new VBox();
-
-    sidebar.setStyle("-fx-background-color: GRAY; -fx-padding: 20;");
-    sidebar.prefWidthProperty().bind(this.widthProperty().multiply(0.2));
-
     sidebar.setStyle("-fx-background-color: #e8e6e1; -fx-padding: 24;");
     sidebar.setSpacing(4);
+    sidebar.prefWidthProperty().bind(this.widthProperty().multiply(0.2));
 
-    Label title = new Label("Name");
-    title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+    Player player = controller.getPlayer();
+    Exchange exchange = controller.getExchange();
 
-    Label subtitle = new Label("Level: Investor");
-    subtitle.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
+    nameLabel = new Label(player.getName());
+    nameLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+
+    subtitleLabel = new Label("Level: " + statusLabel(player.getStatus()));
+    subtitleLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
     VBox money = new VBox(6);
     money.setStyle(
@@ -53,13 +81,13 @@ public class Screen extends StackPane {
     Label moneyLabel = new Label("PORTFOLIO SUMMARY");
     moneyLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    Label balance = new Label("Net Worth:  78 476");
-    balance.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+    netWorthLabel = new Label("Net Worth:  " + fmt(player.getNetWorth()));
+    netWorthLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    Label netWorth = new Label("Balance:  643 634");
-    netWorth.setStyle("-fx-font-size: 13px; -fx-text-fill: #555;");
+    cashLabel = new Label("Balance:  " + fmt(player.getCurrentMoney()));
+    cashLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #555;");
 
-    money.getChildren().addAll(moneyLabel, balance, netWorth);
+    money.getChildren().addAll(moneyLabel, netWorthLabel, cashLabel);
 
     Button todayBtn = navBtn("Today", () -> new TodayMenu(this));
     currentButton = todayBtn;
@@ -68,27 +96,26 @@ public class Screen extends StackPane {
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
-    Label week = new Label("Week N");
+    weekLabel = new Label("Week " + exchange.getWeek());
 
-    Button advanceWeek = createAdvanceWeekBtn();
+    advanceWeekBtn = createAdvanceWeekBtn();
     Button exit = createExitBtn();
 
     sidebar
         .getChildren()
         .addAll(
-            title,
-            subtitle,
+            nameLabel,
+            subtitleLabel,
             money,
             sectionLabel("PLAY"),
             todayBtn,
             navBtn("Market", () -> new ExchangeMenu(this)),
             navBtn("My portfolio", () -> new PortfolioMenu(this)),
-            navBtn("History", () -> new ExchangeMenu(this)),
             sectionLabel("LEVEL"),
             navBtn("Progress", () -> new ExchangeMenu(this)),
             spacer,
-            week,
-            advanceWeek,
+            weekLabel,
+            advanceWeekBtn,
             exit);
 
     return sidebar;
@@ -174,44 +201,34 @@ public class Screen extends StackPane {
   }
 
   private Button createAdvanceWeekBtn() {
-    Button advanceWeek = new Button("Advance to week N+1");
-    advanceWeek.setMaxWidth(Double.MAX_VALUE);
-    advanceWeek.setStyle(
+    Exchange exchange = controller.getExchange();
+    Button btn = new Button("Advance to week " + (exchange.getWeek() + 1));
+    btn.setMaxWidth(Double.MAX_VALUE);
+    String base =
         """
-            -fx-background-color: #1a1a1a;
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 12 0 12 0;
-            -fx-background-radius: 10;
-            -fx-cursor: hand;
-        """);
-    advanceWeek.setOnMouseEntered(
-        ignored ->
-            advanceWeek.setStyle(
-                """
-            -fx-background-color: #333;
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 12 0 12 0;
-            -fx-background-radius: 10;
-            -fx-cursor: hand;
-        """));
-    advanceWeek.setOnMouseExited(
-        ignored ->
-            advanceWeek.setStyle(
-                """
-            -fx-background-color: #1a1a1a;
-            -fx-text-fill: white;
-            -fx-font-size: 14px;
-            -fx-font-weight: bold;
-            -fx-padding: 12 0 12 0;
-            -fx-background-radius: 10;
-            -fx-cursor: hand;
-        """));
-    advanceWeek.setOnAction(ignored -> new AdvanceWeekPopup().show(this));
-    return advanceWeek;
+        -fx-text-fill: white;
+        -fx-font-size: 14px;
+        -fx-font-weight: bold;
+        -fx-padding: 12 0 12 0;
+        -fx-background-radius: 10;
+        -fx-cursor: hand;
+        """;
+    btn.setStyle(base + "-fx-background-color: #1a1a1a;");
+    btn.setOnMouseEntered(ignored -> btn.setStyle(base + "-fx-background-color: #333;"));
+    btn.setOnMouseExited(ignored -> btn.setStyle(base + "-fx-background-color: #1a1a1a;"));
+    btn.setOnAction(
+        ignored -> {
+          int week = controller.getExchange().getWeek();
+          AdvanceWeekPopup popup = new AdvanceWeekPopup();
+          popup.setWeeks(week, week + 1);
+          popup.setOnConfirm(
+              () -> {
+                controller.advanceWeek();
+                refreshSidebar();
+              });
+          popup.show(this);
+        });
+    return btn;
   }
 
   private Button createExitBtn() {
@@ -239,7 +256,35 @@ public class Screen extends StackPane {
             btn.setStyle(
                 base
                     + "-fx-background-color: white; -fx-text-fill: #888; -fx-border-color: #ccc; -fx-border-width: 1;"));
-    btn.setOnAction(ignored -> new SellAllQuitPopup().show(this));
+    btn.setOnAction(
+        ignored -> {
+          SellAllQuitPopup popup = new SellAllQuitPopup();
+          popup.populateFromController(controller);
+          popup.setOnConfirm(
+              () -> {
+                try {
+                  controller.sellAll();
+                  controller.saveGame();
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+                Stage stage = (Stage) getScene().getWindow();
+                stage.getScene().setRoot(new StartMenu(stage));
+              });
+          popup.show(this);
+        });
     return btn;
+  }
+
+  private static String fmt(BigDecimal v) {
+    return String.format("%.2f", v);
+  }
+
+  private static String statusLabel(int status) {
+    return switch (status) {
+      case 3 -> "Speculator";
+      case 2 -> "Investor";
+      default -> "Novice";
+    };
   }
 }

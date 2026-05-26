@@ -1,5 +1,11 @@
 package ntnu.gruppe21.view;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -9,16 +15,28 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import ntnu.gruppe21.model.Share;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.transaction.TransactionException;
 
 public class StockMenu extends VBox {
-  public StockMenu() {
+  private final Stock stock;
+  private final Screen screen;
+
+  private Label sharesOwnedLabel;
+  private Label avgCostLabel;
+  private Label currentValueLabel;
+
+  public StockMenu(Stock stock, Screen screen) {
     super(20);
+    this.stock = stock;
+    this.screen = screen;
     setStyle("-fx-padding: 20 20 30 20");
 
-    Label symbol = new Label("SYMB");
+    Label symbol = new Label(stock.getSymbol());
     symbol.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-    Label company = new Label("Company Name");
+    Label company = new Label(stock.getCompany());
     company.setStyle("-fx-font-size: 14px; -fx-text-fill: #888;");
 
     VBox header = new VBox(2, symbol, company);
@@ -47,12 +65,17 @@ public class StockMenu extends VBox {
   private HBox buildStatsRow() {
     HBox row = new HBox(10);
 
+    BigDecimal price = stock.getSalesPrice();
+    BigDecimal change = stock.getLatestPriceChange();
+    String changeStr = fmtChange(change);
+    String pctStr = fmtPct(stock);
+
     for (VBox box :
-        java.util.List.of(
-            createStatBox("CURRENT PRICE", "420.00", "+3.14%"),
-            createStatBox("CHANGE", "+12.34", "+3.14%"),
-            createStatBox("RECENT HIGH", "512.50", ""),
-            createStatBox("RECENT LOW", "310.00", ""))) {
+        List.of(
+            createStatBox("CURRENT PRICE", fmt(price), pctStr),
+            createStatBox("CHANGE", changeStr, pctStr),
+            createStatBox("RECENT HIGH", fmt(stock.getHighestPrice()), ""),
+            createStatBox("RECENT LOW", fmt(stock.getLowestPrice()), ""))) {
       HBox.setHgrow(box, Priority.ALWAYS);
       box.setMaxWidth(Double.MAX_VALUE);
       row.getChildren().add(box);
@@ -62,7 +85,7 @@ public class StockMenu extends VBox {
   }
 
   private VBox buildChartPane() {
-    String normal =
+    String inactive =
         """
         -fx-background-color: #f0efeb;
         -fx-text-fill: #333;
@@ -72,8 +95,8 @@ public class StockMenu extends VBox {
         -fx-border-radius: 20;
         -fx-border-color: #ddd;
         -fx-cursor: hand;
-    """;
-    String hover =
+        """;
+    String active =
         """
         -fx-background-color: #1a1a1a;
         -fx-text-fill: white;
@@ -83,28 +106,59 @@ public class StockMenu extends VBox {
         -fx-border-radius: 20;
         -fx-border-color: #1a1a1a;
         -fx-cursor: hand;
-    """;
+        """;
 
-    HBox filters = new HBox(8);
-    for (String label : java.util.List.of("3M", "ALL")) {
-      Button btn = new Button(label);
-      btn.setStyle(normal);
-      btn.setOnMouseEntered(ignored -> btn.setStyle(hover));
-      btn.setOnMouseExited(ignored -> btn.setStyle(normal));
-      filters.getChildren().add(btn);
-    }
+    NumberAxis xAxis = new NumberAxis();
+    xAxis.setLabel("Week");
+    xAxis.setMinorTickCount(0);
 
-    Label chartLabel = new Label("Price chart coming soon");
-    chartLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 13px;");
+    NumberAxis yAxis = new NumberAxis();
+    yAxis.setLabel("Price");
+    yAxis.setMinorTickCount(0);
 
-    VBox chart = new VBox(chartLabel);
-    chart.setStyle(
-        "-fx-background-color: #e0e0e0; -fx-background-radius: 8; -fx-alignment: center;");
+    LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+    chart.setLegendVisible(false);
+    chart.setAnimated(false);
+    chart.setCreateSymbols(false);
+    chart.getStylesheets().add(getClass().getResource("/styles/chart.css").toExternalForm());
     VBox.setVgrow(chart, Priority.ALWAYS);
+
+    Button tmBtn = new Button("3M");
+    Button allBtn = new Button("ALL");
+
+    loadSeries(chart, Integer.MAX_VALUE);
+    allBtn.setStyle(active);
+    tmBtn.setStyle(inactive);
+
+    allBtn.setOnAction(
+        ignored -> {
+          loadSeries(chart, Integer.MAX_VALUE);
+          allBtn.setStyle(active);
+          tmBtn.setStyle(inactive);
+        });
+    tmBtn.setOnAction(
+        ignored -> {
+          loadSeries(chart, 12);
+          tmBtn.setStyle(active);
+          allBtn.setStyle(inactive);
+        });
+
+    HBox filters = new HBox(8, tmBtn, allBtn);
 
     VBox pane = new VBox(10, filters, chart);
     VBox.setVgrow(pane, Priority.ALWAYS);
     return pane;
+  }
+
+  private void loadSeries(LineChart<Number, Number> chart, int limit) {
+    chart.getData().clear();
+    XYChart.Series<Number, Number> series = new XYChart.Series<>();
+    List<BigDecimal> history = stock.getPriceHistory();
+    int start = Math.max(0, history.size() - limit);
+    for (int i = start; i < history.size(); i++) {
+      series.getData().add(new XYChart.Data<>(i + 1, history.get(i).doubleValue()));
+    }
+    chart.getData().add(series);
   }
 
   private VBox buildActionPane() {
@@ -121,7 +175,22 @@ public class StockMenu extends VBox {
     Button buyBtn = new Button("Buy");
     buyBtn.setMaxWidth(Double.MAX_VALUE);
     buyBtn.setStyle(btnBase + "-fx-background-color: #1a1a1a; -fx-text-fill: white;");
-    buyBtn.setOnAction(ignored -> new BuyPopup().show((Pane) getScene().getRoot()));
+    buyBtn.setOnAction(
+        ignored -> {
+          BuyPopup popup = new BuyPopup(stock);
+          popup.setOnConfirm(
+              () -> {
+                try {
+                  screen.getController().buyStock(stock.getSymbol(), popup.getQuantity());
+                  popup.close();
+                  screen.refreshSidebar();
+                  refreshPositionCard();
+                } catch (IllegalArgumentException | TransactionException e) {
+                  e.printStackTrace();
+                }
+              });
+          popup.show((Pane) getScene().getRoot());
+        });
 
     Button sellBtn = new Button("Sell");
     sellBtn.setMaxWidth(Double.MAX_VALUE);
@@ -129,7 +198,22 @@ public class StockMenu extends VBox {
         btnBase
             + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
             + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
-    sellBtn.setOnAction(ignored -> new SellPopup().show((Pane) getScene().getRoot()));
+    sellBtn.setOnAction(
+        ignored -> {
+          SellPopup popup = new SellPopup(stock);
+          popup.setOnConfirm(
+              () -> {
+                try {
+                  screen.getController().sellStock(stock.getSymbol(), popup.getQuantity());
+                  popup.close();
+                  screen.refreshSidebar();
+                  refreshPositionCard();
+                } catch (IllegalArgumentException | TransactionException e) {
+                  e.printStackTrace();
+                }
+              });
+          popup.show((Pane) getScene().getRoot());
+        });
 
     Button watchlistBtn = new Button("Add to Watchlist");
     watchlistBtn.setMaxWidth(Double.MAX_VALUE);
@@ -144,7 +228,7 @@ public class StockMenu extends VBox {
     VBox pane = new VBox(12, buildPositionCard(), spacer, buyBtn, sellBtn, watchlistBtn);
     pane.setStyle(
         """
-         -fx-padding: 10px;
+        -fx-padding: 10px;
         -fx-background-radius: 8;
         -fx-border-color: #d0d0d0;
         -fx-border-radius: 8;
@@ -156,13 +240,21 @@ public class StockMenu extends VBox {
     Label heading = new Label("YOUR POSITION");
     heading.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
+    BigDecimal totalShares = ownedShares();
+    BigDecimal avgCost = avgCost();
+    BigDecimal currentValue = totalShares.multiply(stock.getSalesPrice());
+
+    sharesOwnedLabel = new Label(totalShares.toPlainString());
+    avgCostLabel = new Label(fmt(avgCost));
+    currentValueLabel = new Label(fmt(currentValue));
+
     VBox card =
         new VBox(
             10,
             heading,
-            buildPositionRow("Shares owned", "10"),
-            buildPositionRow("Avg. cost", "395.20"),
-            buildPositionRow("Current value", "4 200.00"));
+            buildPositionRow("Shares owned", sharesOwnedLabel),
+            buildPositionRow("Avg. cost", avgCostLabel),
+            buildPositionRow("Current value", currentValueLabel));
     card.setStyle(
         """
         -fx-background-color: white;
@@ -174,17 +266,44 @@ public class StockMenu extends VBox {
     return card;
   }
 
-  private HBox buildPositionRow(String label, String value) {
+  private void refreshPositionCard() {
+    BigDecimal totalShares = ownedShares();
+    sharesOwnedLabel.setText(totalShares.toPlainString());
+    avgCostLabel.setText(fmt(avgCost()));
+    currentValueLabel.setText(fmt(totalShares.multiply(stock.getSalesPrice())));
+  }
+
+  private BigDecimal ownedShares() {
+    return screen.getController().getPlayer().getPortfolio().getShares().stream()
+        .filter(s -> s.getStock().getSymbol().equals(stock.getSymbol()))
+        .map(Share::getQuantity)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  private BigDecimal avgCost() {
+    List<Share> matching =
+        screen.getController().getPlayer().getPortfolio().getShares().stream()
+            .filter(s -> s.getStock().getSymbol().equals(stock.getSymbol()))
+            .toList();
+    if (matching.isEmpty()) return BigDecimal.ZERO;
+    BigDecimal totalCost =
+        matching.stream()
+            .map(s -> s.getPurchasePrice().multiply(s.getQuantity()))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalQty =
+        matching.stream().map(Share::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
+    return totalQty.compareTo(BigDecimal.ZERO) == 0
+        ? BigDecimal.ZERO
+        : totalCost.divide(totalQty, 2, RoundingMode.HALF_UP);
+  }
+
+  private HBox buildPositionRow(String label, Label valueLabel) {
     Label l = new Label(label);
     l.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
-
-    Label v = new Label(value);
-    v.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
-
+    valueLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
-
-    return new HBox(l, spacer, v);
+    return new HBox(l, spacer, valueLabel);
   }
 
   private VBox createStatBox(String label, String value, String sub) {
@@ -194,17 +313,37 @@ public class StockMenu extends VBox {
     Label l2 = new Label(value);
     l2.setStyle("-fx-font-size: 20px;");
 
+    boolean positive = sub.startsWith("+");
+    String color = sub.isEmpty() ? "#888" : (positive ? "#27ae60" : "#c0392b");
     Label l3 = new Label(sub.isEmpty() ? " " : sub);
-    l3.setStyle("-fx-font-size: 10px; -fx-font-weight: lighter; -fx-text-fill: gray;");
+    l3.setStyle("-fx-font-size: 10px; -fx-font-weight: lighter; -fx-text-fill: " + color + ";");
 
     VBox box = new VBox(10, l1, l2, l3);
     box.setStyle(
         """
-         -fx-padding: 10px;
+        -fx-padding: 10px;
         -fx-background-radius: 8;
         -fx-border-color: #d0d0d0;
         -fx-border-radius: 8;
         """);
     return box;
+  }
+
+  private static String fmt(BigDecimal v) {
+    return String.format("%.2f", v);
+  }
+
+  private static String fmtChange(BigDecimal change) {
+    String sign = change.signum() >= 0 ? "+" : "";
+    return sign + String.format("%.2f", change);
+  }
+
+  private static String fmtPct(Stock s) {
+    BigDecimal change = s.getLatestPriceChange();
+    BigDecimal prev = s.getSalesPrice().subtract(change);
+    if (prev.signum() == 0) return "0.00%";
+    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+    String sign = pct.signum() >= 0 ? "+" : "";
+    return sign + String.format("%.2f", pct) + "%";
   }
 }

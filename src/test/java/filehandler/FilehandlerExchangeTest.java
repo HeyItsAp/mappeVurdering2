@@ -15,6 +15,7 @@ import ntnu.gruppe21.model.gameEngine.Difficulty;
 import ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimStock;
 import ntnu.gruppe21.model.gameEngine.strategies.marketsimulator.MarketSimulator;
 import ntnu.gruppe21.model.gameEngine.strategies.standard.StandardStrategy;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -262,9 +263,9 @@ public class FilehandlerExchangeTest {
 
     @Test
     void gettingExchangeDatasetOptionsShouldBeCorrect() {
-      assertEquals(5, FilehandlerExchange.getExchangeDatasetOptions().size());
+      assertEquals(3, FilehandlerExchange.getExchangeDatasetOptions().size());
       assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("exchangeDataSet1.csv"));
-      assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("highscores.csv"));
+      assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("sp500.csv"));
     }
   }
 
@@ -421,6 +422,12 @@ public class FilehandlerExchangeTest {
 
   @Nested
   class copyToDatasets {
+    @AfterEach
+    void cleanUp() throws IOException {
+      Files.deleteIfExists(Path.of("src/main/resources/datasets/testImport.csv"));
+      Files.deleteIfExists(Path.of("src/main/resources/datasets/duplicate.csv"));
+    }
+
     /* A valid CSV copied to datasets should appear in getExchangeDatasetOptions. */
     @Test
     void copyToDatasetsFileAppearsInOptions(@TempDir Path tempDir) throws IOException {

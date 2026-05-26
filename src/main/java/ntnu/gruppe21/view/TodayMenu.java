@@ -1,5 +1,8 @@
 package ntnu.gruppe21.view;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +16,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import ntnu.gruppe21.model.Exchange;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.Share;
+import ntnu.gruppe21.model.Stock;
 
 public class TodayMenu extends VBox {
   private final Screen screen;
@@ -22,7 +29,9 @@ public class TodayMenu extends VBox {
     this.screen = screen;
     setStyle("-fx-padding: 20 20 30 20");
 
-    Label title = new Label("Week 7");
+    Exchange exchange = screen.getController().getExchange();
+
+    Label title = new Label("Week " + exchange.getWeek());
     title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
     Line line = new Line();
@@ -39,7 +48,7 @@ public class TodayMenu extends VBox {
     VBox leftPane = buildLeftPane();
     HBox.setHgrow(leftPane, Priority.ALWAYS);
 
-    VBox rightPane = buildWatchlist();
+    VBox rightPane = buildPortfolioWatchlist();
     rightPane.prefWidthProperty().bind(body.widthProperty().multiply(0.25));
 
     body.getChildren().addAll(leftPane, rightPane);
@@ -47,25 +56,38 @@ public class TodayMenu extends VBox {
   }
 
   private VBox buildLeftPane() {
-    VBox GainLosss = buildGainLosssSection();
-    VBox.setVgrow(GainLosss, Priority.ALWAYS);
-
-    VBox pane = new VBox(16, buildNetWorthCard(), buildSummaryRow(), GainLosss);
+    VBox gainLoss = buildGainLossSection();
+    VBox.setVgrow(gainLoss, Priority.ALWAYS);
+    VBox pane = new VBox(16, buildNetWorthCard(), buildSummaryRow(), gainLoss);
     VBox.setVgrow(pane, Priority.ALWAYS);
     return pane;
   }
 
   private VBox buildNetWorthCard() {
-    Label heading = new Label("NET WORTH CHANGE THIS WEEK");
+    Player player = screen.getController().getPlayer();
+    BigDecimal netWorth = player.getNetWorth();
+    BigDecimal starting = player.getStartingMoney();
+    BigDecimal change = netWorth.subtract(starting);
+    String sign = change.signum() >= 0 ? "+" : "";
+    String pct =
+        starting.signum() == 0
+            ? "0.00"
+            : String.format(
+                "%.2f",
+                change.divide(starting, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)));
+
+    Label heading = new Label("NET WORTH SINCE START");
     heading.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    Label change = new Label("+2 340 NOK");
-    change.setStyle("-fx-font-size: 36px; -fx-font-weight: bold;");
+    String color = change.signum() >= 0 ? "#27ae60" : "#c0392b";
+    Label changeLabel = new Label(sign + fmt(change));
+    changeLabel.setStyle(
+        "-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
 
-    Label pct = new Label("+4.72% from last week  ·  Now: 51 654 NOK");
-    pct.setStyle("-fx-font-size: 13px; -fx-text-fill: #888;");
+    Label pctLabel = new Label(sign + pct + "%  ·  Now: " + fmt(netWorth));
+    pctLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #888;");
 
-    VBox card = new VBox(6, heading, change, pct);
+    VBox card = new VBox(6, heading, changeLabel, pctLabel);
     card.setStyle(
         """
         -fx-background-color: white;
@@ -78,52 +100,65 @@ public class TodayMenu extends VBox {
   }
 
   private HBox buildSummaryRow() {
-    HBox row = new HBox(10);
+    Player player = screen.getController().getPlayer();
+    Exchange exchange = screen.getController().getExchange();
 
+    String cash = fmt(player.getCurrentMoney());
+    String invested = fmt(player.getPortfolio().getNetWorth());
+    int stockCount = player.getPortfolio().countDistinctStock();
+
+    String bestStock = bestPortfolioStock();
+
+    HBox row = new HBox(10);
     for (VBox box :
-        java.util.List.of(
-            createStatBox("CASH", "23 420", "Available to invest"),
-            createStatBox("INVESTED", "28 234", "Across 5 stocks"),
-            createStatBox("BEST STOCK", "SYMB +8.1%", "This week"))) {
+        List.of(
+            createStatBox("CASH", cash, "Available to invest"),
+            createStatBox("INVESTED", invested, "Across " + stockCount + " stocks"),
+            createStatBox("BEST STOCK", bestStock, "This week"))) {
       HBox.setHgrow(box, Priority.ALWAYS);
       box.setMaxWidth(Double.MAX_VALUE);
       row.getChildren().add(box);
     }
-
     return row;
   }
 
-  private VBox buildGainLosssSection() {
+  private String bestPortfolioStock() {
+    return screen.getController().getPlayer().getPortfolio().getShares().stream()
+        .map(s -> s.getStock())
+        .distinct()
+        .max((a, b) -> a.getLatestPriceChange().compareTo(b.getLatestPriceChange()))
+        .map(s -> s.getSymbol() + " " + fmtChange(s))
+        .orElse("—");
+  }
+
+  private VBox buildGainLossSection() {
+    Exchange exchange = screen.getController().getExchange();
+    int limit = Math.min(4, exchange.getStockMap().size());
+
+    List<Stock> gainers = limit > 0 ? exchange.getGainers(limit) : List.of();
+    List<Stock> losers = limit > 0 ? exchange.getLosers(limit) : List.of();
+
     HBox row = new HBox(10);
     VBox.setVgrow(row, Priority.ALWAYS);
 
-    VBox gainers = buildGainLossList("TOP GAINERS", true);
-    VBox losers = buildGainLossList("TOP LOSERS", false);
-    HBox.setHgrow(gainers, Priority.ALWAYS);
-    HBox.setHgrow(losers, Priority.ALWAYS);
+    VBox gainerPane = buildGainLossList("TOP GAINERS", gainers);
+    VBox loserPane = buildGainLossList("TOP LOSERS", losers);
+    HBox.setHgrow(gainerPane, Priority.ALWAYS);
+    HBox.setHgrow(loserPane, Priority.ALWAYS);
 
-    row.getChildren().addAll(gainers, losers);
-
+    row.getChildren().addAll(gainerPane, loserPane);
     VBox section = new VBox(row);
     VBox.setVgrow(section, Priority.ALWAYS);
     return section;
   }
 
-  private VBox buildGainLossList(String heading, boolean gainers) {
+  private VBox buildGainLossList(String heading, List<Stock> stocks) {
     Label title = new Label(heading);
     title.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    String sign = gainers ? "+" : "-";
-
     VBox cards = new VBox(6);
-    for (String[] entry :
-        new String[][] {
-          {"SYMB", "420.00", sign + "8.14%"},
-          {"SYMB", "380.50", sign + "5.32%"},
-          {"SYMB", "210.75", sign + "3.90%"},
-          {"SYMB", "155.20", sign + "2.11%"}
-        }) {
-      cards.getChildren().add(buildGainLossCard(entry[0], entry[1], entry[2]));
+    for (Stock s : stocks) {
+      cards.getChildren().add(buildGainLossCard(s));
     }
 
     VBox pane = new VBox(8, title, cards);
@@ -131,20 +166,25 @@ public class TodayMenu extends VBox {
     return pane;
   }
 
-  private HBox buildGainLossCard(String symbol, String value, String change) {
-    Label symbolLabel = new Label(symbol);
+  private HBox buildGainLossCard(Stock stock) {
+    Label symbolLabel = new Label(stock.getSymbol());
     symbolLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    Label valueLabel = new Label(value);
-    valueLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
+    Label priceLabel = new Label(fmt(stock.getSalesPrice()));
+    priceLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
 
-    Label changeLabel = new Label(change);
-    changeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+    String changeStr = fmtChange(stock);
+    boolean pos = stock.getLatestPriceChange().signum() >= 0;
+    Label changeLabel = new Label(changeStr);
+    changeLabel.setStyle(
+        "-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: "
+            + (pos ? "#27ae60" : "#c0392b")
+            + ";");
 
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
 
-    HBox card = new HBox(10, symbolLabel, valueLabel, spacer, changeLabel);
+    HBox card = new HBox(10, symbolLabel, priceLabel, spacer, changeLabel);
     card.setStyle(
         """
         -fx-padding: 10 12 10 12;
@@ -154,13 +194,15 @@ public class TodayMenu extends VBox {
         -fx-border-radius: 8;
         """);
     card.setMaxWidth(Double.MAX_VALUE);
+    card.setOnMouseClicked(ignored -> screen.showView(() -> new StockMenu(stock, screen)));
+    card.setStyle(card.getStyle() + "-fx-cursor: hand;");
     return card;
   }
 
-  record WatchRow(String symbol, String price, String change) {}
+  record WatchRow(String symbol, String price, String change, Stock stock) {}
 
-  private VBox buildWatchlist() {
-    Label heading = new Label("WATCHLIST");
+  private VBox buildPortfolioWatchlist() {
+    Label heading = new Label("MY HOLDINGS");
     heading.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
     TableView<WatchRow> table = new TableView<>();
@@ -181,11 +223,12 @@ public class TodayMenu extends VBox {
 
     table.setRowFactory(
         tv -> {
-          TableRow<TodayMenu.WatchRow> row = new TableRow<>();
+          TableRow<WatchRow> row = new TableRow<>();
           row.setOnMouseClicked(
               e -> {
                 if (!row.isEmpty()) {
-                  screen.showView(() -> new StockMenu());
+                  Stock stock = row.getItem().stock();
+                  screen.showView(() -> new StockMenu(stock, screen));
                 }
               });
           return row;
@@ -194,17 +237,17 @@ public class TodayMenu extends VBox {
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 30);
     priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);
     changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);
-
-    for (TableColumn<WatchRow, String> col : java.util.List.of(symbolCol, priceCol, changeCol)) {
+    for (TableColumn<WatchRow, String> col : List.of(symbolCol, priceCol, changeCol)) {
       col.setStyle(headerStyle);
     }
-
     table.getColumns().addAll(symbolCol, priceCol, changeCol);
 
     ObservableList<WatchRow> data = FXCollections.observableArrayList();
-    for (int i = 0; i < 8; i++) {
-      data.add(new WatchRow("SYMB", "420.00", "+3.14%"));
-    }
+    screen.getController().getPlayer().getPortfolio().getShares().stream()
+        .map(Share::getStock)
+        .distinct()
+        .forEach(
+            s -> data.add(new WatchRow(s.getSymbol(), fmt(s.getSalesPrice()), fmtChange(s), s)));
     table.setItems(data);
 
     Region spacer = new Region();
@@ -227,21 +270,31 @@ public class TodayMenu extends VBox {
   private VBox createStatBox(String label, String value, String sub) {
     Label l1 = new Label(label);
     l1.setStyle("-fx-font-size: 12px; -fx-font-weight: lighter; -fx-text-fill: gray");
-
     Label l2 = new Label(value);
     l2.setStyle("-fx-font-size: 20px;");
-
     Label l3 = new Label(sub);
     l3.setStyle("-fx-font-size: 10px; -fx-font-weight: lighter; -fx-text-fill: gray;");
-
     VBox box = new VBox(10, l1, l2, l3);
     box.setStyle(
         """
-         -fx-padding: 10px;
+        -fx-padding: 10px;
         -fx-background-radius: 8;
         -fx-border-color: #d0d0d0;
         -fx-border-radius: 8;
         """);
     return box;
+  }
+
+  private static String fmt(BigDecimal v) {
+    return String.format("%.2f", v);
+  }
+
+  private static String fmtChange(Stock s) {
+    BigDecimal change = s.getLatestPriceChange();
+    BigDecimal prev = s.getSalesPrice().subtract(change);
+    if (prev.signum() == 0) return "0.00%";
+    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+    String sign = pct.signum() >= 0 ? "+" : "";
+    return sign + String.format("%.2f", pct) + "%";
   }
 }

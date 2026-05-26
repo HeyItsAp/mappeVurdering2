@@ -2,7 +2,7 @@
 
 # Player metadata:
 # name,startingMoney,currentMoney,{challenges}
-SaveManagerPlayer,5000,3000,EASY,UNIQUE_SHARE_REQUIREMENT;0
+SaveManagerPlayer,5000,3000,EASY,BALANCE_REQUIREMENT;0
 
 
 # First dataset, Portfolio/Shares:

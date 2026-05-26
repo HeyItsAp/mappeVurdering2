@@ -7,6 +7,7 @@
 package ntnu.gruppe21.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.Sale;
@@ -19,6 +20,15 @@ public class TransactionArchive {
   /** Creates a new TransactionArchive with an empty list of transactions. */
   public TransactionArchive() {
     this.transactions = new ArrayList<>();
+  }
+
+  /**
+   * Returns all transactions in insertion order.
+   *
+   * @return unmodifiable view of all transactions
+   */
+  public List<Transaction> getAll() {
+    return Collections.unmodifiableList(transactions);
   }
 
   /**

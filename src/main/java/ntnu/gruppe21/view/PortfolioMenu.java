@@ -1,5 +1,8 @@
 package ntnu.gruppe21.view;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +12,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import ntnu.gruppe21.model.Player;
+import ntnu.gruppe21.model.Share;
+import ntnu.gruppe21.model.Stock;
+import ntnu.gruppe21.model.transaction.Purchase;
+import ntnu.gruppe21.model.transaction.Transaction;
 
 public class PortfolioMenu extends VBox {
   private final Screen screen;
@@ -26,7 +34,6 @@ public class PortfolioMenu extends VBox {
     line.setStartY(0);
     line.setEndX(1000);
     line.setEndY(0);
-
     line.setStroke(Color.BLACK);
     line.setStrokeWidth(0.5);
 
@@ -37,44 +44,50 @@ public class PortfolioMenu extends VBox {
     leftPane.prefWidthProperty().bind(bottom.widthProperty().multiply(0.5).subtract(5));
     leftPane.setMaxWidth(Double.MAX_VALUE);
 
-    VBox rightPane = new VBox(10);
+    VBox rightPane = buildTransactionHistory();
     HBox.setHgrow(rightPane, Priority.ALWAYS);
 
-    VBox chartPlaceholder = new VBox();
-    chartPlaceholder.setStyle(
-        "-fx-background-color: #e0e0e0; -fx-background-radius: 8; -fx-alignment: center;");
-    chartPlaceholder.setPrefHeight(300);
-    chartPlaceholder.setMaxHeight(300);
-    Label chartLabel = new Label("Net worth chart coming soon");
-    chartLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 13px;");
-    chartPlaceholder.getChildren().add(chartLabel);
-
-    rightPane.getChildren().addAll(chartPlaceholder);
     bottom.getChildren().addAll(leftPane, rightPane);
-
     getChildren().addAll(title, line, createMoneyDisplay(), bottom);
   }
 
   public HBox createMoneyDisplay() {
-    HBox moneyDisplay = new HBox(8);
+    Player player = screen.getController().getPlayer();
+    int weeks = player.getTransactionArchive().countDistinctWeeks();
+    String statusStr =
+        switch (player.getStatus()) {
+          case 3 -> "Speculator";
+          case 2 -> "Investor";
+          default -> "Novice";
+        };
 
+    HBox moneyDisplay = new HBox(8);
     for (VBox box :
-        java.util.List.of(
-            createBox("NET WORTH", "51 654", "+0.43%"),
-            createBox("CASH", "23 420", "Started with 20 000"),
+        List.of(
+            createBox("NET WORTH", fmt(player.getNetWorth()), fmtChangeVsStart(player)),
             createBox(
-                "STATUS/ASSETS",
-                "NOVICE/28 234",
-                "N weeks played"))) { // Havent decided what should be here
+                "CASH",
+                fmt(player.getCurrentMoney()),
+                "Started with " + fmt(player.getStartingMoney())),
+            createBox(
+                "STATUS / ASSETS",
+                statusStr + " / " + fmt(player.getPortfolio().getNetWorth()),
+                weeks + " weeks played"))) {
       HBox.setHgrow(box, Priority.ALWAYS);
       box.setMaxWidth(Double.MAX_VALUE);
       moneyDisplay.getChildren().add(box);
     }
-
     return moneyDisplay;
   }
 
-  record HoldingRow(String symbol, String company, String shares, String value, String change) {}
+  private String fmtChangeVsStart(Player player) {
+    BigDecimal change = player.getNetWorth().subtract(player.getStartingMoney());
+    String sign = change.signum() >= 0 ? "+" : "";
+    return sign + String.format("%.2f", change);
+  }
+
+  record HoldingRow(
+      String symbol, String company, String shares, String value, String change, Stock stock) {}
 
   private VBox buildHoldingsTable() {
     TableView<HoldingRow> table = new TableView<>();
@@ -99,11 +112,12 @@ public class PortfolioMenu extends VBox {
 
     table.setRowFactory(
         tv -> {
-          TableRow<PortfolioMenu.HoldingRow> row = new TableRow<>();
+          TableRow<HoldingRow> row = new TableRow<>();
           row.setOnMouseClicked(
               e -> {
                 if (!row.isEmpty()) {
-                  screen.showView(() -> new StockMenu());
+                  Stock stock = row.getItem().stock();
+                  screen.showView(() -> new StockMenu(stock, screen));
                 }
               });
           return row;
@@ -116,16 +130,33 @@ public class PortfolioMenu extends VBox {
     changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 12);
 
     for (TableColumn<HoldingRow, String> col :
-        java.util.List.of(symbolCol, companyCol, sharesCol, valueCol, changeCol)) {
+        List.of(symbolCol, companyCol, sharesCol, valueCol, changeCol)) {
       col.setStyle(headerStyle);
     }
-
     table.getColumns().addAll(symbolCol, companyCol, sharesCol, valueCol, changeCol);
 
     ObservableList<HoldingRow> data = FXCollections.observableArrayList();
-    for (int i = 0; i < 8; i++) {
-      data.add(new HoldingRow("SYMB", "Company", "10", "4 200", "+3.14%"));
-    }
+    screen.getController().getPlayer().getPortfolio().getShares().stream()
+        .collect(
+            java.util.stream.Collectors.groupingBy(
+                s -> s.getStock().getSymbol(),
+                java.util.LinkedHashMap::new,
+                java.util.stream.Collectors.toList()))
+        .forEach(
+            (symbol, shares) -> {
+              Stock stock = shares.get(0).getStock();
+              BigDecimal totalQty =
+                  shares.stream().map(Share::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
+              BigDecimal currentValue = totalQty.multiply(stock.getSalesPrice());
+              data.add(
+                  new HoldingRow(
+                      symbol,
+                      stock.getCompany(),
+                      totalQty.toPlainString(),
+                      fmt(currentValue),
+                      fmtChange(stock),
+                      stock));
+            });
     table.setItems(data);
 
     VBox pane = new VBox(table);
@@ -136,21 +167,99 @@ public class PortfolioMenu extends VBox {
   private VBox createBox(String text1, String text2, String text3) {
     Label label1 = new Label(text1);
     label1.setStyle("-fx-font-size: 12px; -fx-font-weight: lighter; -fx-text-fill: gray");
-
     Label label2 = new Label(text2);
     label2.setStyle("-fx-font-size: 20px;");
-
     Label label3 = new Label(text3);
     label3.setStyle("-fx-font-size: 10px; -fx-font-weight: lighter; -fx-text-fill: gray;");
-
     VBox box = new VBox(10, label1, label2, label3);
     box.setStyle(
         """
-         -fx-padding: 10px;
+        -fx-padding: 10px;
         -fx-background-radius: 8;
         -fx-border-color: #d0d0d0;
         -fx-border-radius: 8;
         """);
     return box;
+  }
+
+  record TxRow(String week, String type, String symbol, String qty, String total) {}
+
+  private VBox buildTransactionHistory() {
+    Label heading = new Label("TRANSACTION HISTORY");
+    heading.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
+
+    TableView<TxRow> table = new TableView<>();
+    table.getStylesheets().add(getClass().getResource("/styles/table.css").toExternalForm());
+    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+    table.setMaxWidth(Double.MAX_VALUE);
+    VBox.setVgrow(table, Priority.ALWAYS);
+
+    String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;";
+
+    TableColumn<TxRow, String> weekCol = new TableColumn<>("WEEK");
+    TableColumn<TxRow, String> typeCol = new TableColumn<>("TYPE");
+    TableColumn<TxRow, String> symbolCol = new TableColumn<>("SYMBOL");
+    TableColumn<TxRow, String> qtyCol = new TableColumn<>("QTY");
+    TableColumn<TxRow, String> totalCol = new TableColumn<>("TOTAL");
+
+    weekCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().week()));
+    typeCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().type()));
+    symbolCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().symbol()));
+    qtyCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().qty()));
+    totalCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().total()));
+
+    weekCol.setMaxWidth(1f * Integer.MAX_VALUE * 12);
+    typeCol.setMaxWidth(1f * Integer.MAX_VALUE * 12);
+    symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 18);
+    qtyCol.setMaxWidth(1f * Integer.MAX_VALUE * 12);
+    totalCol.setMaxWidth(1f * Integer.MAX_VALUE * 18);
+
+    for (TableColumn<TxRow, String> col : List.of(weekCol, typeCol, symbolCol, qtyCol, totalCol)) {
+      col.setStyle(headerStyle);
+    }
+    table.getColumns().addAll(weekCol, typeCol, symbolCol, qtyCol, totalCol);
+
+    ObservableList<TxRow> data = FXCollections.observableArrayList();
+    java.util.List<Transaction> txs =
+        new java.util.ArrayList<>(
+            screen.getController().getPlayer().getTransactionArchive().getAll());
+    java.util.Collections.reverse(txs);
+    for (Transaction tx : txs) {
+      String type = tx instanceof Purchase ? "Buy" : "Sell";
+      data.add(
+          new TxRow(
+              "Wk " + tx.getWeek(),
+              type,
+              tx.getShare().getStock().getSymbol(),
+              tx.getShare().getQuantity().toPlainString(),
+              fmt(tx.getCalculator().calculateTotal())));
+    }
+    table.setItems(data);
+
+    VBox pane = new VBox(8, heading, table);
+    VBox.setVgrow(table, Priority.ALWAYS);
+    VBox.setVgrow(pane, Priority.ALWAYS);
+    pane.setStyle(
+        """
+        -fx-padding: 12;
+        -fx-background-color: white;
+        -fx-background-radius: 8;
+        -fx-border-color: #c8c6c1;
+        -fx-border-radius: 8;
+        """);
+    return pane;
+  }
+
+  private static String fmt(BigDecimal v) {
+    return String.format("%.2f", v);
+  }
+
+  private static String fmtChange(Stock s) {
+    BigDecimal change = s.getLatestPriceChange();
+    BigDecimal prev = s.getSalesPrice().subtract(change);
+    if (prev.signum() == 0) return "0.00%";
+    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+    String sign = pct.signum() >= 0 ? "+" : "";
+    return sign + String.format("%.2f", pct) + "%";
   }
 }
