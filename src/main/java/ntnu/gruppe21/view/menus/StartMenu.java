@@ -188,6 +188,7 @@ public class StartMenu extends StackPane {
 
   private void showNewGamePopup() {
     NewGamePopup popup = new NewGamePopup();
+    popup.setDatasetOptions(controller.getDatasetOptions());
     popup.setOnConfirm(
         () -> {
           try {
@@ -196,7 +197,7 @@ public class StartMenu extends StackPane {
                     popup.getPlayerName(),
                     popup.getStartingMoney(),
                     popup.getDifficulty(),
-                    "sp500",
+                    popup.getDatasetName(),
                     popup.getSaveSlot());
             popup.close();
             launchGame(gc);
