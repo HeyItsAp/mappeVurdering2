@@ -16,10 +16,16 @@ import ntnu.gruppe21.view.Screen;
 import ntnu.gruppe21.view.StockFormatter;
 import ntnu.gruppe21.view.popups.NewGamePopup;
 
+/** The start menu. */
 public class StartMenu extends StackPane {
   private final Stage stage;
   private final StartMenuController controller = new StartMenuController();
 
+  /**
+   * Builds the start menu for the given application window.
+   *
+   * @param stage the primary stage, used to swap the scene root when a game starts
+   */
   public StartMenu(Stage stage) {
     this.stage = stage;
     setStyle("-fx-background-color: #f0ede8;");
