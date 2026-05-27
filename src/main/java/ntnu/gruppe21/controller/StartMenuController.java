@@ -1,9 +1,11 @@
 package ntnu.gruppe21.controller;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import ntnu.gruppe21.filehandler.FilehandlerExchange;
 import ntnu.gruppe21.filehandler.FilehandlerPlayer;
+import ntnu.gruppe21.filehandler.HighScoreManager;
 import ntnu.gruppe21.filehandler.SaveManager;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
@@ -14,6 +16,14 @@ import ntnu.gruppe21.model.gameEngine.Difficulty;
  * produce a fully initialised {@link GameController} that views can use for the active session.
  */
 public class StartMenuController {
+
+  /**
+   * A save slot paired with its computed score, used to display and sort saves on the start menu.
+   *
+   * @param slot the save-folder name
+   * @param score the score calculated from that save's current state
+   */
+  public record SaveSummary(String slot, BigDecimal score) {}
 
   /**
    * Returns the names of all available save slots so the view can list them.
@@ -56,6 +66,30 @@ public class StartMenuController {
     exchange.setDifficulty(difficulty);
 
     return new GameController(player, exchange, saveSlot);
+  }
+
+  /**
+   * Returns all save slots with their computed scores, sorted by score descending. If a save cannot
+   * be loaded or scored it is still included with a score of zero, so it always appears last.
+   *
+   * @return save summaries sorted highest score first
+   */
+  public List<SaveSummary> getSavesRanked() {
+    return getSaveOptions().stream()
+        .map(
+            slot -> {
+              try {
+                SaveManager sm = new SaveManager(slot, false);
+                Player player = sm.loadPlayer();
+                Exchange exchange = sm.loadExchange();
+                BigDecimal score = HighScoreManager.calculateFinalScore(exchange, player);
+                return new SaveSummary(slot, score);
+              } catch (Exception e) {
+                return new SaveSummary(slot, BigDecimal.ZERO);
+              }
+            })
+        .sorted(Comparator.comparing(SaveSummary::score).reversed())
+        .toList();
   }
 
   /**

@@ -2,10 +2,12 @@ package ntnu.gruppe21.filehandler;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
 
@@ -17,65 +19,59 @@ import ntnu.gruppe21.model.Player;
  * from {@link Player}
  */
 public class HighScoreManager {
+
   private static final String highscoreFile =
       "src/main/resources/datasets/highscores/highscores.csv";
 
   /**
-   * Method that calculates your final score based on an algorithm. Can be seen as a helper for
-   * {@link #calculateFinalScore(Exchange, Player)}
+   * Calculates the final score for a given game state.
    *
-   * <p>Final Score is calculated by the following algorithm: FinalScore = Difficulty * Week *
-   * NetWorth/StartingMoney * 10 Higher weeks and greater profit margin will yield a higher score.
+   * <p>Formula: {@code Difficulty * Week * (NetWorth / StartingMoney) * 10}. Higher weeks and a
+   * greater profit margin yield a higher score.
    *
-   * @param exchange The exchange at current point to calculate networth at current state
-   * @param player Player with portfolio to calculate final score.
-   * @return highscore final highscore
+   * @param exchange the exchange at the point of scoring
+   * @param player the player whose state is scored
+   * @return the calculated final score
+   * @throws IllegalArgumentException if the score turns out negative
    */
   public static BigDecimal calculateFinalScore(Exchange exchange, Player player) {
-    BigDecimal difficultyBigDecimalValue = BigDecimal.valueOf(5);
-
     int week = exchange.getWeek();
-    BigDecimal weekBigDecimal = BigDecimal.valueOf(week);
-
     BigDecimal startingMoney = player.getStartingMoney();
     BigDecimal fortune = player.getCurrentMoney().add(player.getNetWorth());
     BigDecimal profitScore =
-        fortune.divide(startingMoney, RoundingMode.HALF_UP).multiply(BigDecimal.TEN);
-    System.out.println(startingMoney + " " + fortune + " " + profitScore);
+        fortune.divide(startingMoney, 6, RoundingMode.HALF_UP).multiply(BigDecimal.TEN);
 
-    BigDecimal playerDifficultyFinalMultiplier = player.getDifficulty().getDifficultyMultiplier();
     BigDecimal finalScore =
-        difficultyBigDecimalValue
-            .multiply(weekBigDecimal)
+        BigDecimal.valueOf(5)
+            .multiply(BigDecimal.valueOf(week))
             .multiply(profitScore)
-            .multiply(playerDifficultyFinalMultiplier);
+            .multiply(player.getDifficulty().getDifficultyMultiplier());
 
     if (finalScore.compareTo(BigDecimal.ZERO) < 0) {
-      System.out.println(finalScore);
-      throw new IllegalArgumentException("Final score became negative");
+      throw new IllegalArgumentException("Final score became negative: " + finalScore);
     }
-    return finalScore;
+    return finalScore.setScale(2, RoundingMode.HALF_UP);
   }
 
   /**
-   * Method to add a new line in datasets/highscores.csv containing player name, week and calculated
-   * finalScore. Uses {@link #calculateFinalScore(Exchange, Player)} to calculate final score.
+   * Appends a new high-score entry to the CSV file.
    *
-   * <p>Format of generated lines: Week,playerName,finalScore
+   * <p>Format of each line: {@code week,playerName,finalScore}
    *
-   * @param exchange The exchange at current point to calculate networth at current state
-   * @param player Player with portfolio to calculate final score.
-   * @return true/false if is successes or not
+   * @param exchange the exchange at the point of scoring
+   * @param player the player whose score is recorded
+   * @return {@code true} if the entry was written successfully, {@code false} otherwise
    */
   public static boolean addFinalScoreToCsv(Exchange exchange, Player player) {
-    BigDecimal finalScore = null;
+    BigDecimal finalScore;
     try {
       finalScore = calculateFinalScore(exchange, player);
     } catch (Exception e) {
       e.printStackTrace();
       return false;
     }
-    try (PrintWriter pw = new PrintWriter(highscoreFile)) {
+    // append = true so existing entries are not overwritten
+    try (PrintWriter pw = new PrintWriter(new FileWriter(highscoreFile, true))) {
       pw.println(exchange.getWeek() + "," + player.getName() + "," + finalScore);
     } catch (Exception e) {
       e.printStackTrace();
@@ -87,7 +83,7 @@ public class HighScoreManager {
   /**
    * Reads all high scores from the CSV and returns them sorted by final score descending.
    *
-   * <p>Each entry in the returned list is a {@code List<String>} with three elements:
+   * <p>Each entry is a {@code List<String>} with three elements:
    *
    * <ol>
    *   <li>week (e.g. {@code "12"})
@@ -95,57 +91,36 @@ public class HighScoreManager {
    *   <li>final score (e.g. {@code "340.50"})
    * </ol>
    *
-   * @return a list of score entries sorted by final score descending, or an empty list if the file
-   *     is missing or unreadable
+   * @return entries sorted by score descending; empty list if the file is missing or unreadable
    */
-  public static ArrayList<List> getHighScores() {
-    ArrayList<List> scores = new ArrayList<>();
-    String line = "";
-    try {
-      BufferedReader br = new BufferedReader(new FileReader(highscoreFile));
+  public static List<List<String>> getHighScores() {
+    List<List<String>> scores = new ArrayList<>();
+    try (BufferedReader br = new BufferedReader(new FileReader(highscoreFile))) {
+      String line;
       while ((line = br.readLine()) != null) {
-        String trimmedLine = line.trim();
+        String trimmed = line.trim();
+        if (trimmed.isEmpty() || trimmed.startsWith("#")) continue;
 
-        if (trimmedLine.isEmpty()) {
-          continue;
-        }
-        if (trimmedLine.startsWith("#")) {
-          continue;
-        }
-
-        String[] values = trimmedLine.split(",");
-
-        // Just a normal print out
-        for (String value : values) {
-          System.out.print(value.trim() + " ");
-        }
-
-        if (values.length != 3) throw new IllegalArgumentException("Illegal format");
+        String[] values = trimmed.split(",");
+        if (values.length != 3) continue;
         try {
-          Integer.valueOf(values[0]);
-          new BigDecimal(values[2].trim()); // price must be a number
+          Integer.parseInt(values[0].trim());
+          new BigDecimal(values[2].trim());
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("Illegal format");
+          continue;
         }
-
-        String week = values[0];
-        String playerName = values[1];
-        String finalScore = (values[2]);
-        scores.add(List.of(week, playerName, finalScore));
+        scores.add(List.of(values[0].trim(), values[1].trim(), values[2].trim()));
       }
-
     } catch (Exception e) {
-      e.printStackTrace();
+      // File may not exist yet — return empty list silently
     }
-    if (!scores.isEmpty()) {
-      // Sort by final score descending
-      scores.sort(
-          (a, b) -> {
-            BigDecimal scoreA = new BigDecimal((char[]) a.get(2));
-            BigDecimal scoreB = new BigDecimal((char[]) b.get(2));
-            return scoreB.compareTo(scoreA);
-          });
-    }
+
+    scores.sort(
+        (a, b) -> {
+          BigDecimal scoreA = new BigDecimal(a.get(2));
+          BigDecimal scoreB = new BigDecimal(b.get(2));
+          return scoreB.compareTo(scoreA);
+        });
     return scores;
   }
 }
