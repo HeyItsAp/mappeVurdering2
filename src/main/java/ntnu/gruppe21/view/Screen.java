@@ -285,6 +285,7 @@ public class Screen extends StackPane {
                   e.printStackTrace();
                 }
                 Stage stage = (Stage) getScene().getWindow();
+                stage.setOnCloseRequest(null);
                 stage.getScene().setRoot(new StartMenu(stage));
               });
           popup.show(this);

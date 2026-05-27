@@ -179,6 +179,19 @@ public class StartMenu extends StackPane {
   }
 
   private void launchGame(GameController controller) {
-    stage.getScene().setRoot(new Screen(controller));
+    Screen screen = new Screen(controller);
+    stage.getScene().setRoot(screen);
+    stage.setOnCloseRequest(
+        event -> {
+          event.consume();
+          try {
+            controller.sellAll();
+            controller.saveGame();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          stage.setOnCloseRequest(null);
+          stage.close();
+        });
   }
 }
