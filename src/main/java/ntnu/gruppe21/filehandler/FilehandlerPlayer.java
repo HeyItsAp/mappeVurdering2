@@ -208,13 +208,6 @@ public class FilehandlerPlayer {
 
         String[] values = trimmedLine.split(",");
 
-        // Just a normal print out
-        System.out.println("Length of line: " + values.length);
-        for (String value : values) {
-          System.out.print(value.trim() + " ");
-        }
-        System.out.print("\n");
-
         if (values.length == 5 && !metadataLinePassed) {
           metadataLinePassed = true;
           playerName = values[0];
@@ -228,7 +221,6 @@ public class FilehandlerPlayer {
             savedTotalCompletions = Integer.parseInt(challengeString[0].trim());
             startIdx = 1;
           } catch (NumberFormatException ignored) {
-            // old format without total prefix — derive total from per-challenge counts below
           }
           for (int i = startIdx; i < challengeString.length; i++) {
             String[] challengeMetadata = challengeString[i].split(";");
@@ -240,7 +232,6 @@ public class FilehandlerPlayer {
           continue;
         }
 
-        System.out.println("Checkpoint 1");
         String[] stockPricesString = values[3].split(";");
         List<BigDecimal> stockPrices =
             Arrays.stream(stockPricesString).map(BigDecimal::new).toList();

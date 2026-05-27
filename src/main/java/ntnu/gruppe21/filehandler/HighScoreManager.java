@@ -112,7 +112,6 @@ public class HighScoreManager {
         scores.add(List.of(values[0].trim(), values[1].trim(), values[2].trim()));
       }
     } catch (Exception e) {
-      // File may not exist yet — return empty list silently
     }
 
     scores.sort(
