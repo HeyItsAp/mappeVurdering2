@@ -157,6 +157,19 @@ public class Player {
   }
 
   /**
+   * Returns the human-readable name for the player's current status level.
+   *
+   * @return {@code "Speculator"}, {@code "Investor"}, or {@code "Novice"}
+   */
+  public String getStatusName() {
+    return switch (getStatus()) {
+      case 3 -> "Speculator";
+      case 2 -> "Investor";
+      default -> "Novice";
+    };
+  }
+
+  /**
    * Standard builder that have base values that are necessary to make a new player. If necessary
    * attributes can be changed. Challenges need to be created after player creation, as challenges
    * and player have necessarily tight coupling.

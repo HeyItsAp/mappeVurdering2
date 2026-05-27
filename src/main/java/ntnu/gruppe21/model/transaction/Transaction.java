@@ -43,6 +43,14 @@ public abstract class Transaction {
   }
 
   /**
+   * Returns a short human-readable label for the transaction type, e.g. {@code "Buy"} or {@code
+   * "Sell"}. Used by views to display the type without needing an {@code instanceof} check.
+   *
+   * @return the type label
+   */
+  public abstract String getTypeName();
+
+  /**
    * When making a Transaction, commit is the final check before money is withdrawn/added.
    *
    * @param player Player object contain current money and etc.

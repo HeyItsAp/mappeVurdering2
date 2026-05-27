@@ -18,6 +18,11 @@ public class Purchase extends Transaction {
     super(share, week, calculator);
   }
 
+  @Override
+  public String getTypeName() {
+    return "Buy";
+  }
+
   public void commit(Player player) throws TransactionException {
     if (isCommitted()) {
       throw new TransactionException("Transaction is already committed.");

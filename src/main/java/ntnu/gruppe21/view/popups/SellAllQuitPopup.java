@@ -11,7 +11,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import ntnu.gruppe21.controller.GameController;
-import ntnu.gruppe21.model.Share;
 
 public class SellAllQuitPopup extends Popup {
   private Runnable onConfirm;
@@ -91,32 +90,27 @@ public class SellAllQuitPopup extends Popup {
     return List.of(title, description, scroll, summaryBox, btnBox);
   }
 
-  public void populateFromController(GameController controller) {
+  /**
+   * Populates the popup with a pre-computed sell-all summary from the controller.
+   *
+   * @param summary the summary returned by {@link GameController#getSellAllSummary()}
+   */
+  public void populate(GameController.SellAllSummary summary) {
     holdingsBox.getChildren().clear();
-    List<Share> shares = controller.getPlayer().getPortfolio().getShares();
-
-    BigDecimal proceeds = BigDecimal.ZERO;
-    if (shares.isEmpty()) {
+    if (summary.holdings().isEmpty()) {
       Label empty = new Label("No shares held.");
       empty.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaa;");
       holdingsBox.getChildren().add(empty);
     } else {
-      for (Share share : shares) {
-        BigDecimal value =
-            share.getStock().getSalesPrice().multiply(BigDecimal.valueOf(share.getQuantity()));
-        proceeds = proceeds.add(value);
+      for (GameController.HoldingLine line : summary.holdings()) {
         holdingsBox
             .getChildren()
-            .add(
-                buildHoldingRow(
-                    share.getStock().getSymbol(), share.getQuantity() + " shares", fmt(value)));
+            .add(buildHoldingRow(line.symbol(), line.quantity() + " shares", fmt(line.value())));
       }
     }
-
-    BigDecimal cash = controller.getPlayer().getCurrentMoney();
-    cashLabel.setText("Current cash:  " + fmt(cash));
-    proceedsLabel.setText("Proceeds from sale:  " + fmt(proceeds));
-    totalLabel.setText("Total after sale:  " + fmt(cash.add(proceeds)));
+    cashLabel.setText("Current cash:  " + fmt(summary.cash()));
+    proceedsLabel.setText("Proceeds from sale:  " + fmt(summary.proceeds()));
+    totalLabel.setText("Total after sale:  " + fmt(summary.total()));
   }
 
   private HBox buildHoldingRow(String symbol, String qty, String value) {

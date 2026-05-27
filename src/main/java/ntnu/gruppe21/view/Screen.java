@@ -48,7 +48,7 @@ public class Screen extends StackPane {
     Player player = controller.getPlayer();
     Exchange exchange = controller.getExchange();
     nameLabel.setText(player.getName());
-    subtitleLabel.setText("Level: " + statusLabel(player.getStatus()));
+    subtitleLabel.setText("Level: " + player.getStatusName());
     netWorthLabel.setText("Net Worth:  " + fmt(player.getNetWorth()));
     cashLabel.setText("Balance:  " + fmt(player.getCurrentMoney()));
     weekLabel.setText("Week " + exchange.getWeek());
@@ -80,7 +80,7 @@ public class Screen extends StackPane {
     nameLabel = new Label(player.getName());
     nameLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
-    subtitleLabel = new Label("Level: " + statusLabel(player.getStatus()));
+    subtitleLabel = new Label("Level: " + player.getStatusName());
     subtitleLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
     VBox money = new VBox(6);
@@ -275,7 +275,7 @@ public class Screen extends StackPane {
     btn.setOnAction(
         ignored -> {
           SellAllQuitPopup popup = new SellAllQuitPopup();
-          popup.populateFromController(controller);
+          popup.populate(controller.getSellAllSummary());
           popup.setOnConfirm(
               () -> {
                 try {
@@ -295,13 +295,5 @@ public class Screen extends StackPane {
 
   private static String fmt(BigDecimal v) {
     return String.format("%.2f", v);
-  }
-
-  private static String statusLabel(int status) {
-    return switch (status) {
-      case 3 -> "Speculator";
-      case 2 -> "Investor";
-      default -> "Novice";
-    };
   }
 }

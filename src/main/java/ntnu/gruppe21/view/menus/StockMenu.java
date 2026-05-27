@@ -1,7 +1,6 @@
 package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -15,10 +14,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.model.transaction.TransactionException;
 import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.StockFormatter;
 import ntnu.gruppe21.view.popups.BuyPopup;
 import ntnu.gruppe21.view.popups.SellPopup;
 
@@ -70,15 +69,15 @@ public class StockMenu extends VBox {
 
     BigDecimal price = stock.getSalesPrice();
     BigDecimal change = stock.getLatestPriceChange();
-    String changeStr = fmtChange(change);
-    String pctStr = fmtPct(stock);
+    String pctStr = StockFormatter.fmtChange(stock);
+    String changeStr = (change.signum() >= 0 ? "+" : "") + StockFormatter.fmt(change);
 
     for (VBox box :
         List.of(
-            buildStatBox("CURRENT PRICE", fmt(price), pctStr),
+            buildStatBox("CURRENT PRICE", StockFormatter.fmt(price), pctStr),
             buildStatBox("CHANGE", changeStr, pctStr),
-            buildStatBox("RECENT HIGH", fmt(stock.getHighestPrice()), ""),
-            buildStatBox("RECENT LOW", fmt(stock.getLowestPrice()), ""))) {
+            buildStatBox("RECENT HIGH", StockFormatter.fmt(stock.getHighestPrice()), ""),
+            buildStatBox("RECENT LOW", StockFormatter.fmt(stock.getLowestPrice()), ""))) {
       HBox.setHgrow(box, Priority.ALWAYS);
       box.setMaxWidth(Double.MAX_VALUE);
       row.getChildren().add(box);
@@ -197,14 +196,14 @@ public class StockMenu extends VBox {
 
     Button sellBtn = new Button("Sell");
     sellBtn.setMaxWidth(Double.MAX_VALUE);
-    sellBtn.setDisable(ownedShares() == 0);
+    sellBtn.setDisable(screen.getController().getOwnedShares(stock.getSymbol()) == 0);
     sellBtn.setStyle(
         btnBase
             + "-fx-background-color: white; -fx-text-fill: #1a1a1a;"
             + "-fx-border-color: #1a1a1a; -fx-border-radius: 8;");
     sellBtn.setOnAction(
         ignored -> {
-          int owned = ownedShares();
+          int owned = screen.getController().getOwnedShares(stock.getSymbol());
           SellPopup popup = new SellPopup(stock, owned);
           popup.setOnConfirm(
               () -> {
@@ -213,7 +212,7 @@ public class StockMenu extends VBox {
                   popup.close();
                   screen.refreshSidebar();
                   refreshPositionCard();
-                  sellBtn.setDisable(ownedShares() == 0);
+                  sellBtn.setDisable(screen.getController().getOwnedShares(stock.getSymbol()) == 0);
                 } catch (IllegalArgumentException | TransactionException e) {
                   e.printStackTrace();
                 }
@@ -239,13 +238,13 @@ public class StockMenu extends VBox {
     Label heading = new Label("YOUR POSITION");
     heading.setStyle("-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    int totalShares = ownedShares();
-    BigDecimal avgCost = avgCost();
+    int totalShares = screen.getController().getOwnedShares(stock.getSymbol());
+    BigDecimal avgCost = screen.getController().getAvgCost(stock.getSymbol());
     BigDecimal currentValue = BigDecimal.valueOf(totalShares).multiply(stock.getSalesPrice());
 
     sharesOwnedLabel = new Label(String.valueOf(totalShares));
-    avgCostLabel = new Label(fmt(avgCost));
-    currentValueLabel = new Label(fmt(currentValue));
+    avgCostLabel = new Label(StockFormatter.fmt(avgCost));
+    currentValueLabel = new Label(StockFormatter.fmt(currentValue));
 
     VBox card =
         new VBox(
@@ -266,33 +265,11 @@ public class StockMenu extends VBox {
   }
 
   private void refreshPositionCard() {
-    int totalShares = ownedShares();
+    int totalShares = screen.getController().getOwnedShares(stock.getSymbol());
     sharesOwnedLabel.setText(String.valueOf(totalShares));
-    avgCostLabel.setText(fmt(avgCost()));
-    currentValueLabel.setText(fmt(BigDecimal.valueOf(totalShares).multiply(stock.getSalesPrice())));
-  }
-
-  private int ownedShares() {
-    return screen.getController().getPlayer().getPortfolio().getShares().stream()
-        .filter(s -> s.getStock().getSymbol().equals(stock.getSymbol()))
-        .mapToInt(Share::getQuantity)
-        .sum();
-  }
-
-  private BigDecimal avgCost() {
-    List<Share> matching =
-        screen.getController().getPlayer().getPortfolio().getShares().stream()
-            .filter(s -> s.getStock().getSymbol().equals(stock.getSymbol()))
-            .toList();
-    if (matching.isEmpty()) return BigDecimal.ZERO;
-    BigDecimal totalCost =
-        matching.stream()
-            .map(s -> s.getPurchasePrice().multiply(BigDecimal.valueOf(s.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    int totalQty = matching.stream().mapToInt(Share::getQuantity).sum();
-    return totalQty == 0
-        ? BigDecimal.ZERO
-        : totalCost.divide(BigDecimal.valueOf(totalQty), 2, RoundingMode.HALF_UP);
+    avgCostLabel.setText(StockFormatter.fmt(screen.getController().getAvgCost(stock.getSymbol())));
+    currentValueLabel.setText(
+        StockFormatter.fmt(BigDecimal.valueOf(totalShares).multiply(stock.getSalesPrice())));
   }
 
   private HBox buildPositionRow(String label, Label valueLabel) {
@@ -325,23 +302,5 @@ public class StockMenu extends VBox {
         -fx-border-radius: 8;
         """);
     return box;
-  }
-
-  private static String fmt(BigDecimal v) {
-    return String.format("%.2f", v);
-  }
-
-  private static String fmtChange(BigDecimal change) {
-    String sign = change.signum() >= 0 ? "+" : "";
-    return sign + String.format("%.2f", change);
-  }
-
-  private static String fmtPct(Stock s) {
-    BigDecimal change = s.getLatestPriceChange();
-    BigDecimal prev = s.getSalesPrice().subtract(change);
-    if (prev.signum() == 0) return "0.00%";
-    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-    String sign = pct.signum() >= 0 ? "+" : "";
-    return sign + String.format("%.2f", pct) + "%";
   }
 }
