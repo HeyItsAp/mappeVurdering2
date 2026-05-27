@@ -90,6 +90,17 @@ public class StartMenu extends StackPane {
       empty.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaa;");
       saveSlots.getChildren().add(empty);
     } else {
+      String colStyle = "-fx-font-size: 10px; -fx-text-fill: #aaa; -fx-font-weight: bold;";
+      Label saveCol = new Label("SAVE");
+      saveCol.setStyle(colStyle);
+      Label scoreCol = new Label("SCORE");
+      scoreCol.setStyle(colStyle);
+      Region colSpacer = new Region();
+      HBox.setHgrow(colSpacer, Priority.ALWAYS);
+      HBox colHeader = new HBox(saveCol, colSpacer, scoreCol);
+      colHeader.setStyle("-fx-padding: 0 12 0 12;");
+      saveSlots.getChildren().add(colHeader);
+
       for (StartMenuController.SaveSummary save : saves) {
         saveSlots.getChildren().add(buildSaveSlotRow(save));
       }
