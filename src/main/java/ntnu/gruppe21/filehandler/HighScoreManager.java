@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
@@ -16,15 +17,15 @@ import ntnu.gruppe21.model.Player;
  * from {@link Player}
  */
 public class HighScoreManager {
-  private static final String highscoreFile = "src/main/resources/datasets/highscores/highscores.csv";
+  private static final String highscoreFile =
+      "src/main/resources/datasets/highscores/highscores.csv";
 
   /**
    * Method that calculates your final score based on an algorithm. Can be seen as a helper for
    * {@link #calculateFinalScore(Exchange, Player)}
    *
-   * <p>Final Score is calculated by the following algorithm: FinalScore = Difficulty (not yet
-   * implemented) * Week * NetWorth/StartingMoney * 10 Higher weeks and greater profit margin will
-   * wield a higher score.
+   * <p>Final Score is calculated by the following algorithm: FinalScore = Difficulty * Week *
+   * NetWorth/StartingMoney * 10 Higher weeks and greater profit margin will yield a higher score.
    *
    * @param exchange The exchange at current point to calculate networth at current state
    * @param player Player with portfolio to calculate final score.
@@ -38,7 +39,7 @@ public class HighScoreManager {
 
     BigDecimal startingMoney = player.getStartingMoney();
     BigDecimal fortune = player.getCurrentMoney().add(player.getNetWorth());
-    BigDecimal profitScore = fortune.divide(startingMoney).multiply(BigDecimal.TEN);
+    BigDecimal profitScore = fortune.divide(startingMoney, RoundingMode.HALF_UP).multiply(BigDecimal.TEN);
     System.out.println(startingMoney + " " + fortune + " " + profitScore);
 
     BigDecimal playerDifficultyFinalMultiplier = player.getDifficulty().getDifficultyMultiplier();
@@ -120,7 +121,7 @@ public class HighScoreManager {
 
         if (values.length != 3) throw new IllegalArgumentException("Illegal format");
         try {
-          new Integer(values[0]);
+            Integer.valueOf(values[0]);
           new BigDecimal(values[2].trim()); // price must be a number
         } catch (NumberFormatException e) {
           throw new IllegalArgumentException("Illegal format");
