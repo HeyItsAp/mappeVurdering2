@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -35,11 +36,12 @@ public class ExchangeMenu extends VBox {
     line.setStroke(Color.BLACK);
     line.setStrokeWidth(0.5);
 
+    TableView<MarketRow> table = buildMarketTable();
     setStyle("-fx-padding: 20 20 30 20");
-    getChildren().addAll(title, line, buildFilterButtons(), buildMarketTable());
+    getChildren().addAll(title, line, buildTopBar(table), table);
   }
 
-  private HBox buildFilterButtons() {
+  private HBox buildTopBar(TableView<MarketRow> table) {
     HBox bar = new HBox(8);
     String normal =
         """
@@ -70,6 +72,47 @@ public class ExchangeMenu extends VBox {
       btn.setOnMouseExited(ignored -> btn.setStyle(normal));
       bar.getChildren().add(btn);
     }
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    TextField search = new TextField();
+    search.setPromptText("Search symbol or company...");
+    search.setStyle(
+        """
+        -fx-font-size: 10px;
+        -fx-padding: 3 10 3 10;
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-border-color: #ddd;
+        -fx-background-color: white;
+        -fx-pref-width: 180;
+        """);
+    search
+        .textProperty()
+        .addListener(
+            (obs, old, q) -> {
+              List<Stock> stocks =
+                  q.isBlank()
+                      ? screen.getController().getExchange().getStockMap().values().stream()
+                          .sorted(Comparator.comparing(Stock::getSymbol))
+                          .toList()
+                      : screen.getController().getExchange().findStock(q).stream()
+                          .sorted(Comparator.comparing(Stock::getSymbol))
+                          .toList();
+              ObservableList<MarketRow> rows = FXCollections.observableArrayList();
+              stocks.forEach(
+                  s ->
+                      rows.add(
+                          new MarketRow(
+                              s.getSymbol(),
+                              s.getCompany(),
+                              fmt(s.getSalesPrice()),
+                              fmtChange(s))));
+              table.setItems(rows);
+            });
+
+    bar.getChildren().addAll(spacer, search);
     return bar;
   }
 
