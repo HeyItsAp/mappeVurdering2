@@ -23,10 +23,10 @@ public class StartMenu extends StackPane {
     setStyle("-fx-background-color: #f0ede8;");
     setAlignment(Pos.CENTER);
 
-    Label title = new Label("Stock Market");
+    Label title = new Label("Billions");
     title.setStyle("-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    Label subtitle = new Label("Build your portfolio. Beat the market.");
+    Label subtitle = new Label("We do not condone gambling.");
     subtitle.setStyle("-fx-font-size: 14px; -fx-text-fill: #888;");
 
     HBox cards = new HBox(16, buildNewGameCard(), buildLoadGameCard());

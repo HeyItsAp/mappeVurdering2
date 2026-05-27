@@ -13,7 +13,7 @@ public class Main extends Application {
   public void start(Stage stage) {
     Scene scene = new Scene(new StartMenu(stage), 1000, 700);
     stage.setScene(scene);
-    stage.setTitle("Lets go gambling!");
+    stage.setTitle("Billions");
     stage.setMaximized(true);
     stage.show();
   }
