@@ -21,6 +21,7 @@ import ntnu.gruppe21.view.StockFormatter;
 import ntnu.gruppe21.view.popups.BuyPopup;
 import ntnu.gruppe21.view.popups.SellPopup;
 
+/** Detailed view for a single stock. */
 public class StockMenu extends VBox {
   private final Stock stock;
   private final Screen screen;
@@ -29,6 +30,12 @@ public class StockMenu extends VBox {
   private Label avgCostLabel;
   private Label currentValueLabel;
 
+  /**
+   * Builds the stock view for the given stock.
+   *
+   * @param stock the stock to display
+   * @param screen the parent screen, used to show buy/sell popups and refresh the sidebar
+   */
   public StockMenu(Stock stock, Screen screen) {
     super(20);
     this.stock = stock;

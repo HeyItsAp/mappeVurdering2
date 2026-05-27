@@ -22,9 +22,18 @@ import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.view.Screen;
 import ntnu.gruppe21.view.StockFormatter;
 
+/**
+ * The main dashboard shown at the start of each week. Displays this week's portfolio change, a
+ * summary row, top gainers and losers from the exchange, and a compact holdings panel on the right.
+ */
 public class TodayMenu extends VBox {
   private final Screen screen;
 
+  /**
+   * Builds the dashboard for the given game session.
+   *
+   * @param screen the parent screen
+   */
   public TodayMenu(Screen screen) {
     super(20);
     this.screen = screen;
@@ -202,6 +211,7 @@ public class TodayMenu extends VBox {
     return card;
   }
 
+  /** One row in the compact holdings panel on the right. */
   record HoldingRow(String symbol, String price, String change, Stock stock) {}
 
   private VBox buildHoldingsPanel() {
