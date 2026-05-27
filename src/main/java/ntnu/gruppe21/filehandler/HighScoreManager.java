@@ -39,7 +39,8 @@ public class HighScoreManager {
 
     BigDecimal startingMoney = player.getStartingMoney();
     BigDecimal fortune = player.getCurrentMoney().add(player.getNetWorth());
-    BigDecimal profitScore = fortune.divide(startingMoney, RoundingMode.HALF_UP).multiply(BigDecimal.TEN);
+    BigDecimal profitScore =
+        fortune.divide(startingMoney, RoundingMode.HALF_UP).multiply(BigDecimal.TEN);
     System.out.println(startingMoney + " " + fortune + " " + profitScore);
 
     BigDecimal playerDifficultyFinalMultiplier = player.getDifficulty().getDifficultyMultiplier();
@@ -121,7 +122,7 @@ public class HighScoreManager {
 
         if (values.length != 3) throw new IllegalArgumentException("Illegal format");
         try {
-            Integer.valueOf(values[0]);
+          Integer.valueOf(values[0]);
           new BigDecimal(values[2].trim()); // price must be a number
         } catch (NumberFormatException e) {
           throw new IllegalArgumentException("Illegal format");
