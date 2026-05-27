@@ -24,8 +24,7 @@ public class ExchangeMenu extends VBox {
     super(20);
     this.screen = screen;
 
-    String exchangeName = screen.getController().getExchange().getName();
-    Label title = new Label(exchangeName);
+    Label title = new Label("Stocks on exchange");
     title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
     Line line = new Line();
@@ -43,35 +42,6 @@ public class ExchangeMenu extends VBox {
 
   private HBox buildTopBar(TableView<MarketRow> table) {
     HBox bar = new HBox(8);
-    String normal =
-        """
-        -fx-background-color: #f0efeb;
-        -fx-text-fill: #333;
-        -fx-font-size: 10px;
-        -fx-padding: 3 10 3 10;
-        -fx-background-radius: 20;
-        -fx-border-radius: 20;
-        -fx-border-color: #ddd;
-        -fx-cursor: hand;
-        """;
-    String hover =
-        """
-        -fx-background-color: #1a1a1a;
-        -fx-text-fill: white;
-        -fx-font-size: 10px;
-        -fx-padding: 3 10 3 10;
-        -fx-background-radius: 20;
-        -fx-border-radius: 20;
-        -fx-border-color: #1a1a1a;
-        -fx-cursor: hand;
-        """;
-    for (String label : List.of("All", "Owned")) {
-      Button btn = new Button(label);
-      btn.setStyle(normal);
-      btn.setOnMouseEntered(ignored -> btn.setStyle(hover));
-      btn.setOnMouseExited(ignored -> btn.setStyle(normal));
-      bar.getChildren().add(btn);
-    }
 
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
