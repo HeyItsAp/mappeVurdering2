@@ -62,7 +62,7 @@ public class ExchangeMenu extends VBox {
         -fx-border-color: #1a1a1a;
         -fx-cursor: hand;
         """;
-    for (String label : List.of("All", "Owned", "Watchlist")) {
+    for (String label : List.of("All", "Owned")) {
       Button btn = new Button(label);
       btn.setStyle(normal);
       btn.setOnMouseEntered(ignored -> btn.setStyle(hover));

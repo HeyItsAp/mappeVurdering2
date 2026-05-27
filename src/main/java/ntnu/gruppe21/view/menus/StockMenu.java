@@ -221,17 +221,10 @@ public class StockMenu extends VBox {
           popup.show((Pane) getScene().getRoot());
         });
 
-    Button watchlistBtn = new Button("Add to Watchlist");
-    watchlistBtn.setMaxWidth(Double.MAX_VALUE);
-    watchlistBtn.setStyle(
-        btnBase
-            + "-fx-background-color: white; -fx-text-fill: #555;"
-            + "-fx-border-color: #ccc; -fx-border-radius: 8;");
-
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
-    VBox pane = new VBox(12, buildPositionCard(), spacer, buyBtn, sellBtn, watchlistBtn);
+    VBox pane = new VBox(12, buildPositionCard(), spacer, buyBtn, sellBtn);
     pane.setStyle(
         """
         -fx-padding: 10px;
