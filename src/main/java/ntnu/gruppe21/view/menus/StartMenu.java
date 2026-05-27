@@ -5,18 +5,20 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ntnu.gruppe21.controller.GameController;
 import ntnu.gruppe21.controller.StartMenuController;
-import ntnu.gruppe21.filehandler.FilehandlerPlayer;
 import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.StockFormatter;
 import ntnu.gruppe21.view.popups.NewGamePopup;
 
 public class StartMenu extends StackPane {
   private final Stage stage;
+  private final StartMenuController controller = new StartMenuController();
 
   public StartMenu(Stage stage) {
     this.stage = stage;
@@ -48,7 +50,7 @@ public class StartMenu extends StackPane {
     description.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
 
     Region spacer = new Region();
-    VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+    VBox.setVgrow(spacer, Priority.ALWAYS);
 
     Button startBtn = new Button("Start");
     startBtn.setMaxWidth(Double.MAX_VALUE);
@@ -74,11 +76,11 @@ public class StartMenu extends StackPane {
     heading.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
     VBox saveSlots = new VBox(6);
-    VBox.setVgrow(saveSlots, javafx.scene.layout.Priority.ALWAYS);
+    VBox.setVgrow(saveSlots, Priority.ALWAYS);
 
-    List<String> saves;
+    List<StartMenuController.SaveSummary> saves;
     try {
-      saves = FilehandlerPlayer.getPlayerSaveOptions();
+      saves = controller.getSavesRanked();
     } catch (Exception ignored) {
       saves = List.of();
     }
@@ -88,9 +90,8 @@ public class StartMenu extends StackPane {
       empty.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaa;");
       saveSlots.getChildren().add(empty);
     } else {
-      for (String save : saves) {
-        Button slotBtn = buildSaveSlotButton(save);
-        saveSlots.getChildren().add(slotBtn);
+      for (StartMenuController.SaveSummary save : saves) {
+        saveSlots.getChildren().add(buildSaveSlotRow(save));
       }
     }
 
@@ -99,48 +100,66 @@ public class StartMenu extends StackPane {
     return card;
   }
 
-  private Button buildSaveSlotButton(String name) {
-    Button btn = new Button(name);
-    btn.setMaxWidth(Double.MAX_VALUE);
+  private HBox buildSaveSlotRow(StartMenuController.SaveSummary save) {
     String normal =
         """
         -fx-font-size: 13px;
         -fx-background-color: #f9f9f9;
-        -fx-text-fill: #1a1a1a;
         -fx-background-radius: 8;
         -fx-border-color: #e0e0e0;
         -fx-border-radius: 8;
         -fx-border-width: 1;
         -fx-padding: 10 12 10 12;
-        -fx-alignment: CENTER-LEFT;
         -fx-cursor: hand;
         """;
     String hover =
         """
         -fx-font-size: 13px;
         -fx-background-color: #1a1a1a;
-        -fx-text-fill: white;
         -fx-background-radius: 8;
         -fx-border-color: #1a1a1a;
         -fx-border-radius: 8;
         -fx-border-width: 1;
         -fx-padding: 10 12 10 12;
-        -fx-alignment: CENTER-LEFT;
         -fx-cursor: hand;
         """;
-    btn.setStyle(normal);
-    btn.setOnMouseEntered(ignored -> btn.setStyle(hover));
-    btn.setOnMouseExited(ignored -> btn.setStyle(normal));
-    btn.setOnAction(
+
+    Label nameLabel = new Label(save.slot());
+    nameLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
+
+    Label scoreLabel = new Label(StockFormatter.fmt(save.score()));
+    scoreLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    HBox row = new HBox(8, nameLabel, spacer, scoreLabel);
+    row.setAlignment(Pos.CENTER_LEFT);
+    row.setMaxWidth(Double.MAX_VALUE);
+    row.setStyle(normal);
+
+    row.setOnMouseEntered(
+        ignored -> {
+          row.setStyle(hover);
+          nameLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: white;");
+          scoreLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #aaa;");
+        });
+    row.setOnMouseExited(
+        ignored -> {
+          row.setStyle(normal);
+          nameLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
+          scoreLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888;");
+        });
+    row.setOnMouseClicked(
         ignored -> {
           try {
-            GameController controller = new StartMenuController().loadGame(name);
-            launchGame(controller);
+            GameController gc = controller.loadGame(save.slot());
+            launchGame(gc);
           } catch (Exception e) {
             e.printStackTrace();
           }
         });
-    return btn;
+    return row;
   }
 
   private void styleCard(VBox card) {
@@ -161,16 +180,15 @@ public class StartMenu extends StackPane {
     popup.setOnConfirm(
         () -> {
           try {
-            GameController controller =
-                new StartMenuController()
-                    .startNewGame(
-                        popup.getPlayerName(),
-                        popup.getStartingMoney(),
-                        popup.getDifficulty(),
-                        "sp500",
-                        popup.getSaveSlot());
+            GameController gc =
+                controller.startNewGame(
+                    popup.getPlayerName(),
+                    popup.getStartingMoney(),
+                    popup.getDifficulty(),
+                    "sp500",
+                    popup.getSaveSlot());
             popup.close();
-            launchGame(controller);
+            launchGame(gc);
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -178,15 +196,16 @@ public class StartMenu extends StackPane {
     popup.show(this);
   }
 
-  private void launchGame(GameController controller) {
-    Screen screen = new Screen(controller);
+  private void launchGame(GameController gc) {
+    Screen screen = new Screen(gc);
     stage.getScene().setRoot(screen);
     stage.setOnCloseRequest(
         event -> {
           event.consume();
           try {
-            controller.sellAll();
-            controller.saveGame();
+            gc.sellAll();
+            gc.recordHighScore();
+            gc.saveGame();
           } catch (Exception e) {
             e.printStackTrace();
           }
