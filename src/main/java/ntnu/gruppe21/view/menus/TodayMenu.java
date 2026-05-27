@@ -67,25 +67,35 @@ public class TodayMenu extends VBox {
   private VBox buildNetWorthCard() {
     Player player = screen.getController().getPlayer();
     BigDecimal netWorth = player.getNetWorth();
-    BigDecimal starting = player.getStartingMoney();
-    BigDecimal change = netWorth.subtract(starting);
-    String sign = change.signum() >= 0 ? "+" : "";
+
+    BigDecimal weeklyChange =
+        player.getPortfolio().getShares().stream()
+            .map(
+                s ->
+                    BigDecimal.valueOf(s.getQuantity())
+                        .multiply(s.getStock().getLatestPriceChange()))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    BigDecimal prevNetWorth = netWorth.subtract(weeklyChange);
+    String sign = weeklyChange.signum() >= 0 ? "+" : "";
     String pct =
-        starting.signum() == 0
+        prevNetWorth.signum() == 0
             ? "0.00"
             : String.format(
                 "%.2f",
-                change.divide(starting, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)));
+                weeklyChange
+                    .divide(prevNetWorth, 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100)));
 
-    Label heading = new Label("NET WORTH SINCE START");
+    Label heading = new Label("PORTFOLIO CHANGE THIS WEEK");
     heading.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    String color = change.signum() >= 0 ? "#27ae60" : "#c0392b";
-    Label changeLabel = new Label(sign + fmt(change));
+    String color = weeklyChange.signum() >= 0 ? "#27ae60" : "#c0392b";
+    Label changeLabel = new Label(sign + fmt(weeklyChange));
     changeLabel.setStyle(
         "-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
 
-    Label pctLabel = new Label(sign + pct + "%  ·  Now: " + fmt(netWorth));
+    Label pctLabel = new Label(sign + pct + "%  ·  Net worth: " + fmt(netWorth));
     pctLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #888;");
 
     VBox card = new VBox(6, heading, changeLabel, pctLabel);
