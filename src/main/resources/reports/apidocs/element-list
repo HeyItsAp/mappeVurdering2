@@ -1,0 +1,14 @@
+ntnu.gruppe21
+ntnu.gruppe21.controller
+ntnu.gruppe21.filehandler
+ntnu.gruppe21.model
+ntnu.gruppe21.model.gameEngine
+ntnu.gruppe21.model.gameEngine.challenges
+ntnu.gruppe21.model.gameEngine.strategies
+ntnu.gruppe21.model.gameEngine.strategies.marketsimulator
+ntnu.gruppe21.model.gameEngine.strategies.standard
+ntnu.gruppe21.model.transaction
+ntnu.gruppe21.model.transaction.calculators
+ntnu.gruppe21.view
+ntnu.gruppe21.view.menus
+ntnu.gruppe21.view.popups
