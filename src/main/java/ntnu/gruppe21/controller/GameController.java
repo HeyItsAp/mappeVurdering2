@@ -1,5 +1,6 @@
 package ntnu.gruppe21.controller;
 
+import java.math.BigDecimal;
 import ntnu.gruppe21.filehandler.SaveManager;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
@@ -15,6 +16,7 @@ public class GameController {
   private final Player player;
   private final Exchange exchange;
   private final String saveSlot;
+  private BigDecimal lastWeeklyChange = BigDecimal.ZERO;
 
   /**
    * Creates a GameController for an active game session.
@@ -73,7 +75,19 @@ public class GameController {
   /** Advances the exchange by one week, updating all stock prices. */
   public void advanceWeek() {
     exchange.advance();
+    lastWeeklyChange =
+        player.getPortfolio().getShares().stream()
+            .map(
+                s ->
+                    BigDecimal.valueOf(s.getQuantity())
+                        .multiply(s.getStock().getLatestPriceChange()))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     player.getChallengeManager().evaluateChallenges(player);
+  }
+
+  /** Returns the portfolio value change from the most recent week advance. */
+  public BigDecimal getLastWeeklyChange() {
+    return lastWeeklyChange;
   }
 
   /**

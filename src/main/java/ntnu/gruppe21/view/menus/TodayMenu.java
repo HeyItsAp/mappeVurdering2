@@ -68,13 +68,7 @@ public class TodayMenu extends VBox {
     Player player = screen.getController().getPlayer();
     BigDecimal netWorth = player.getNetWorth();
 
-    BigDecimal weeklyChange =
-        player.getPortfolio().getShares().stream()
-            .map(
-                s ->
-                    BigDecimal.valueOf(s.getQuantity())
-                        .multiply(s.getStock().getLatestPriceChange()))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal weeklyChange = screen.getController().getLastWeeklyChange();
 
     BigDecimal prevNetWorth = netWorth.subtract(weeklyChange);
     String sign = weeklyChange.signum() >= 0 ? "+" : "";
