@@ -18,6 +18,7 @@ public class NewGamePopup extends Popup {
   private TextField nameField;
   private TextField moneyField;
   private ComboBox<Difficulty> difficultyBox;
+  private ComboBox<String> datasetBox;
   private Label errorLabel;
   private Button confirmBtn;
 
@@ -34,6 +35,19 @@ public class NewGamePopup extends Popup {
     difficultyBox.setValue(Difficulty.EASY);
     difficultyBox.setMaxWidth(Double.MAX_VALUE);
     difficultyBox.setStyle(
+        """
+        -fx-font-size: 13px;
+        -fx-background-color: #f9f9f9;
+        -fx-border-color: #d0d0d0;
+        -fx-border-radius: 8;
+        -fx-background-radius: 8;
+        -fx-border-width: 1;
+        -fx-cursor: hand;
+        """);
+
+    datasetBox = new ComboBox<>();
+    datasetBox.setMaxWidth(Double.MAX_VALUE);
+    datasetBox.setStyle(
         """
         -fx-font-size: 13px;
         -fx-background-color: #f9f9f9;
@@ -81,7 +95,9 @@ public class NewGamePopup extends Popup {
             buildFieldLabel("Starting money"),
             moneyField,
             buildFieldLabel("Difficulty"),
-            difficultyBox);
+            difficultyBox,
+            buildFieldLabel("Dataset"),
+            datasetBox);
     form.setStyle(
         """
         -fx-background-color: #f9f9f9;
@@ -134,6 +150,22 @@ public class NewGamePopup extends Popup {
   /** Returns the selected difficulty. */
   public Difficulty getDifficulty() {
     return difficultyBox.getValue();
+  }
+
+  /**
+   * Populates the dataset selector with the given options and pre-selects the first one. Call this
+   * before {@link #show} so the combo box is not empty.
+   *
+   * @param options dataset base-names (without {@code .csv}) to display
+   */
+  public void setDatasetOptions(List<String> options) {
+    datasetBox.getItems().setAll(options);
+    if (!options.isEmpty()) datasetBox.setValue(options.getFirst());
+  }
+
+  /** Returns the selected dataset base-name (without {@code .csv}). */
+  public String getDatasetName() {
+    return datasetBox.getValue();
   }
 
   /**
