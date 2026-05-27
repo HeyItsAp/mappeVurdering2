@@ -35,12 +35,16 @@ public class StartMenuController {
   }
 
   /**
-   * Returns the names of all available exchange datasets so the view can list them.
+   * Returns the names of all available exchange datasets so the view can list them. The {@code
+   * .csv} extension is stripped so the names can be passed directly to {@link #startNewGame}.
    *
-   * @return list of dataset filenames inside {@code resources/datasets}
+   * @return list of dataset base-names (without extension) inside {@code resources/datasets}
    */
   public List<String> getDatasetOptions() {
-    return FilehandlerExchange.getExchangeDatasetOptions();
+    return FilehandlerExchange.getExchangeDatasetOptions().stream()
+        .filter(name -> name.endsWith(".csv"))
+        .map(name -> name.substring(0, name.length() - 4))
+        .toList();
   }
 
   /**
