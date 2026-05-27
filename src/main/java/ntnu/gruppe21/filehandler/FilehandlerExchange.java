@@ -76,7 +76,7 @@ public class FilehandlerExchange {
                         .map(BigDecimal::toString)
                         .collect(Collectors.joining(";"));
 
-                String extras = strategy.saveStockExtras(value); // If any extras within stock.
+                String extras = strategy.saveStockExtras(value);
 
                 pw.println(
                     value.getSymbol() + "," + value.getCompany() + "," + prices + "," + extras);
@@ -125,12 +125,6 @@ public class FilehandlerExchange {
         }
 
         String[] values = trimmedLine.split(",");
-
-        // Just a normal print out
-        for (String value : values) {
-          System.out.print(value.trim() + " ");
-        }
-        System.out.print("\n");
 
         Stock stock = new Stock(values[0], values[1], new BigDecimal(values[2]));
         listOfStocks.add(stock);
@@ -185,12 +179,6 @@ public class FilehandlerExchange {
         }
 
         String[] values = trimmedLine.split(",");
-
-        // Just a normal print out
-        for (String value : values) {
-          System.out.print(value.trim() + " ");
-        }
-        System.out.print("\n");
 
         if (values.length == 4 && !basedMetaDataline) {
           basedMetaDataline = true;
@@ -257,7 +245,7 @@ public class FilehandlerExchange {
     try {
       Path saved = copyToDatasets(chosen);
       System.out.println("Imported to: " + saved);
-      return true; // reuse your existing load logic
+      return true;
     } catch (IOException e) {
       e.printStackTrace();
       return false;
@@ -293,7 +281,7 @@ public class FilehandlerExchange {
         if (values.length != 3) return false;
 
         try {
-          BigDecimal importedNumber = new BigDecimal(values[2].trim()); // price must be a number
+          BigDecimal importedNumber = new BigDecimal(values[2].trim());
           if (importedNumber.compareTo(BigDecimal.ZERO) < 0) {
             throw new NumberFormatException();
           }
@@ -303,7 +291,7 @@ public class FilehandlerExchange {
 
         lineCount += 1;
       }
-      return lineCount >= 5; // should be at least 5 valid lines
+      return lineCount >= 5;
 
     } catch (IOException e) {
       return false;

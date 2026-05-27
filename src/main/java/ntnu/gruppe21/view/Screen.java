@@ -280,6 +280,7 @@ public class Screen extends StackPane {
               () -> {
                 try {
                   controller.sellAll();
+                  controller.recordHighScore();
                   controller.saveGame();
                 } catch (Exception e) {
                   e.printStackTrace();

@@ -97,13 +97,10 @@ public class MarketSimulator implements PriceStrategy {
     double globD = 0.0;
     if (random.nextDouble() < 0.05 + 0.08 * chaosModifier) {
       globD = (random.nextDouble() - 0.5) * 2.0;
-      System.out.println("oop");
     }
 
     for (Stock stock : stocks) {
-      // Check if stock is the extended.
       MarketSimStock me = (MarketSimStock) stock;
-      // Extract simulation state as locals so the arithmetic stays readable.
       double val = me.getSalesPrice().doubleValue();
       double d = me.getD();
       int mode = me.getMode();
@@ -113,7 +110,6 @@ public class MarketSimulator implements PriceStrategy {
       // 2% chance that the price halts for a week.
       if (random.nextDouble() < 0.02 + 0.03 * chaosModifier) {
         val += (random.nextDouble() - 0.5) * 20;
-        System.out.println("pause");
         me.addNewSalesPrice(
             BigDecimal.valueOf(Math.max(val, 1.0)).setScale(2, RoundingMode.HALF_UP));
         continue;
@@ -156,7 +152,6 @@ public class MarketSimulator implements PriceStrategy {
       // Feature: Global Shock Impact
       // Applies the market-wide shock (computed above) to this individual stock.
       if (globD != 0.0 && random.nextDouble() < 0.4) {
-        System.out.println("IMPACT!");
         val -= (1 + d * Math.pow(random.nextDouble(), 3) * 10) * globD;
         val -= globD * (1 + Math.pow(random.nextDouble(), 3) * 20);
         d += globD * (1 + random.nextDouble() * (3 + chaosModifier));
@@ -175,7 +170,6 @@ public class MarketSimulator implements PriceStrategy {
       // Feature: Rare Large Jump
       // 3% chance of a significant price move each calculateNewPrice.
       if (random.nextDouble() < 0.03) {
-        System.out.println("kabomba");
         val += (random.nextDouble() - 0.5) * (50 + 50 * chaosModifier);
       }
 
@@ -204,7 +198,6 @@ public class MarketSimulator implements PriceStrategy {
       // Feature: Fast rise-to-fall Transition
       // A 3% per-calculateNewPrice chance that a fast rise market tips into a fast fall market.
       if (mode == MODE_FAST_RISE && random.nextDouble() < 0.04 * d) {
-        System.out.println("sike");
         mode = MODE_FAST_FALL;
         d *= 0.4;
         dur = 6;
@@ -231,7 +224,6 @@ public class MarketSimulator implements PriceStrategy {
             && random.nextDouble() < chaosModifier
             && random.nextDouble() < 0.15) {
           mode = MODE_CHAOTIC;
-          System.out.println(5);
         } else {
           int newMode = mode;
           while (newMode == mode) {
@@ -239,11 +231,9 @@ public class MarketSimulator implements PriceStrategy {
           }
           mode = newMode;
           d *= 0.5;
-          System.out.println(mode);
         }
       }
 
-      // Commit the new price and write simulation state back to the stock.
       me.addNewSalesPrice(BigDecimal.valueOf(val).setScale(2, RoundingMode.HALF_UP));
       me.setMode(mode);
       me.setDur(dur);
@@ -251,7 +241,6 @@ public class MarketSimulator implements PriceStrategy {
     }
   }
 
-  // Weighted random mode: stable, slow_rise, slow_fall, fast_rise, fast_fall, chaotic
   private int randomMode() {
     int[] pool = {
       MODE_STABLE, MODE_SLOW_RISE, MODE_SLOW_FALL, MODE_FAST_RISE, MODE_FAST_FALL, MODE_CHAOTIC

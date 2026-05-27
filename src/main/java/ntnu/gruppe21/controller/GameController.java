@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import ntnu.gruppe21.filehandler.HighScoreManager;
 import ntnu.gruppe21.filehandler.SaveManager;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
@@ -156,6 +157,27 @@ public class GameController {
    */
   public void saveGame() throws Exception {
     new SaveManager(saveSlot, false).save(player, exchange);
+  }
+
+  /**
+   * Records the current score to the global high-score file. Should be called once at the end of a
+   * session, after all shares have been sold.
+   */
+  public void recordHighScore() {
+    HighScoreManager.addFinalScoreToCsv(exchange, player);
+  }
+
+  /**
+   * Returns the live score for the current session without recording it.
+   *
+   * @return the calculated score, or {@link BigDecimal#ZERO} if calculation fails
+   */
+  public BigDecimal getCurrentScore() {
+    try {
+      return HighScoreManager.calculateFinalScore(exchange, player);
+    } catch (Exception e) {
+      return BigDecimal.ZERO;
+    }
   }
 
   /**
