@@ -13,9 +13,15 @@ import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.model.gameEngine.challenges.Challenge;
 import ntnu.gruppe21.view.Screen;
 
+/** The progress screen. */
 public class ProgressMenu extends VBox {
   private final Screen screen;
 
+  /**
+   * Builds the progress screen.
+   *
+   * @param screen the parent screen
+   */
   public ProgressMenu(Screen screen) {
     super(20);
     this.screen = screen;

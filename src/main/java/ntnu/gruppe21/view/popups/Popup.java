@@ -9,9 +9,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Base class for all modal popups in the game. Renders a centred card over a semi-transparent
+ * background.
+ *
+ * <p>Subclasses implement {@link #buildContent()} to supply the nodes that go inside the card,
+ * which is built once during construction.
+ */
 public abstract class Popup extends StackPane {
   private final VBox container;
 
+  /** Creates the popup and calls {@link #buildContent()} to fill the card. */
   public Popup() {
     setStyle("-fx-background-color: rgba(0, 0, 0, 0.45);");
     setAlignment(Pos.CENTER);
@@ -35,18 +43,31 @@ public abstract class Popup extends StackPane {
     setOnMouseClicked(e -> close());
   }
 
+  /**
+   * Builds and returns the nodes that form the popup's content card, top to bottom. Called once
+   * during construction.
+   *
+   * @return ordered list of nodes to add to the card
+   */
   protected abstract List<Node> buildContent();
 
-  protected void setContainerAlignment(Pos pos) {
-    container.setAlignment(pos);
+  /** Sets the alignment of items inside the card container to be centered. */
+  protected void setMiddleAlignment() {
+    container.setAlignment(Pos.CENTER);
   }
 
+  /**
+   * Overlays this popup on the given pane, stretching it to fill the pane's bounds.
+   *
+   * @param parent the pane to display the popup over
+   */
   public void show(Pane parent) {
     prefWidthProperty().bind(parent.widthProperty());
     prefHeightProperty().bind(parent.heightProperty());
     parent.getChildren().add(this);
   }
 
+  /** Removes this popup from its parent and unbinds size properties. */
   public void close() {
     prefWidthProperty().unbind();
     prefHeightProperty().unbind();

@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import ntnu.gruppe21.controller.GameController;
 
+/** Confirmation popup for the "sell all and quit" flow. */
 public class SellAllQuitPopup extends Popup {
   private Runnable onConfirm;
   private VBox holdingsBox;
@@ -141,6 +142,11 @@ public class SellAllQuitPopup extends Popup {
     return String.format("%.2f", v);
   }
 
+  /**
+   * Sets the action to run when the player confirms they want to sell everything and exit.
+   *
+   * @param action the callback to invoke
+   */
   public void setOnConfirm(Runnable action) {
     this.onConfirm = action;
   }

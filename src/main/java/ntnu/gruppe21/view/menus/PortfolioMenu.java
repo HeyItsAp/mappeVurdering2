@@ -17,9 +17,18 @@ import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.view.Screen;
 import ntnu.gruppe21.view.StockFormatter;
 
+/**
+ * The portfolio screen. Shows current holdings on the left and the full transaction history on the
+ * right.
+ */
 public class PortfolioMenu extends VBox {
   private final Screen screen;
 
+  /**
+   * Builds the portfolio screen.
+   *
+   * @param screen the parent screen, used to navigate to individual stock views
+   */
   public PortfolioMenu(Screen screen) {
     super(20);
     this.screen = screen;
@@ -50,6 +59,11 @@ public class PortfolioMenu extends VBox {
     getChildren().addAll(title, line, buildMoneyDisplay(), bottom);
   }
 
+  /**
+   * Builds the top stats row showing net worth, cash, and player status.
+   *
+   * @return an {@link HBox} containing the three stat boxes
+   */
   public HBox buildMoneyDisplay() {
     Player player = screen.getController().getPlayer();
     int weeks = player.getTransactionArchive().countDistinctWeeks();
@@ -81,6 +95,7 @@ public class PortfolioMenu extends VBox {
     return sign + StockFormatter.fmt(change);
   }
 
+  /** One row in the holdings table. */
   record HoldingRow(
       String symbol, String company, String shares, String value, String change, Stock stock) {}
 
@@ -166,6 +181,7 @@ public class PortfolioMenu extends VBox {
     return box;
   }
 
+  /** One row in the transaction history table. */
   record TxRow(String week, String type, String symbol, String qty, String total) {}
 
   private VBox buildTransactionHistory() {

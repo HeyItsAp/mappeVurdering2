@@ -5,8 +5,17 @@ import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.model.transaction.calculators.PurchaseCalculator;
 
+/**
+ * Confirmation popup for buying shares. The cost breakdown updates live as the player changes the
+ * quantity.
+ */
 public class BuyPopup extends BuySellPopup {
 
+  /**
+   * Creates a buy popup for the given stock.
+   *
+   * @param stock the stock being bought
+   */
   public BuyPopup(Stock stock) {
     setTitle("Buy " + stock.getSymbol() + "?");
     setValue("at " + fmt(stock.getSalesPrice()) + " per share");

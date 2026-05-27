@@ -17,6 +17,10 @@ import ntnu.gruppe21.view.menus.TodayMenu;
 import ntnu.gruppe21.view.popups.AdvanceWeekPopup;
 import ntnu.gruppe21.view.popups.SellAllQuitPopup;
 
+/**
+ * The main game screen. Holds a fixed sidebar on the left and a swappable content pane on the
+ * right.
+ */
 public class Screen extends StackPane {
   private final GameController controller;
   private Pane currentView;
@@ -31,6 +35,11 @@ public class Screen extends StackPane {
   private Button advanceWeekBtn;
   private Button todayBtn;
 
+  /**
+   * Builds the game screen for the given session and shows the Today view by default.
+   *
+   * @param controller the active game controller
+   */
   public Screen(GameController controller) {
     this.controller = controller;
     mainPane = new HBox();
@@ -40,10 +49,12 @@ public class Screen extends StackPane {
     getChildren().add(mainPane);
   }
 
+  /** Returns the active game controller. */
   public GameController getController() {
     return controller;
   }
 
+  /** Refreshes all dynamic labels in the sidebar. */
   public void refreshSidebar() {
     Player player = controller.getPlayer();
     Exchange exchange = controller.getExchange();
@@ -55,6 +66,7 @@ public class Screen extends StackPane {
     advanceWeekBtn.setText("Advance to week " + (exchange.getWeek() + 1));
   }
 
+  /** Navigates to the Today screen and updates the nav highlight accordingly. */
   public void navigateToToday() {
     showView(() -> new TodayMenu(this));
     setUnselectedStyle(currentButton);
@@ -62,6 +74,11 @@ public class Screen extends StackPane {
     setSelectedStyle(currentButton);
   }
 
+  /**
+   * Replaces the right-hand content pane with the node produced by {@code supplier}.
+   *
+   * @param supplier factory for the new content pane
+   */
   public void showView(Supplier<Pane> supplier) {
     currentView = supplier.get();
     HBox.setHgrow(currentView, Priority.ALWAYS);

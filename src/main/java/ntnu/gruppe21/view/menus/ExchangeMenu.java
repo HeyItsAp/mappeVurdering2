@@ -16,9 +16,15 @@ import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.view.Screen;
 import ntnu.gruppe21.view.StockFormatter;
 
+/** The market screen. Lists all stocks on the exchange in a table. */
 public class ExchangeMenu extends VBox {
   private final Screen screen;
 
+  /**
+   * Builds the market screen.
+   *
+   * @param screen the parent screen, used to navigate to individual stock views
+   */
   public ExchangeMenu(Screen screen) {
     super(20);
     this.screen = screen;
@@ -85,6 +91,7 @@ public class ExchangeMenu extends VBox {
     return bar;
   }
 
+  /** One row in the market table, holding pre-formatted display strings. */
   record MarketRow(String symbol, String company, String price, String change) {}
 
   private TableView<MarketRow> buildMarketTable() {
