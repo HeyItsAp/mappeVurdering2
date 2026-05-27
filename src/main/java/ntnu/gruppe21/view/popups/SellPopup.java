@@ -5,8 +5,15 @@ import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.model.transaction.calculators.SaleCalculator;
 
+/** Confirmation popup for selling shares. */
 public class SellPopup extends BuySellPopup {
 
+  /**
+   * Creates a sell popup for the given stock.
+   *
+   * @param stock the stock being sold
+   * @param ownedShares the number of shares the player currently holds
+   */
   public SellPopup(Stock stock, int ownedShares) {
     setTitle("Sell " + stock.getSymbol() + "?");
     setValue("at " + fmt(stock.getSalesPrice()) + " per share");

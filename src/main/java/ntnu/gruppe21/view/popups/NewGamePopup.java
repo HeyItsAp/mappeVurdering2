@@ -13,6 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import ntnu.gruppe21.model.gameEngine.Difficulty;
 
+/** Popup for configuring and starting a new game. */
 public class NewGamePopup extends Popup {
 
   private TextField nameField;

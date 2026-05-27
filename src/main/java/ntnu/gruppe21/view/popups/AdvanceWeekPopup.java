@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+/** Confirmation popup shown before advancing to the next week. */
 public class AdvanceWeekPopup extends Popup {
   private Label currentWeekLabel;
   private Label nextWeekLabel;
@@ -16,7 +17,7 @@ public class AdvanceWeekPopup extends Popup {
 
   @Override
   protected List<Node> buildContent() {
-    setContainerAlignment(Pos.CENTER);
+    setMiddleAlignment();
     setPadding(new Insets(40));
 
     currentWeekLabel = new Label("Week —");
@@ -72,11 +73,22 @@ public class AdvanceWeekPopup extends Popup {
     return List.of(currentWeekLabel, arrow, nextWeekLabel, desc1, desc2, buttons);
   }
 
+  /**
+   * Updates the week labels shown in the popup.
+   *
+   * @param current the week the game is on now
+   * @param next the week it will advance to
+   */
   public void setWeeks(int current, int next) {
     currentWeekLabel.setText("Week " + current);
     nextWeekLabel.setText("Week " + next);
   }
 
+  /**
+   * Sets the action to run when the player confirms they want to advance the week.
+   *
+   * @param action the callback to invoke
+   */
   public void setOnConfirm(Runnable action) {
     this.onConfirm = action;
   }
