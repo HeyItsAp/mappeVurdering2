@@ -2,6 +2,7 @@ package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -106,7 +107,6 @@ public class TodayMenu extends VBox {
 
   private HBox buildSummaryRow() {
     Player player = screen.getController().getPlayer();
-    Exchange exchange = screen.getController().getExchange();
 
     String cash = fmt(player.getCurrentMoney());
     String invested = fmt(player.getPortfolio().getNetWorth());
@@ -129,9 +129,9 @@ public class TodayMenu extends VBox {
 
   private String bestPortfolioStock() {
     return screen.getController().getPlayer().getPortfolio().getShares().stream()
-        .map(s -> s.getStock())
+        .map(Share::getStock)
         .distinct()
-        .max((a, b) -> a.getLatestPriceChange().compareTo(b.getLatestPriceChange()))
+        .max(Comparator.comparing(Stock::getLatestPriceChange))
         .map(s -> s.getSymbol() + " " + fmtChange(s))
         .orElse("—");
   }

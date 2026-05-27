@@ -36,7 +36,7 @@ public class Screen extends StackPane {
     mainPane = new HBox();
     currentView = new TodayMenu(this);
     HBox.setHgrow(currentView, Priority.ALWAYS);
-    mainPane.getChildren().addAll(createSidebar(), currentView);
+    mainPane.getChildren().addAll(buildSidebar(), currentView);
     getChildren().add(mainPane);
   }
 
@@ -68,7 +68,7 @@ public class Screen extends StackPane {
     mainPane.getChildren().set(1, currentView);
   }
 
-  private VBox createSidebar() {
+  private VBox buildSidebar() {
     VBox sidebar = new VBox();
     sidebar.setStyle("-fx-background-color: #e8e6e1; -fx-padding: 24;");
     sidebar.setSpacing(4);
@@ -113,8 +113,8 @@ public class Screen extends StackPane {
 
     weekLabel = new Label("Week " + exchange.getWeek());
 
-    advanceWeekBtn = createAdvanceWeekBtn();
-    Button exit = createExitBtn();
+    advanceWeekBtn = buildAdvanceWeekBtn();
+    Button exit = buildExitBtn();
 
     sidebar
         .getChildren()
@@ -215,7 +215,7 @@ public class Screen extends StackPane {
         """);
   }
 
-  private Button createAdvanceWeekBtn() {
+  private Button buildAdvanceWeekBtn() {
     Exchange exchange = controller.getExchange();
     Button btn = new Button("Advance to week " + (exchange.getWeek() + 1));
     btn.setMaxWidth(Double.MAX_VALUE);
@@ -247,7 +247,7 @@ public class Screen extends StackPane {
     return btn;
   }
 
-  private Button createExitBtn() {
+  private Button buildExitBtn() {
     String base =
         """
         -fx-font-size: 13px;

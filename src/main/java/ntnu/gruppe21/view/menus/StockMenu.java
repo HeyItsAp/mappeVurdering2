@@ -75,10 +75,10 @@ public class StockMenu extends VBox {
 
     for (VBox box :
         List.of(
-            createStatBox("CURRENT PRICE", fmt(price), pctStr),
-            createStatBox("CHANGE", changeStr, pctStr),
-            createStatBox("RECENT HIGH", fmt(stock.getHighestPrice()), ""),
-            createStatBox("RECENT LOW", fmt(stock.getLowestPrice()), ""))) {
+            buildStatBox("CURRENT PRICE", fmt(price), pctStr),
+            buildStatBox("CHANGE", changeStr, pctStr),
+            buildStatBox("RECENT HIGH", fmt(stock.getHighestPrice()), ""),
+            buildStatBox("RECENT LOW", fmt(stock.getLowestPrice()), ""))) {
       HBox.setHgrow(box, Priority.ALWAYS);
       box.setMaxWidth(Double.MAX_VALUE);
       row.getChildren().add(box);
@@ -304,7 +304,7 @@ public class StockMenu extends VBox {
     return new HBox(l, spacer, valueLabel);
   }
 
-  private VBox createStatBox(String label, String value, String sub) {
+  private VBox buildStatBox(String label, String value, String sub) {
     Label l1 = new Label(label);
     l1.setStyle("-fx-font-size: 12px; -fx-font-weight: lighter; -fx-text-fill: gray");
 

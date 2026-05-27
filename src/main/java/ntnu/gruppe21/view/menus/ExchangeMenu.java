@@ -2,6 +2,7 @@ package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -118,7 +119,7 @@ public class ExchangeMenu extends VBox {
 
     ObservableList<MarketRow> data = FXCollections.observableArrayList();
     screen.getController().getExchange().getStockMap().values().stream()
-        .sorted((a, b) -> a.getSymbol().compareTo(b.getSymbol()))
+        .sorted(Comparator.comparing(Stock::getSymbol))
         .forEach(
             s ->
                 data.add(

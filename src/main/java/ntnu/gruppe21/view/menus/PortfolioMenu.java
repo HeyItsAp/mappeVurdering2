@@ -49,10 +49,10 @@ public class PortfolioMenu extends VBox {
     HBox.setHgrow(rightPane, Priority.ALWAYS);
 
     bottom.getChildren().addAll(leftPane, rightPane);
-    getChildren().addAll(title, line, createMoneyDisplay(), bottom);
+    getChildren().addAll(title, line, buildMoneyDisplay(), bottom);
   }
 
-  public HBox createMoneyDisplay() {
+  public HBox buildMoneyDisplay() {
     Player player = screen.getController().getPlayer();
     int weeks = player.getTransactionArchive().countDistinctWeeks();
     String statusStr =
@@ -65,12 +65,12 @@ public class PortfolioMenu extends VBox {
     HBox moneyDisplay = new HBox(8);
     for (VBox box :
         List.of(
-            createBox("NET WORTH", fmt(player.getNetWorth()), fmtChangeVsStart(player)),
-            createBox(
+            buildBox("NET WORTH", fmt(player.getNetWorth()), fmtChangeVsStart(player)),
+            buildBox(
                 "CASH",
                 fmt(player.getCurrentMoney()),
                 "Started with " + fmt(player.getStartingMoney())),
-            createBox(
+            buildBox(
                 "STATUS / ASSETS",
                 statusStr + " / " + fmt(player.getPortfolio().getNetWorth()),
                 weeks + " weeks played"))) {
@@ -145,7 +145,7 @@ public class PortfolioMenu extends VBox {
                 java.util.stream.Collectors.toList()))
         .forEach(
             (symbol, shares) -> {
-              Stock stock = shares.get(0).getStock();
+              Stock stock = shares.getFirst().getStock();
               int totalQty = shares.stream().mapToInt(Share::getQuantity).sum();
               BigDecimal currentValue =
                   BigDecimal.valueOf(totalQty).multiply(stock.getSalesPrice());
@@ -165,7 +165,7 @@ public class PortfolioMenu extends VBox {
     return pane;
   }
 
-  private VBox createBox(String text1, String text2, String text3) {
+  private VBox buildBox(String text1, String text2, String text3) {
     Label label1 = new Label(text1);
     label1.setStyle("-fx-font-size: 12px; -fx-font-weight: lighter; -fx-text-fill: gray");
     Label label2 = new Label(text2);

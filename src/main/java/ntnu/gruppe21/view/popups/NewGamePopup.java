@@ -26,8 +26,8 @@ public class NewGamePopup extends Popup {
     Label title = new Label("New Game");
     title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    nameField = buildTextField("Player name", false);
-    moneyField = buildTextField("Starting money (e.g. 10000)", false);
+    nameField = buildTextField("Player name");
+    moneyField = buildTextField("Starting money (e.g. 10000)");
 
     difficultyBox = new ComboBox<>();
     difficultyBox.getItems().addAll(Difficulty.values());
@@ -100,7 +100,7 @@ public class NewGamePopup extends Popup {
     return label;
   }
 
-  private TextField buildTextField(String prompt, boolean ignored) {
+  private TextField buildTextField(String prompt) {
     TextField field = new TextField();
     field.setPromptText(prompt);
     field.setStyle(
