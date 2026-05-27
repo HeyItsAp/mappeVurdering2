@@ -1,11 +1,13 @@
 package ntnu.gruppe21.view.popups;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -81,15 +83,7 @@ public abstract class BuySellPopup extends Popup {
                 -fx-min-height: 36;
                 """;
 
-    quantityField = new TextField("1");
-    TextField field = quantityField;
-    field
-        .textProperty()
-        .addListener(
-            (obs, old, newVal) -> {
-              if (quantityChangeCallback != null) quantityChangeCallback.run();
-            });
-    field.setStyle(
+    String fieldStyle =
         """
                 -fx-font-size: 24px;
                 -fx-font-weight: bold;
@@ -97,8 +91,62 @@ public abstract class BuySellPopup extends Popup {
                 -fx-background-color: transparent;
                 -fx-border-color: transparent;
                 -fx-padding: 4 8 4 8;
-                """);
+                """;
+    String fieldErrorStyle =
+        """
+                -fx-font-size: 24px;
+                -fx-font-weight: bold;
+                -fx-alignment: center;
+                -fx-background-color: #fff0f0;
+                -fx-border-color: #e74c3c;
+                -fx-border-radius: 4;
+                -fx-border-width: 1.5;
+                -fx-padding: 4 8 4 8;
+                """;
+
+    UnaryOperator<TextFormatter.Change> digitFilter =
+        change -> change.getControlNewText().matches("\\d*") ? change : null;
+
+    quantityField = new TextField("1");
+    quantityField.setTextFormatter(new TextFormatter<>(digitFilter));
+    TextField field = quantityField;
+    field.setStyle(fieldStyle);
     HBox.setHgrow(field, Priority.ALWAYS);
+
+    field
+        .textProperty()
+        .addListener(
+            (obs, old, newVal) -> {
+              if (newVal.isEmpty()) {
+                field.setStyle(fieldErrorStyle);
+                if (confirmBtn != null) confirmBtn.setDisable(true);
+                if (quantityChangeCallback != null) quantityChangeCallback.run();
+                return;
+              }
+              int val;
+              try {
+                val = Integer.parseInt(newVal);
+              } catch (NumberFormatException e) {
+                field.setText(old.isEmpty() ? "1" : old);
+                return;
+              }
+              if (maxQuantity > 0 && val > maxQuantity) {
+                field.setText(String.valueOf(maxQuantity));
+                return;
+              }
+              boolean valid = val >= 1;
+              field.setStyle(valid ? fieldStyle : fieldErrorStyle);
+              if (confirmBtn != null) confirmBtn.setDisable(!valid);
+              if (quantityChangeCallback != null) quantityChangeCallback.run();
+            });
+
+    field
+        .focusedProperty()
+        .addListener(
+            (obs, was, now) -> {
+              if (!now && (field.getText().isEmpty() || field.getText().equals("0")))
+                field.setText("1");
+            });
 
     Button decrease = new Button("−");
     decrease.setStyle(btnStyle);
