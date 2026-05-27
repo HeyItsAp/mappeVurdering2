@@ -187,9 +187,12 @@ public class Challenge {
   }
 
   /**
-   * Calculates the A NEW goal requirements based on initial goal. Right now does a simple
-   * arithmetic addition to calculate new goal. One of params is {@code newWeek} (which this method
-   * doesn't use) but opens for interesting ways to calculate new goals.
+   * Calculates the A ENTIRELY DIFFERENT NEW goal requirements based on initial goal. Right now does
+   * a simple arithmetic addition to calculate new goal. One of params is {@code newWeek} (which
+   * this method doesn't use) but opens for interesting ways to calculate new goals.
+   *
+   * <p>On load it may load an entirely different challenge, but challenge difficulty-ness is
+   * preserved
    *
    * @param player certain {@link ChallengeType} depend on starting stats of player, so its required
    * @param newWeek Unnecessary parameter, but opens for development.

@@ -33,7 +33,7 @@ public class FilehandlerExchangeTest {
   private final String test_saves_name = "src/test/resources/saves/testsetsaveslot";
   // Second root will have static data
   private final String test_get_saves_root = "src/test/resources/saves/testgetsaveslot";
-  private final String defaultDatasetName = "exchangeDataSet1";
+  private final String defaultDatasetName = "sp500";
 
   // ── getExchangeData ──────────────────────────────────────────────────────
 
@@ -49,7 +49,7 @@ public class FilehandlerExchangeTest {
     @Test
     public void getExchangeDataReturnsCorrectNumberOfStocks() {
       assertEquals(
-          5, FilehandlerExchange.getExchangeDataset(defaultDatasetName).getStockMap().size());
+          503, FilehandlerExchange.getExchangeDataset(defaultDatasetName).getStockMap().size());
     }
 
     /* The exchange should be named "ExchangeFromFile" as defined in the method. */
@@ -263,8 +263,7 @@ public class FilehandlerExchangeTest {
 
     @Test
     void gettingExchangeDatasetOptionsShouldBeCorrect() {
-      assertEquals(3, FilehandlerExchange.getExchangeDatasetOptions().size());
-      assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("exchangeDataSet1.csv"));
+      assertEquals(1, FilehandlerExchange.getExchangeDatasetOptions().size());
       assertTrue(FilehandlerExchange.getExchangeDatasetOptions().contains("sp500.csv"));
     }
   }

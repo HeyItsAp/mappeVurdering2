@@ -16,7 +16,7 @@ import ntnu.gruppe21.model.Player;
  * from {@link Player}
  */
 public class HighScoreManager {
-  private static final String highscoreFile = "src/main/resources/datasets/highscores.csv";
+  private static final String highscoreFile = "src/main/resources/datasets/highscores/highscores.csv";
 
   /**
    * Method that calculates your final score based on an algorithm. Can be seen as a helper for
@@ -31,7 +31,6 @@ public class HighScoreManager {
    * @return highscore final highscore
    */
   public static BigDecimal calculateFinalScore(Exchange exchange, Player player) {
-    // TODO: Difficulty mechanism not yet implemented
     BigDecimal difficultyBigDecimalValue = BigDecimal.valueOf(5);
 
     int week = exchange.getWeek();

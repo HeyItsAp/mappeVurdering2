@@ -1,5 +1,4 @@
-# Save on Exchange: SaveManagerExchange, Week: 1
+# Save on Exchange: SaveTest, Week: 1
 # Ticker,Name,{Prices}
-SaveManagerExchange,1,EASY,MARKET_SIMULATOR
+SaveTest,1,EASY,MARKET_SIMULATOR
  
-SMT,SaveManagerCo,100,0.0|0|5|100
