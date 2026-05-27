@@ -16,6 +16,7 @@ public class GameController {
   private final Player player;
   private final Exchange exchange;
   private final String saveSlot;
+  private BigDecimal lastWeeklyChange = BigDecimal.ZERO;
 
   /**
    * Creates a GameController for an active game session.
@@ -53,10 +54,9 @@ public class GameController {
    * @throws IllegalArgumentException if the symbol is unknown or funds are insufficient
    * @throws TransactionException if the transaction cannot be committed
    */
-  public void buyStock(String symbol, BigDecimal quantity) throws TransactionException {
+  public void buyStock(String symbol, int quantity) throws TransactionException {
     Transaction purchase = exchange.buy(symbol, quantity, player);
     purchase.commit(player);
-    player.getTransactionArchive().add(purchase);
   }
 
   /**
@@ -67,16 +67,27 @@ public class GameController {
    * @throws IllegalArgumentException if the symbol is unknown
    * @throws TransactionException if the transaction cannot be committed
    */
-  public void sellStock(String symbol, BigDecimal quantity) throws TransactionException {
+  public void sellStock(String symbol, int quantity) throws TransactionException {
     Transaction sale = exchange.sell(symbol, quantity, player);
     sale.commit(player);
-    player.getTransactionArchive().add(sale);
   }
 
   /** Advances the exchange by one week, updating all stock prices. */
   public void advanceWeek() {
     exchange.advance();
+    lastWeeklyChange =
+        player.getPortfolio().getShares().stream()
+            .map(
+                s ->
+                    BigDecimal.valueOf(s.getQuantity())
+                        .multiply(s.getStock().getLatestPriceChange()))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     player.getChallengeManager().evaluateChallenges(player);
+  }
+
+  /** Returns the portfolio value change from the most recent week advance. */
+  public BigDecimal getLastWeeklyChange() {
+    return lastWeeklyChange;
   }
 
   /**
@@ -99,7 +110,6 @@ public class GameController {
         new java.util.ArrayList<>(player.getPortfolio().getShares())) {
       Transaction sale = exchange.sell(share.getStock().getSymbol(), share.getQuantity(), player);
       sale.commit(player);
-      player.getTransactionArchive().add(sale);
     }
   }
 }

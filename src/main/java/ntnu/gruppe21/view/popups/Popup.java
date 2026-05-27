@@ -10,7 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public abstract class Popup extends StackPane {
-  private VBox container;
+  private final VBox container;
 
   public Popup() {
     setStyle("-fx-background-color: rgba(0, 0, 0, 0.45);");

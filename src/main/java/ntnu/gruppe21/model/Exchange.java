@@ -4,7 +4,6 @@ package ntnu.gruppe21.model;
 
 import static java.util.stream.Collectors.toList;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -170,7 +169,7 @@ public class Exchange {
    * @param player The player doing the purchase.
    * @return The transaction.
    */
-  public Transaction buy(String symbol, BigDecimal quantity, Player player) {
+  public Transaction buy(String symbol, int quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
     Transaction purchase = transactionFactory.createPurchase(share, week);
@@ -189,7 +188,7 @@ public class Exchange {
    * @param player The player doing the sale.
    * @return The transaction.
    */
-  public Transaction sell(String symbol, BigDecimal quantity, Player player) {
+  public Transaction sell(String symbol, int quantity, Player player) {
     Stock stock = getStock(symbol);
     Share share = new Share(stock, quantity, stock.getSalesPrice());
     return transactionFactory.createSale(share, week);

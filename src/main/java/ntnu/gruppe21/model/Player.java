@@ -1,7 +1,6 @@
 package ntnu.gruppe21.model;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 import ntnu.gruppe21.model.gameEngine.Difficulty;
 import ntnu.gruppe21.model.gameEngine.challenges.ChallengeManager;
@@ -151,25 +150,10 @@ public class Player {
    * @return A number representing the experience level. 1 = Novice, 2 = Investor, 3 = Speculator.
    */
   public int getStatus() {
-    int weeks = transactionArchive.countDistinctWeeks();
-    BigDecimal bonusGrowthFactor =
-        difficulty
-            .getDifficultyMultiplier()
-            .divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP)
-            .add(BigDecimal.ONE);
-    BigDecimal gain =
-        getNetWorth()
-            .subtract(startingMoney)
-            .divide(startingMoney, 8, RoundingMode.HALF_UP)
-            .multiply(bonusGrowthFactor);
-
-    if (weeks >= 20 && gain.compareTo(BigDecimal.ONE) >= 0) {
-      return 3;
-    } else if (weeks >= 10 && gain.compareTo(BigDecimal.valueOf(0.2)) >= 0) {
-      return 2;
-    } else {
-      return 1;
-    }
+    int total = challengeManager.getTotalCompletions();
+    if (total >= 8) return 3;
+    if (total >= 3) return 2;
+    return 1;
   }
 
   /**

@@ -23,10 +23,10 @@ public class StartMenu extends StackPane {
     setStyle("-fx-background-color: #f0ede8;");
     setAlignment(Pos.CENTER);
 
-    Label title = new Label("Stock Market");
+    Label title = new Label("Billions");
     title.setStyle("-fx-font-size: 52px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    Label subtitle = new Label("Build your portfolio. Beat the market.");
+    Label subtitle = new Label("We do not condone gambling.");
     subtitle.setStyle("-fx-font-size: 14px; -fx-text-fill: #888;");
 
     HBox cards = new HBox(16, buildNewGameCard(), buildLoadGameCard());
@@ -179,6 +179,19 @@ public class StartMenu extends StackPane {
   }
 
   private void launchGame(GameController controller) {
-    stage.getScene().setRoot(new Screen(controller));
+    Screen screen = new Screen(controller);
+    stage.getScene().setRoot(screen);
+    stage.setOnCloseRequest(
+        event -> {
+          event.consume();
+          try {
+            controller.sellAll();
+            controller.saveGame();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          stage.setOnCloseRequest(null);
+          stage.close();
+        });
   }
 }

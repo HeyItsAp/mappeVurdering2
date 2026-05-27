@@ -105,19 +105,17 @@ class ChallengeTest {
 
     @Test
     void restoredChallenge_targetValueHigherThanFresh() {
-      // We infer target via checkCompletion: fresh challenge at EASY starts at money/2 = 500.
-      // After 3 advances the target should be > 500, so a player with 600 will pass.
+      // Fresh EASY target = 1000 * 1.5 = 1500.
+      // After 5 advances the target is ~2414, so 1600 passes fresh but not restored.
       Player startingPlayer = mockPlayer(1000, 0, Difficulty.EASY);
-      Player playerAfterSomeAdvances = mockPlayer(520, 0, Difficulty.EASY);
+      Player playerAfterSomeAdvances = mockPlayer(1600, 0, Difficulty.EASY);
 
       Challenge fresh =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, startingPlayer);
       Challenge restored =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, startingPlayer, 5);
 
-      // Fresh challenge: 520 >= 500 → true. Restored: target has been raised 3 times.
       assertTrue(fresh.checkCompletion(playerAfterSomeAdvances));
-      // With only 520 and a raised target the restored challenge should NOT be completable.
       assertFalse(restored.checkCompletion(playerAfterSomeAdvances));
     }
   }
@@ -129,7 +127,7 @@ class ChallengeTest {
 
     @Test
     void belowTarget_returnsFalse() {
-      // EASY: target = 1000 / 2 = 500
+      // EASY: target = 1000 * 1.5 = 1500
       Player newplayer = mockPlayer(1000, 0, Difficulty.EASY);
       Player playerWithGameTime = mockPlayer(499, 0, Difficulty.EASY);
       Challenge challenge =
@@ -140,23 +138,23 @@ class ChallengeTest {
 
     @Test
     void atTarget_returnsTrue() {
-      // EASY: target = 1000 / 2 = 500
+      // EASY: target = 1000 * 1.5 = 1500
       Player player = mockPlayer(1000, 0, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, player);
 
-      // Now simulate player with exactly 500
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(500));
+      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1500));
       assertTrue(challenge.checkCompletion(player));
     }
 
     @Test
     void aboveTarget_returnsTrue() {
+      // EASY: target = 1000 * 1.5 = 1500
       Player player = mockPlayer(1000, 0, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, player);
 
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(999));
+      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1600));
       assertTrue(challenge.checkCompletion(player));
     }
 
@@ -166,7 +164,7 @@ class ChallengeTest {
       Challenge challenge =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, player);
 
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(999));
+      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1600));
       challenge.checkCompletion(player);
 
       assertTrue(challenge.isCompleted());
@@ -187,8 +185,7 @@ class ChallengeTest {
     @ParameterizedTest
     @EnumSource(Difficulty.class)
     void harderDifficulty_hasHigherOrEqualTarget(Difficulty difficulty) {
-      // Compare each difficulty's starting target against EASY.
-      // EASY: target = startingMoney / 2. Others add a percentage on top.
+      // EASY: target = 10_000 * 1.5 = 15_000. Higher difficulties add a percentage on top.
       Player easyPlayer = mockPlayer(10_000, 0, Difficulty.EASY);
       Player testPlayer = mockPlayer(10_000, 0, difficulty);
 
@@ -196,13 +193,13 @@ class ChallengeTest {
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, easyPlayer);
       Challenge test = new Challenge(ChallengeType.BALANCE_REQUIREMENT, difficulty, testPlayer);
 
-      // Derive targets by checking at EASY's target (5000); it should pass for EASY.
-      when(easyPlayer.getCurrentMoney()).thenReturn(BigDecimal.valueOf(5000));
+      // EASY target is 15_000; exactly 15_000 should satisfy it.
+      when(easyPlayer.getCurrentMoney()).thenReturn(BigDecimal.valueOf(15_000));
       assertTrue(easy.checkCompletion(easyPlayer));
 
-      // For difficulties other than EASY, the same amount should NOT be enough.
+      // For harder difficulties the same amount should NOT be enough.
       if (difficulty != Difficulty.EASY) {
-        when(testPlayer.getCurrentMoney()).thenReturn(BigDecimal.valueOf(5000));
+        when(testPlayer.getCurrentMoney()).thenReturn(BigDecimal.valueOf(15_000));
         assertFalse(test.checkCompletion(testPlayer));
       }
     }
@@ -214,7 +211,7 @@ class ChallengeTest {
 
     @Test
     void belowTarget_returnsFalse() {
-      // EASY base = 2; player has 1 stock
+      // EASY base = 4; player has 1 stock
       Player player = mockPlayer(1000, 1, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.UNIQUE_SHARE_REQUIREMENT, Difficulty.EASY, player);
@@ -224,8 +221,8 @@ class ChallengeTest {
 
     @Test
     void atTarget_returnsTrue() {
-      // EASY base = 2; player has 2 stocks
-      Player player = mockPlayer(1000, 2, Difficulty.EASY);
+      // EASY base = 4; player has 4 stocks
+      Player player = mockPlayer(1000, 4, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.UNIQUE_SHARE_REQUIREMENT, Difficulty.EASY, player);
 
@@ -234,7 +231,7 @@ class ChallengeTest {
 
     @Test
     void hard_requiresMoreUniqueStocksThanEasy() {
-      // EASY target = 2, HARD target = 6
+      // EASY target = 4, HARD target = 10; player has 5 → not enough for HARD
       Player player = mockPlayer(1000, 5, Difficulty.HARD);
       Challenge challenge =
           new Challenge(ChallengeType.UNIQUE_SHARE_REQUIREMENT, Difficulty.HARD, player);
@@ -259,11 +256,12 @@ class ChallengeTest {
 
     @Test
     void afterAdvance_isNotCompleted() {
+      // EASY: target = 1000 * 1.5 = 1500
       Player player = mockPlayer(1000, 0, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, player);
 
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(999));
+      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1500));
       challenge.checkCompletion(player); // complete it
 
       challenge.advanceChallenge(1, player);
@@ -273,32 +271,31 @@ class ChallengeTest {
 
     @Test
     void uniqueShare_targetIncreasedByOne() {
-      // EASY target = 2. Complete with 2 stocks, advance, then 2 stocks should no longer suffice.
-      Player player = mockPlayer(1000, 2, Difficulty.EASY);
+      // EASY target = 4. Complete with 4 stocks, advance, then 4 stocks should no longer suffice.
+      Player player = mockPlayer(1000, 4, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.UNIQUE_SHARE_REQUIREMENT, Difficulty.EASY, player);
 
-      challenge.checkCompletion(player); // complete (2 >= 2)
+      challenge.checkCompletion(player); // complete (4 >= 4)
       challenge.advanceChallenge(1, player);
 
-      // Target is now 3; player still has 2 → should fail
+      // Target is now 5; player still has 4 → should fail
       assertFalse(challenge.checkCompletion(player));
     }
 
     @Test
     void balance_targetIncreasedAfterAdvance() {
-      // EASY: target starts at 500 (1000/2). Complete with 500, advance, 500 should no longer
-      // suffice.
+      // EASY: target starts at 1000 * 1.5 = 1500. Complete at 1500, advance → new target = 1650.
       Player player = mockPlayer(1000, 0, Difficulty.EASY);
       Challenge challenge =
           new Challenge(ChallengeType.BALANCE_REQUIREMENT, Difficulty.EASY, player);
 
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(500));
-      challenge.checkCompletion(player); // complete (500 >= 500)
+      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1500));
+      challenge.checkCompletion(player); // complete (1500 >= 1500)
       challenge.advanceChallenge(1, player);
 
-      // New target = 500 + 500/100 = 505
-      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(500));
+      // New target = 1650; 1500 no longer suffices
+      when(player.getCurrentMoney()).thenReturn(BigDecimal.valueOf(1500));
       assertFalse(challenge.checkCompletion(player));
     }
   }

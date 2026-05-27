@@ -8,7 +8,7 @@ import ntnu.gruppe21.model.Share;
 public class SaleCalculator implements TransactionCalculator {
   private final BigDecimal purchasePrice;
   private final BigDecimal salesPrice;
-  private final BigDecimal quantity;
+  private final int quantity;
 
   /**
    * Creates a new sale calculator.
@@ -22,7 +22,7 @@ public class SaleCalculator implements TransactionCalculator {
   }
 
   public BigDecimal calculateGross() {
-    return salesPrice.multiply(quantity);
+    return salesPrice.multiply(BigDecimal.valueOf(quantity));
   }
 
   public BigDecimal calculateCommission() {
@@ -30,7 +30,7 @@ public class SaleCalculator implements TransactionCalculator {
   }
 
   public BigDecimal calculateTax() {
-    BigDecimal costs = purchasePrice.multiply(quantity);
+    BigDecimal costs = purchasePrice.multiply(BigDecimal.valueOf(quantity));
     BigDecimal gain = calculateGross().subtract(calculateCommission()).subtract(costs);
     return gain.multiply(BigDecimal.valueOf(0.3));
   }

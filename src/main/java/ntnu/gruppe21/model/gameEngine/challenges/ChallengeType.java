@@ -16,7 +16,9 @@ public enum ChallengeType {
    */
   UNIQUE_SHARE_REQUIREMENT("Own different stocks:"),
   /** Balance_requirement: Players must have a certain amount of current money {@link Player} */
-  BALANCE_REQUIREMENT("Must have amount of balance:");
+  BALANCE_REQUIREMENT("Must have amount of balance:"),
+  /** Profit_target: Players must earn a certain profit (net worth minus starting money) */
+  PROFIT_TARGET("Reach profit target:");
 
   private final String challengeTitle;
 

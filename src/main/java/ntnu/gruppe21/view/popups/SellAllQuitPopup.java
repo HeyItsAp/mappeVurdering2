@@ -102,15 +102,14 @@ public class SellAllQuitPopup extends Popup {
       holdingsBox.getChildren().add(empty);
     } else {
       for (Share share : shares) {
-        BigDecimal value = share.getStock().getSalesPrice().multiply(share.getQuantity());
+        BigDecimal value =
+            share.getStock().getSalesPrice().multiply(BigDecimal.valueOf(share.getQuantity()));
         proceeds = proceeds.add(value);
         holdingsBox
             .getChildren()
             .add(
                 buildHoldingRow(
-                    share.getStock().getSymbol(),
-                    share.getQuantity().toPlainString() + " shares",
-                    fmt(value)));
+                    share.getStock().getSymbol(), share.getQuantity() + " shares", fmt(value)));
       }
     }
 

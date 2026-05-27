@@ -3,10 +3,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
-import ntnu.gruppe21.model.transaction.TransactionArchive;
 import ntnu.gruppe21.model.transaction.Purchase;
 import ntnu.gruppe21.model.transaction.Sale;
 import ntnu.gruppe21.model.transaction.Transaction;
+import ntnu.gruppe21.model.transaction.TransactionArchive;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ public class TransactionArchiveTest {
     transactionArchive = new TransactionArchive();
     FilledtransactionArchive = new TransactionArchive();
     Stock stock = new Stock("Bit", "ExampleCompany", new BigDecimal(20000));
-    Share share = new Share(stock, new BigDecimal(10), new BigDecimal(10));
+    Share share = new Share(stock, 10, new BigDecimal(10));
     purchase1 = new Purchase(share, 1);
     Transaction purchase2 = new Purchase(share, 2);
     Transaction sale1 = new Sale(share, 1);

@@ -11,6 +11,7 @@ import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
 import ntnu.gruppe21.view.menus.ExchangeMenu;
 import ntnu.gruppe21.view.menus.PortfolioMenu;
+import ntnu.gruppe21.view.menus.ProgressMenu;
 import ntnu.gruppe21.view.menus.StartMenu;
 import ntnu.gruppe21.view.menus.TodayMenu;
 import ntnu.gruppe21.view.popups.AdvanceWeekPopup;
@@ -28,13 +29,14 @@ public class Screen extends StackPane {
   private Label cashLabel;
   private Label weekLabel;
   private Button advanceWeekBtn;
+  private Button todayBtn;
 
   public Screen(GameController controller) {
     this.controller = controller;
     mainPane = new HBox();
     currentView = new TodayMenu(this);
     HBox.setHgrow(currentView, Priority.ALWAYS);
-    mainPane.getChildren().addAll(createSidebar(), currentView);
+    mainPane.getChildren().addAll(buildSidebar(), currentView);
     getChildren().add(mainPane);
   }
 
@@ -53,13 +55,20 @@ public class Screen extends StackPane {
     advanceWeekBtn.setText("Advance to week " + (exchange.getWeek() + 1));
   }
 
+  public void navigateToToday() {
+    showView(() -> new TodayMenu(this));
+    setUnselectedStyle(currentButton);
+    currentButton = todayBtn;
+    setSelectedStyle(currentButton);
+  }
+
   public void showView(Supplier<Pane> supplier) {
     currentView = supplier.get();
     HBox.setHgrow(currentView, Priority.ALWAYS);
     mainPane.getChildren().set(1, currentView);
   }
 
-  private VBox createSidebar() {
+  private VBox buildSidebar() {
     VBox sidebar = new VBox();
     sidebar.setStyle("-fx-background-color: #e8e6e1; -fx-padding: 24;");
     sidebar.setSpacing(4);
@@ -95,7 +104,7 @@ public class Screen extends StackPane {
 
     money.getChildren().addAll(moneyLabel, netWorthLabel, cashLabel);
 
-    Button todayBtn = navBtn("Today", () -> new TodayMenu(this));
+    todayBtn = navBtn("Today", () -> new TodayMenu(this));
     currentButton = todayBtn;
     setSelectedStyle(currentButton);
 
@@ -104,8 +113,8 @@ public class Screen extends StackPane {
 
     weekLabel = new Label("Week " + exchange.getWeek());
 
-    advanceWeekBtn = createAdvanceWeekBtn();
-    Button exit = createExitBtn();
+    advanceWeekBtn = buildAdvanceWeekBtn();
+    Button exit = buildExitBtn();
 
     sidebar
         .getChildren()
@@ -118,7 +127,7 @@ public class Screen extends StackPane {
             navBtn("Market", () -> new ExchangeMenu(this)),
             navBtn("My portfolio", () -> new PortfolioMenu(this)),
             sectionLabel("LEVEL"),
-            navBtn("Progress", () -> new ExchangeMenu(this)),
+            navBtn("Progress", () -> new ProgressMenu(this)),
             spacer,
             weekLabel,
             advanceWeekBtn,
@@ -206,7 +215,7 @@ public class Screen extends StackPane {
         """);
   }
 
-  private Button createAdvanceWeekBtn() {
+  private Button buildAdvanceWeekBtn() {
     Exchange exchange = controller.getExchange();
     Button btn = new Button("Advance to week " + (exchange.getWeek() + 1));
     btn.setMaxWidth(Double.MAX_VALUE);
@@ -231,13 +240,14 @@ public class Screen extends StackPane {
               () -> {
                 controller.advanceWeek();
                 refreshSidebar();
+                navigateToToday();
               });
           popup.show(this);
         });
     return btn;
   }
 
-  private Button createExitBtn() {
+  private Button buildExitBtn() {
     String base =
         """
         -fx-font-size: 13px;
@@ -275,6 +285,7 @@ public class Screen extends StackPane {
                   e.printStackTrace();
                 }
                 Stage stage = (Stage) getScene().getWindow();
+                stage.setOnCloseRequest(null);
                 stage.getScene().setRoot(new StartMenu(stage));
               });
           popup.show(this);

@@ -24,6 +24,9 @@ public class ChallengeManager {
   // Random to produce random {@link ChallengeType}
   private final Random random = new Random();
 
+  /** Total challenge completions across all challenge instances (including replaced ones). */
+  private int totalCompletions = 0;
+
   /** Creates a new ChallengeManager with empty challenges list; */
   public ChallengeManager() {
     this.challenges = new ArrayList<>();
@@ -42,23 +45,45 @@ public class ChallengeManager {
   }
 
   /**
-   * Checks if all challenges are complete for {@link Player}. If it is, advance the challenges.
+   * Checks each challenge and refreshes its description. Completed challenges give a cash reward
+   * and are replaced with a fresh challenge of a different type.
    *
    * @param player Player object to compare player stats and targetValue
    */
   public void evaluateChallenges(Player player) {
-    boolean completedAll = true;
-    for (Challenge c : challenges) {
+    List<Integer> completedIndexes = new ArrayList<>();
+    for (int i = 0; i < challenges.size(); i++) {
+      Challenge c = challenges.get(i);
       c.refreshDescription(player, c.getChallengeType());
-      if (!c.isCompleted() && !c.checkCompletion(player)) {
-        completedAll = false;
-        throw new IllegalStateException("All challenges are not completed");
+      if (!c.isCompleted()) {
+        c.checkCompletion(player);
+      }
+      if (c.isCompleted()) {
+        totalCompletions++;
+        player.addMoney(c.calculateReward(player));
+        completedIndexes.add(i);
       }
     }
-
-    for (Challenge c : challenges) {
-      c.advanceChallenge(0, player);
+    for (int idx : completedIndexes) {
+      ChallengeType newType = pickDifferentType(challenges.get(idx).getChallengeType());
+      challenges.set(idx, new Challenge(newType, player.getDifficulty(), player));
     }
+  }
+
+  private ChallengeType pickDifferentType(ChallengeType current) {
+    List<ChallengeType> options =
+        Arrays.stream(ChallengeType.values())
+            .filter(t -> t != current)
+            .collect(java.util.stream.Collectors.toList());
+    return options.get(random.nextInt(options.size()));
+  }
+
+  public int getTotalCompletions() {
+    return totalCompletions;
+  }
+
+  public void setTotalCompletions(int totalCompletions) {
+    this.totalCompletions = totalCompletions;
   }
 
   /**
@@ -71,22 +96,20 @@ public class ChallengeManager {
   }
 
   /**
-   * Returns a String with all challenges type with | as separator.
+   * Returns a String representing challenge state. Format: {@code total|TYPE;timesCompleted|...}
+   * where {@code total} is the lifetime completion count used for player status.
    *
-   * @return String with containing each Challenge object as ChallengeType;timesCompleted then
-   *     separated by "|";
+   * @return serialised challenge state
    */
   public String saveChallenges() {
     StringBuilder stringBuilder = new StringBuilder(100);
+    stringBuilder.append(totalCompletions);
     for (Challenge c : challenges) {
       stringBuilder
+          .append("|")
           .append(c.getChallengeType())
           .append(";")
-          .append(c.getTimesCompleted())
-          .append("|");
-    }
-    if (!stringBuilder.isEmpty()) {
-      stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+          .append(c.getTimesCompleted());
     }
     return stringBuilder.toString();
   }

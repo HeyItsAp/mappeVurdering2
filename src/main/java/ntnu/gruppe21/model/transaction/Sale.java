@@ -23,7 +23,7 @@ public class Sale extends Transaction {
       throw new TransactionException("Transaction is already committed.");
     }
 
-    player.getPortfolio().removeShare(getShare());
+    player.getPortfolio().removeShares(getShare().getStock().getSymbol(), getShare().getQuantity());
 
     player.addMoney(getCalculator().calculateTotal());
 

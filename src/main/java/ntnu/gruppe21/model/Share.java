@@ -18,7 +18,7 @@ public class Share {
   private final Stock stock;
 
   /* The quantity of shares owned */
-  private final BigDecimal quantity;
+  private final int quantity;
 
   /* The purchase price of the shares */
   private final BigDecimal purchasePrice;
@@ -30,9 +30,9 @@ public class Share {
    * @param quantity amount of stocks.
    * @param purchasePrice price to purchase.
    */
-  public Share(Stock stock, BigDecimal quantity, BigDecimal purchasePrice) {
+  public Share(Stock stock, int quantity, BigDecimal purchasePrice) {
     this.stock = Objects.requireNonNull(stock, "Stock cannot be null");
-    this.quantity = Objects.requireNonNull(quantity, "Quantity cannot be null");
+    this.quantity = quantity;
     this.purchasePrice = Objects.requireNonNull(purchasePrice, "Purchase price cannot be null");
   }
 
@@ -50,7 +50,7 @@ public class Share {
    *
    * @return the quantity in question.
    */
-  public BigDecimal getQuantity() {
+  public int getQuantity() {
     return quantity;
   }
 
