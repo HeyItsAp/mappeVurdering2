@@ -1,7 +1,5 @@
 package ntnu.gruppe21.view.menus;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.StockFormatter;
 
 public class ExchangeMenu extends VBox {
   private final Screen screen;
@@ -77,8 +76,8 @@ public class ExchangeMenu extends VBox {
                           new MarketRow(
                               s.getSymbol(),
                               s.getCompany(),
-                              fmt(s.getSalesPrice()),
-                              fmtChange(s))));
+                              StockFormatter.fmt(s.getSalesPrice()),
+                              StockFormatter.fmtChange(s))));
               table.setItems(rows);
             });
 
@@ -137,21 +136,9 @@ public class ExchangeMenu extends VBox {
             s ->
                 data.add(
                     new MarketRow(
-                        s.getSymbol(), s.getCompany(), fmt(s.getSalesPrice()), fmtChange(s))));
+                        s.getSymbol(), s.getCompany(),
+                        StockFormatter.fmt(s.getSalesPrice()), StockFormatter.fmtChange(s))));
     table.setItems(data);
     return table;
-  }
-
-  private static String fmt(BigDecimal v) {
-    return String.format("%.2f", v);
-  }
-
-  private static String fmtChange(Stock s) {
-    BigDecimal change = s.getLatestPriceChange();
-    BigDecimal prev = s.getSalesPrice().subtract(change);
-    if (prev.signum() == 0) return "0.00%";
-    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-    String sign = pct.signum() >= 0 ? "+" : "";
-    return sign + String.format("%.2f", pct) + "%";
   }
 }

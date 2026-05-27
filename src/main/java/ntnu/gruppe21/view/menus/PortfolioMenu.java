@@ -1,7 +1,6 @@
 package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,12 +11,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import ntnu.gruppe21.controller.GameController;
 import ntnu.gruppe21.model.Player;
-import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
-import ntnu.gruppe21.model.transaction.Purchase;
-import ntnu.gruppe21.model.transaction.Transaction;
 import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.StockFormatter;
 
 public class PortfolioMenu extends VBox {
   private final Screen screen;
@@ -55,24 +53,20 @@ public class PortfolioMenu extends VBox {
   public HBox buildMoneyDisplay() {
     Player player = screen.getController().getPlayer();
     int weeks = player.getTransactionArchive().countDistinctWeeks();
-    String statusStr =
-        switch (player.getStatus()) {
-          case 3 -> "Speculator";
-          case 2 -> "Investor";
-          default -> "Novice";
-        };
+    String statusStr = player.getStatusName();
 
     HBox moneyDisplay = new HBox(8);
     for (VBox box :
         List.of(
-            buildBox("NET WORTH", fmt(player.getNetWorth()), fmtChangeVsStart(player)),
+            buildBox(
+                "NET WORTH", StockFormatter.fmt(player.getNetWorth()), fmtChangeVsStart(player)),
             buildBox(
                 "CASH",
-                fmt(player.getCurrentMoney()),
-                "Started with " + fmt(player.getStartingMoney())),
+                StockFormatter.fmt(player.getCurrentMoney()),
+                "Started with " + StockFormatter.fmt(player.getStartingMoney())),
             buildBox(
                 "STATUS / ASSETS",
-                statusStr + " / " + fmt(player.getPortfolio().getNetWorth()),
+                statusStr + " / " + StockFormatter.fmt(player.getPortfolio().getNetWorth()),
                 weeks + " weeks played"))) {
       HBox.setHgrow(box, Priority.ALWAYS);
       box.setMaxWidth(Double.MAX_VALUE);
@@ -81,10 +75,10 @@ public class PortfolioMenu extends VBox {
     return moneyDisplay;
   }
 
-  private String fmtChangeVsStart(Player player) {
+  private static String fmtChangeVsStart(Player player) {
     BigDecimal change = player.getNetWorth().subtract(player.getStartingMoney());
     String sign = change.signum() >= 0 ? "+" : "";
-    return sign + String.format("%.2f", change);
+    return sign + StockFormatter.fmt(change);
   }
 
   record HoldingRow(
@@ -137,27 +131,16 @@ public class PortfolioMenu extends VBox {
     table.getColumns().addAll(symbolCol, companyCol, sharesCol, valueCol, changeCol);
 
     ObservableList<HoldingRow> data = FXCollections.observableArrayList();
-    screen.getController().getPlayer().getPortfolio().getShares().stream()
-        .collect(
-            java.util.stream.Collectors.groupingBy(
-                s -> s.getStock().getSymbol(),
-                java.util.LinkedHashMap::new,
-                java.util.stream.Collectors.toList()))
-        .forEach(
-            (symbol, shares) -> {
-              Stock stock = shares.getFirst().getStock();
-              int totalQty = shares.stream().mapToInt(Share::getQuantity).sum();
-              BigDecimal currentValue =
-                  BigDecimal.valueOf(totalQty).multiply(stock.getSalesPrice());
-              data.add(
-                  new HoldingRow(
-                      symbol,
-                      stock.getCompany(),
-                      String.valueOf(totalQty),
-                      fmt(currentValue),
-                      fmtChange(stock),
-                      stock));
-            });
+    for (GameController.HoldingSummary h : screen.getController().getHoldings()) {
+      data.add(
+          new HoldingRow(
+              h.symbol(),
+              h.company(),
+              String.valueOf(h.quantity()),
+              StockFormatter.fmt(h.currentValue()),
+              StockFormatter.fmtChange(h.stock()),
+              h.stock()));
+    }
     table.setItems(data);
 
     VBox pane = new VBox(table);
@@ -221,19 +204,14 @@ public class PortfolioMenu extends VBox {
     table.getColumns().addAll(weekCol, typeCol, symbolCol, qtyCol, totalCol);
 
     ObservableList<TxRow> data = FXCollections.observableArrayList();
-    java.util.List<Transaction> txs =
-        new java.util.ArrayList<>(
-            screen.getController().getPlayer().getTransactionArchive().getAll());
-    java.util.Collections.reverse(txs);
-    for (Transaction tx : txs) {
-      String type = tx instanceof Purchase ? "Buy" : "Sell";
+    for (GameController.TransactionSummary tx : screen.getController().getTransactionHistory()) {
       data.add(
           new TxRow(
-              "Wk " + tx.getWeek(),
-              type,
-              tx.getShare().getStock().getSymbol(),
-              String.valueOf(tx.getShare().getQuantity()),
-              fmt(tx.getCalculator().calculateTotal())));
+              "Wk " + tx.week(),
+              tx.type(),
+              tx.symbol(),
+              String.valueOf(tx.quantity()),
+              StockFormatter.fmt(tx.total())));
     }
     table.setItems(data);
 
@@ -249,18 +227,5 @@ public class PortfolioMenu extends VBox {
         -fx-border-radius: 8;
         """);
     return pane;
-  }
-
-  private static String fmt(BigDecimal v) {
-    return String.format("%.2f", v);
-  }
-
-  private static String fmtChange(Stock s) {
-    BigDecimal change = s.getLatestPriceChange();
-    BigDecimal prev = s.getSalesPrice().subtract(change);
-    if (prev.signum() == 0) return "0.00%";
-    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-    String sign = pct.signum() >= 0 ? "+" : "";
-    return sign + String.format("%.2f", pct) + "%";
   }
 }

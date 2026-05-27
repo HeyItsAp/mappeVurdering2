@@ -2,7 +2,6 @@ package ntnu.gruppe21.view.menus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -19,9 +18,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import ntnu.gruppe21.model.Exchange;
 import ntnu.gruppe21.model.Player;
-import ntnu.gruppe21.model.Share;
 import ntnu.gruppe21.model.Stock;
 import ntnu.gruppe21.view.Screen;
+import ntnu.gruppe21.view.StockFormatter;
 
 public class TodayMenu extends VBox {
   private final Screen screen;
@@ -50,7 +49,7 @@ public class TodayMenu extends VBox {
     VBox leftPane = buildLeftPane();
     HBox.setHgrow(leftPane, Priority.ALWAYS);
 
-    VBox rightPane = buildPortfolioWatchlist();
+    VBox rightPane = buildHoldingsPanel();
     rightPane.prefWidthProperty().bind(body.widthProperty().multiply(0.25));
 
     body.getChildren().addAll(leftPane, rightPane);
@@ -86,11 +85,11 @@ public class TodayMenu extends VBox {
     heading.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
     String color = weeklyChange.signum() >= 0 ? "#27ae60" : "#c0392b";
-    Label changeLabel = new Label(sign + fmt(weeklyChange));
+    Label changeLabel = new Label(sign + StockFormatter.fmt(weeklyChange));
     changeLabel.setStyle(
         "-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
 
-    Label pctLabel = new Label(sign + pct + "%  ·  Net worth: " + fmt(netWorth));
+    Label pctLabel = new Label(sign + pct + "%  ·  Net worth: " + StockFormatter.fmt(netWorth));
     pctLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #888;");
 
     VBox card = new VBox(6, heading, changeLabel, pctLabel);
@@ -108,8 +107,8 @@ public class TodayMenu extends VBox {
   private HBox buildSummaryRow() {
     Player player = screen.getController().getPlayer();
 
-    String cash = fmt(player.getCurrentMoney());
-    String invested = fmt(player.getPortfolio().getNetWorth());
+    String cash = StockFormatter.fmt(player.getCurrentMoney());
+    String invested = StockFormatter.fmt(player.getPortfolio().getNetWorth());
     int stockCount = player.getPortfolio().countDistinctStock();
 
     String bestStock = bestPortfolioStock();
@@ -128,11 +127,10 @@ public class TodayMenu extends VBox {
   }
 
   private String bestPortfolioStock() {
-    return screen.getController().getPlayer().getPortfolio().getShares().stream()
-        .map(Share::getStock)
-        .distinct()
-        .max(Comparator.comparing(Stock::getLatestPriceChange))
-        .map(s -> s.getSymbol() + " " + fmtChange(s))
+    return screen
+        .getController()
+        .getBestPortfolioStock()
+        .map(s -> s.getSymbol() + " " + StockFormatter.fmtChange(s))
         .orElse("—");
   }
 
@@ -175,10 +173,10 @@ public class TodayMenu extends VBox {
     Label symbolLabel = new Label(stock.getSymbol());
     symbolLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
 
-    Label priceLabel = new Label(fmt(stock.getSalesPrice()));
+    Label priceLabel = new Label(StockFormatter.fmt(stock.getSalesPrice()));
     priceLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
 
-    String changeStr = fmtChange(stock);
+    String changeStr = StockFormatter.fmtChange(stock);
     boolean pos = stock.getLatestPriceChange().signum() >= 0;
     Label changeLabel = new Label(changeStr);
     changeLabel.setStyle(
@@ -204,13 +202,13 @@ public class TodayMenu extends VBox {
     return card;
   }
 
-  record WatchRow(String symbol, String price, String change, Stock stock) {}
+  record HoldingRow(String symbol, String price, String change, Stock stock) {}
 
-  private VBox buildPortfolioWatchlist() {
+  private VBox buildHoldingsPanel() {
     Label heading = new Label("MY HOLDINGS");
     heading.setStyle("-fx-font-size: 11px; -fx-text-fill: #aaa; -fx-font-weight: bold;");
 
-    TableView<WatchRow> table = new TableView<>();
+    TableView<HoldingRow> table = new TableView<>();
     table.getStylesheets().add(getClass().getResource("/styles/table.css").toExternalForm());
     table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     table.setMaxWidth(Double.MAX_VALUE);
@@ -218,9 +216,9 @@ public class TodayMenu extends VBox {
 
     String headerStyle = "-fx-font-size: 11px; -fx-text-fill: #1a1a1a; -fx-font-weight: normal;";
 
-    TableColumn<WatchRow, String> symbolCol = new TableColumn<>("SYMBOL");
-    TableColumn<WatchRow, String> priceCol = new TableColumn<>("PRICE");
-    TableColumn<WatchRow, String> changeCol = new TableColumn<>("CHANGE");
+    TableColumn<HoldingRow, String> symbolCol = new TableColumn<>("SYMBOL");
+    TableColumn<HoldingRow, String> priceCol = new TableColumn<>("PRICE");
+    TableColumn<HoldingRow, String> changeCol = new TableColumn<>("CHANGE");
 
     symbolCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().symbol()));
     priceCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().price()));
@@ -228,7 +226,7 @@ public class TodayMenu extends VBox {
 
     table.setRowFactory(
         tv -> {
-          TableRow<WatchRow> row = new TableRow<>();
+          TableRow<HoldingRow> row = new TableRow<>();
           row.setOnMouseClicked(
               e -> {
                 if (!row.isEmpty()) {
@@ -242,17 +240,23 @@ public class TodayMenu extends VBox {
     symbolCol.setMaxWidth(1f * Integer.MAX_VALUE * 30);
     priceCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);
     changeCol.setMaxWidth(1f * Integer.MAX_VALUE * 35);
-    for (TableColumn<WatchRow, String> col : List.of(symbolCol, priceCol, changeCol)) {
+    for (TableColumn<HoldingRow, String> col : List.of(symbolCol, priceCol, changeCol)) {
       col.setStyle(headerStyle);
     }
     table.getColumns().addAll(symbolCol, priceCol, changeCol);
 
-    ObservableList<WatchRow> data = FXCollections.observableArrayList();
-    screen.getController().getPlayer().getPortfolio().getShares().stream()
-        .map(Share::getStock)
-        .distinct()
+    ObservableList<HoldingRow> data = FXCollections.observableArrayList();
+    screen
+        .getController()
+        .getPortfolioStocks()
         .forEach(
-            s -> data.add(new WatchRow(s.getSymbol(), fmt(s.getSalesPrice()), fmtChange(s), s)));
+            s ->
+                data.add(
+                    new HoldingRow(
+                        s.getSymbol(),
+                        StockFormatter.fmt(s.getSalesPrice()),
+                        StockFormatter.fmtChange(s),
+                        s)));
     table.setItems(data);
 
     Region spacer = new Region();
@@ -288,18 +292,5 @@ public class TodayMenu extends VBox {
         -fx-border-radius: 8;
         """);
     return box;
-  }
-
-  private static String fmt(BigDecimal v) {
-    return String.format("%.2f", v);
-  }
-
-  private static String fmtChange(Stock s) {
-    BigDecimal change = s.getLatestPriceChange();
-    BigDecimal prev = s.getSalesPrice().subtract(change);
-    if (prev.signum() == 0) return "0.00%";
-    BigDecimal pct = change.divide(prev, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-    String sign = pct.signum() >= 0 ? "+" : "";
-    return sign + String.format("%.2f", pct) + "%";
   }
 }
