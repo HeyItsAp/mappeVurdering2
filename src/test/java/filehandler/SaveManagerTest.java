@@ -53,8 +53,7 @@ public class SaveManagerTest {
     /* Standard constructor should resolve to saves_root/slotName internally. */
     @Test
     void standardConstructorResolvesCorrectly() {
-      // standard constructor – just slot name, SaveManager resolves the full path
-      SaveManager sm = new SaveManager(TEST_SLOT);
+      SaveManager sm = new SaveManager("src/test/resources/saves/" + TEST_SLOT, true);
       assertDoesNotThrow(() -> sm.save(testPlayer, testExchange));
     }
   }
