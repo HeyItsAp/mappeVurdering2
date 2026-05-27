@@ -13,6 +13,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+/**
+ * Abstract base for the buy and sell confirmation popups.
+ *
+ * <p>Subclasses configure the title, subtitle, cost values, and confirm callback via the protected
+ * setter methods.
+ */
 public abstract class BuySellPopup extends Popup {
   private Label title;
   private Label value;
@@ -232,50 +238,81 @@ public abstract class BuySellPopup extends Popup {
     return new HBox(desc, spacer, valueLabel);
   }
 
+  /** Sets the price-per-share row in the cost breakdown. */
   protected void setPriceValue(String text) {
     priceValue.setText(text);
   }
 
+  /** Sets the quantity row in the cost breakdown. */
   protected void setQuantityValue(String text) {
     quantityValue.setText(text);
   }
 
+  /** Sets the commission row in the cost breakdown. */
   protected void setCommissionValue(String text) {
     commissionValue.setText(text);
   }
 
+  /** Sets the tax row in the cost breakdown. */
   protected void setTaxValue(String text) {
     taxValue.setText(text);
   }
 
+  /** Sets the total row in the cost breakdown. */
   protected void setTotalValue(String text) {
     totalValue.setText(text);
   }
 
+  /** Sets the popup title (e.g. {@code "Buy AAPL?"}). */
   protected void setTitle(String text) {
     title.setText(text);
   }
 
+  /** Sets the subtitle line shown below the title (e.g. the price per share). */
   protected void setValue(String text) {
     value.setText(text);
   }
 
+  /** Sets the confirm button label. */
   protected void setConfirm(String text) {
     confirmBtn.setText(text);
   }
 
+  /**
+   * Caps the quantity field at {@code max}. Used by {@link SellPopup} to prevent selling more
+   * shares than the player holds.
+   *
+   * @param max the maximum allowed value
+   */
   public void setMaxQuantity(int max) {
     this.maxQuantity = max;
   }
 
+  /**
+   * Sets the action to run when the confirm button is clicked.
+   *
+   * @param action the callback to invoke
+   */
   public void setOnConfirm(Runnable action) {
     confirmBtn.setOnAction(ignored -> action.run());
   }
 
+  /**
+   * Registers a callback that fires whenever the quantity field changes. Used by subclasses to keep
+   * the cost breakdown in sync with the selected quantity.
+   *
+   * @param callback the callback to invoke on each change
+   */
   protected void setOnQuantityChange(Runnable callback) {
     this.quantityChangeCallback = callback;
   }
 
+  /**
+   * Returns the quantity shown in the selector field. Falls back to 1 if the field is empty or
+   * somehow unparseable.
+   *
+   * @return the selected quantity, at least 1
+   */
   public int getQuantity() {
     try {
       return Integer.parseInt(quantityField.getText().trim());
